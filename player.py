@@ -98,7 +98,8 @@ class Jogador(pygame.sprite.Sprite):
         elif tipo == "PU":
             if self.quick_shot:
                 self.quick_shot = False
-            else: self.quick_shot = True
+            else: 
+                self.quick_shot = True
 
     def image_update(self, tipo): #animação 2-default, animação 10-dano, animação 4-dano+PU, animação 6-PU
         if tipo == "D":    

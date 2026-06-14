@@ -4,10 +4,10 @@ import math #para deixar o código mais claro durante as operações matemática
 #from time import perf_counter
 clock = pygame.time.Clock()
 inimigos_data = {
-            0: {"imagem" : "retangulo_vermelho.png", "velocidade" :(700, 250), "vida" : 200, "bala" : "follow"}, 
-            1: {"imagem" : "hexagono_amarelo2.png", "velocidade" : (300, 250), "vida": 300, "bala": "rajada"},
-            2: {"imagem" : "quadrado_roxo.png", "velocidade": (800, 200), "vida": 100, "bala": "bigger"},
-            3 :{"imagem" : "retangulo_cinza.png", "velocidade": (500, 200), "vida": 250, "bala": "tracker"}
+            0: {"imagem" : "retangulo_vermelho.png", "velocidade" :(700, 250), "vida" : 100, "bala" : "follow"}, 
+            1: {"imagem" : "hexagono_amarelo2.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
+            2: {"imagem" : "quadrado_roxo.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
+            3 :{"imagem" : "retangulo_cinza.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"}
             }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -97,7 +97,7 @@ class Inimigo(pygame.sprite.Sprite):
     def update(self, dt, camera):
         self.dir()
         self.dt = dt
-        print("camera", camera.y)
+        #print("camera", camera.y)
         self.posicao.y -= camera.y
         self.rect.centerx = self.posicao.x - camera.x
         self.rect.centery = self.posicao.y
