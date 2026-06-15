@@ -8,7 +8,7 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
 from time import perf_counter
 from loja import abrir_loja
-from menu import MenuPrincipal
+from menu import MenuPrincipal, menuPause
 
 folderPath = os.path.dirname(os.path.abspath(__file__))
 pygame.init() 
@@ -29,6 +29,8 @@ fps=60
 bg = pygame.image.load(os.path.join(folderPath,"images","placeholderBG.png")).convert()
 bg = pygame.transform.scale(bg, (bgWidth,bgHeight))
 bgSize = bg.get_rect()
+bg_pause = pygame.image.load(os.path.join(folderPath,"images","placeholderBG_filter.png")).convert()
+bg_pause = pygame.transform.scale(bg_pause, (bgWidth,bgHeight))
 
 scroll=0
 tiles = math.ceil(bgHeight/bg.get_height())+2
@@ -119,11 +121,13 @@ duracao =  5
 # =============================================================================
 filtro_bullet_time = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_bullet_time.fill((0, 0, 0, 150))
+filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
+filtro_pause.fill((211, 211, 211, 100))
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
 contador_rastros = 0 #Evitar que crie algum rastro que não seja a partir dos últimos movimentos
 
 menu_principal = MenuPrincipal(tela)
-
+menu_pause = menuPause(tela)
 while main:
     #ve se fechou o jogo
     
@@ -139,7 +143,20 @@ while main:
                 sys.exit()
                 main=False
                 estadoDoJogo="fechado"
-        else:
+        elif event.type == pygame.KEYDOWN :
+            if event.key == pygame.K_ESCAPE:
+                estadoDoJogo = "pausado"
+            selecao = menu_pause.eventos(event)
+            if selecao == "Retomar":
+                estadoDoJogo = "jogando"
+                menu_pause.opcaoAtual = 0
+            elif selecao == "Opções":
+                estadoDoJogo = "jogando" #modificar para criar um menu de opções dps
+            elif selecao == "Sair":
+                pygame.quit()
+                sys.exit()
+                main=False
+                estadoDoJogo="fechado"
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -243,6 +260,8 @@ while main:
 # =============================================================================
     if estadoDoJogo=="menu principal":
         menu_principal.draw(tela)
+    #elif estadoDoJogo == "pausado":
+        
     elif estadoDoJogo=="jogando":
         ##print("rectPLayer", jogador.rect)
         #print("posPLayer", jogador.posicao)    
@@ -480,6 +499,8 @@ while main:
                         dt=deltaTime,
                         tipo = "bigger"
                     )
+                    grupoBullets.add(bullet)
+                    bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
     # =============================================================================
                 elif enemy.tipo_bala == "tracker":
                     bullet = Bullet(
@@ -544,7 +565,7 @@ while main:
     #Colisão do inimigo com a hitbox do player
         colisao_i = False
         for vilao in grupoInimigo:
-            if jogador.hitbox.colliderect(enemy01.rect):
+            if jogador.hitbox.colliderect(vilao.rect):
                 colisao_i = True
         if (colisao_b or colisao_i) and not jogador.invencibilidade: #as variáveis ficam falsas até detectarem uma colisão, quando recebe um elemento, entra na condicional
             if jogador.armadura == 0:
@@ -602,6 +623,30 @@ while main:
         grupoEscudo.draw(tela) 
         grupoMoeda.draw(tela)
         grupoCura.draw(tela)
+
+
+    if estadoDoJogo == "pausado":
+        menu_pause.draw_tela(tela, bg_pause)
+        tela.blit(hp_form, (18, 18))
+        tela.blit(coin_form, (200, 18))
+        tela.blit(escudos_form, (20, 68))
+        tela.blit(cargas_form, (18, 108))
+        for i in range(jogador.charge):
+            x = pos_x_inicial_carga + (i * (largura_imagem + espacamento_carga))
+            y = 122 
+            tela.blit(carga_icon, (x, y))
+
+        tela.blit(timer, (((bgWidth-timer.get_width())/2), 10))
+        tela.blit(kills_form, (bgWidth-kills_form.get_width()-20, 10))
+        grupoInimigo.draw(tela)
+        grupoBullets.draw(tela)
+        grupoQuickShot.draw(tela)
+        grupoBulletTime.draw(tela)#Desenhar a carga na tela
+        grupoEscudo.draw(tela) 
+        grupoMoeda.draw(tela)
+        grupoCura.draw(tela)
+        grupoJogador.draw(tela)
+        menu_pause.draw_texto(tela, telaSizePlaceholder)
 
     #flip atualiza a tela
     pygame.display.update()

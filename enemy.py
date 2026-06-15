@@ -176,7 +176,6 @@ class Bullet(pygame.sprite.Sprite):
             #caso especial do bigger
             
             if self.tipo == "bigger":
-                #print("aumenta")
                 deltax = int(self.rect.bottomright[0] - self.rect.bottomleft[0])
                 deltay = int(math.fabs(self.rect.bottomleft[1] - self.rect.topleft[1]))
                 if deltax < 300 and deltay < 300:    
