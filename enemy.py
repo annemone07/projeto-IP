@@ -166,12 +166,6 @@ class Bullet(pygame.sprite.Sprite):
 
     def mov(self, camera):
         #if self.tipo == "follow":    
-            #print(self.dire)
-            self.posicao.x += (self.dire.x) * self.dt
-            self.posicao.y += (self.dire.y) *self.dt
-            #atualiza a posicao atual
-            self.rect.centerx = self.posicao.x
-            self.rect.centery = self.posicao.y
             
             #caso especial do bigger
             
@@ -181,6 +175,14 @@ class Bullet(pygame.sprite.Sprite):
                 if deltax < 300 and deltay < 300:    
                     self.image = pygame.transform.scale(self.image, (int(deltax*1.02), int(deltay*1.02)))
                     self.rect = self.image.get_rect()
+                    print("rect bullet bigger", self.rect)
+            
+            #print(self.dire)
+            self.posicao.x += (self.dire.x) * self.dt
+            self.posicao.y += (self.dire.y) *self.dt
+            #atualiza a posicao atual
+            self.rect.centerx = self.posicao.x
+            self.rect.centery = self.posicao.y
 
 
     def mudar_disparo(self):

@@ -206,12 +206,11 @@ while main:
 # =============================================================================
 #cria moeda
         if event.type == create_Moeda:
-            if len(grupoMoeda) < 8:
-                x = random.randint(200,bgWidth-200)
-                y = -200
-                moeda = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
-                    posInicial=(x, y),)
-                grupoMoeda.add(moeda)
+            x = random.randint(200,bgWidth-200)
+            y = -200
+            moeda = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
+                posInicial=(x, y),)
+            grupoMoeda.add(moeda)
 # =============================================================================
 #Criar a carga
         if event.type == create_charge:
@@ -504,6 +503,8 @@ while main:
                         dt=deltaTime,
                         tipo = "bigger"
                     )
+                    #print("rect inimigo roxo", (enemy.rect.centerx,enemy.rect.centery))
+                    #print("rect bullet bigger", bullet.rect)
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
     # =============================================================================
