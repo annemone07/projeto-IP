@@ -506,6 +506,8 @@ while main:
                         dt=deltaTime,
                         tipo = "bigger"
                     )
+                    #print("rect inimigo roxo", (enemy.rect.centerx,enemy.rect.centery))
+                    #print("rect bullet bigger", bullet.rect)
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
                     print(bullet.rect.center), print(bullet.posicao), print("AQUI AGR")
