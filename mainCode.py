@@ -484,7 +484,7 @@ while main:
                         tipo = "follow"
                     )
                     grupoBullets.add(bullet)
-                    bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
+                    bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
     # =============================================================================
                 elif enemy.tipo_bala == "rajada":
                     for pow in range(7):    
@@ -498,6 +498,7 @@ while main:
                         bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
     # =============================================================================
                 elif enemy.tipo_bala == "bigger":
+                    print(enemy.rect.center), print("TÁ AQUI")
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         (enemy.rect.centerx,enemy.rect.centery),
@@ -505,7 +506,9 @@ while main:
                         tipo = "bigger"
                     )
                     grupoBullets.add(bullet)
-                    bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
+                    bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
+                    print(bullet.rect.center), print(bullet.posicao), print("AQUI AGR")
+                    
     # =============================================================================
                 elif enemy.tipo_bala == "tracker":
                     bullet = Bullet(
@@ -516,7 +519,7 @@ while main:
                     )
 
                     grupoBullets.add(bullet)
-                    bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
+                    bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
                 enemy.disparo=0
                 #enemy.timer_disparo()
             #elif perf_counter() - enemy.t_disparo >= enemy.dDisparo:

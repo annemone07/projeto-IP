@@ -112,7 +112,7 @@ class Bullet(pygame.sprite.Sprite):
     
     def __init__(self, image, posicao, dt, tipo):
         folderPath = os.path.dirname(os.path.abspath(__file__))
-        velocidades = {"follow": 600, "rajada": 500, "bigger": 400, "tracker": 600}
+        velocidades = {"follow": 600, "rajada": 500, "bigger": 400, "tracker": 450}
         #print("teste 1")
         super().__init__()
         self.dt = dt
