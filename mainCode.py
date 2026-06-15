@@ -460,7 +460,7 @@ while main:
         if tecla[pygame.K_SPACE]:
             if perf_counter() - ultimo_tiro >= intervalo_tiro:
                 if not jogador.quick_shot:
-                    projetil = Bala(os.path.join(folderPath,"images","enemy","bullet.png"),jogador.rect.center,dt=deltaTime)
+                    projetil = Bala(os.path.join(folderPath,"images","playerSprites","bala-player.png"),jogador.rect.center,dt=deltaTime)
                 #quick_shot
                 if jogador.quick_shot:
                     projetil = Bala(os.path.join(folderPath, "images", "Items", "quick_shot.png"),jogador.rect.center,dt=deltaTime)
