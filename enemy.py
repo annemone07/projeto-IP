@@ -112,20 +112,30 @@ class Bullet(pygame.sprite.Sprite):
     
     def __init__(self, image, posicao, dt, tipo):
         folderPath = os.path.dirname(os.path.abspath(__file__))
-        velocidades = {"follow": 600, "rajada": 500, "bigger": 400, "tracker": 600}
+        velocidades = {"follow": 600, "rajada": 500, "bigger": 400, "tracker": 450}
         #print("teste 1")
         super().__init__()
         self.dt = dt
-        self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", "bullet.png")).convert_alpha()
+        self.velocidade = velocidades[tipo]
+        self.disparo = 1
+        self.tipo = tipo
+        imagem = ''
+        if self.tipo == "follow":
+            imagem = "bala-vermelha-retang..png"
+        if self.tipo == "rajada":
+            imagem = "bala-amarela-hexa.png"
+        if self.tipo == "bigger":
+            imagem = "bala-roxo-retang..png"
+        if self.tipo == "tracker":
+            imagem = "bala-''cinza''-retang..png"
+            
+        self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", imagem)).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.centerx = posicao[0]
         self.rect.centery = posicao[1]
         self.image = pygame.transform.scale(self.image, (64, 64))
         self.rect = self.image.get_rect(center=posicao)
         self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
-        self.velocidade = velocidades[tipo]
-        self.disparo = 1
-        self.tipo = tipo
         
 
 
