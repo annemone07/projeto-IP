@@ -76,6 +76,21 @@ class menuPause():
                 return self.opcoes[self.opcaoAtual]
             return None
 
-
-        
-        
+class telaMorte(MenuPrincipal):
+    def __init__(self, tela:pygame.surface):
+        super().__init__(tela)
+        self.folderPath = os.path.dirname(os.path.abspath(__file__))
+        self.bg = pygame.image.load(os.path.join(self.folderPath,"images","telaMorteIP.png")).convert()
+        self.bg = pygame.transform.scale(self.bg, self.tamanho)
+        self.opcoes = ["Reiniciar", "Menu Principal", "Sair"]
+    
+    def draw(self, tela):
+        tela.blit(self.bg, (0,0))
+        cor=(255,255,255)
+        for i, text in enumerate(self.opcoes):
+            if i == self.opcaoSelecionada:
+                cor = (254, 56, 103)
+            else:
+                cor = (255,255,255)
+            renderedText = self.fonte.render(text, True, cor)
+            tela.blit(renderedText, (100,100+i*60))
