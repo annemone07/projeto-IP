@@ -49,12 +49,12 @@ class itemGeral(pygame.sprite.Sprite):
         
 # =============================================================================
 class Moedas(itemGeral):
-    def __init__(self, spriteImage, posInicial):
+    def __init__(self, spriteImage, posInicial, valor):
         super().__init__(spriteImage, posInicial)
         self.image = pygame.image.load(spriteImage).convert_alpha()
         self.image = pygame.transform.scale(self.image, (64, 64))
         self.rect = self.image.get_rect(center=posInicial)
-        self.valor = 1
+        self.valor = valor
 # =============================================================================
 
 # =============================================================================
