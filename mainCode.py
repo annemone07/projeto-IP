@@ -264,21 +264,19 @@ while main:
     # =============================================================================
     #cria moeda ouro
             if event.type == create_Moeda_Ouro:
-                if len(grupoMoeda) < 5:
-                    x = random.randint(200,bgWidth-200)
-                    y = -200
-                    moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
-                        posInicial=(x, y), valor = 3)
-                    grupoMoeda.add(moeda_ouro)
+                x = random.randint(200,bgWidth-200)
+                y = -200
+                moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
+                    posInicial=(x, y), valor = 3)
+                grupoMoeda.add(moeda_ouro)
     # =============================================================================
     #cria moeda prata
             if event.type == create_Moeda_Prata:
-                if len(grupoMoeda) < 8:
-                    x = random.randint(200,bgWidth-200)
-                    y = -200
-                    moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
-                        posInicial=(x, y),valor = 1)
-                    grupoMoeda.add(moeda_prata)
+                x = random.randint(200,bgWidth-200)
+                y = -200
+                moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
+                    posInicial=(x, y),valor = 1)
+                grupoMoeda.add(moeda_prata)
     # =============================================================================
     #Criar a carga
             if event.type == create_charge:
@@ -440,6 +438,9 @@ while main:
             if jogador.hitbox.colliderect(moeda.rect):
                 moeda_coletados.append(moeda)
                 moeda.kill()
+            
+            if moeda.rect.topright[1] >= bgHeight + 6: 
+                moeda.kill()
 
         for moeda in moeda_coletados:
             jogador.moedas += moeda.valor
@@ -450,6 +451,10 @@ while main:
             if jogador.hitbox.colliderect(pedacos.rect):
                 escudo_coletados.append(pedacos)
                 pedacos.kill()
+
+            if pedacos.rect.topright[1] >= bgHeight + 6: 
+                pedacos.kill()
+
         for i in escudo_coletados:
             jogador.escudo += 1
             if jogador.escudo >= 4:
@@ -464,6 +469,9 @@ while main:
                 cura_coletados.append(cura)
                 cura.kill()
 
+            if cura.rect.topright[1] >= bgHeight + 6: 
+                cura.kill()
+
         for i in cura_coletados:
             if jogador.vida < 100:
                 jogador.vida += 10
@@ -474,6 +482,10 @@ while main:
             if jogador.hitbox.colliderect(powerup.rect):
                 quick_shots_coletados.append(powerup)
                 powerup.kill()
+
+            if powerup.rect.topright[1] >= bgHeight + 6: 
+                powerup.kill()
+
         if quick_shots_coletados:
             jogador.player_update("PU")
             quick_shot_t_inicio = perf_counter()
@@ -494,9 +506,13 @@ while main:
                 charges_coletados.append(carga)
                 carga.kill()
                 if jogador.charge < 5:
-                    jogador.charge += 1   
+                    jogador.charge += 1
+
+            if carga.rect.topright[1] >= bgHeight + 6: 
+                carga.kill()
+
     #Ativando o bullet time:
-        if tecla[pygame.K_t]:
+        if tecla[pygame.K_LSHIFT]:
             if jogador.charge > 0:
                 jogador.bullet_time = True
                 tempo_inicio = perf_counter()
