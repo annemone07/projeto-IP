@@ -184,7 +184,7 @@ class Bullet(pygame.sprite.Sprite):
                 deltay = int(math.fabs(self.rect.bottomleft[1] - self.rect.topleft[1]))
                 if deltax < 300 and deltay < 300:    
                     self.image = pygame.transform.scale(self.image, (int(deltax*1.02), int(deltay*1.02)))
-                    self.rect = self.image.get_rect()
+                    self.rect = self.rect.scale_by(1.02, 1.02)
                     print("rect bullet bigger", self.rect)
             
             #print(self.dire)

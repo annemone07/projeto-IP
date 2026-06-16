@@ -41,6 +41,7 @@ class Jogador(pygame.sprite.Sprite):
         self.quick_shot = False
         self.charge = 0
         self.bullet_time = False
+        self.moedas = 0
         
 
     def fatiar_spritesheet(self,sheet):

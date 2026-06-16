@@ -6,7 +6,7 @@ import sys
 import os
 import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
-from time import perf_counter
+from time import perf_counter, sleep
 from loja import abrir_loja
 from menu import MenuPrincipal, menuPause
 
@@ -24,6 +24,7 @@ telaSizePlaceholder = (bgWidth,bgHeight)
 tela = pygame.display.set_mode(telaSizePlaceholder)
 pygame.display.set_caption("nome do jogo") #alterar para o nome do jogo dps
 fonte = pygame.font.SysFont("arial", 40, True, False)
+fonte_grande = pygame.font.SysFont("arial", 100, True, False)
 fps=60
 
 bg = pygame.image.load(os.path.join(folderPath,"images","placeholderBG.png")).convert()
@@ -54,9 +55,9 @@ jogador = Jogador(
         #game=self
     )
 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(500, 1000,), sentido_inicial="L")
-enemy02 = Inimigo(i=1, dt=deltaTime, pos=(600, -200),limites_mov=(200, 1000,), sentido_inicial="R")
-enemy03 = Inimigo(i=2, dt=deltaTime, pos=(650, -200), limites_mov=(200, 1100,), sentido_inicial="L")
-enemy04 = Inimigo(i=3, dt=deltaTime, pos=(400, -200), limites_mov=(200, 1100), sentido_inicial="R")
+#enemy02 = Inimigo(i=1, dt=deltaTime, pos=(600, -200),limites_mov=(200, 1000,), sentido_inicial="R")
+#enemy03 = Inimigo(i=2, dt=deltaTime, pos=(650, -200), limites_mov=(200, 1100,), sentido_inicial="L")
+#enemy04 = Inimigo(i=3, dt=deltaTime, pos=(400, -200), limites_mov=(200, 1100), sentido_inicial="R")
 # =============================================================================
 # =============================================================================
 # EVENTOS - SPAWNS
@@ -102,7 +103,7 @@ grupoInimigo = pygame.sprite.Group()
 grupoBullets = pygame.sprite.Group()
 # =============================================================================
 grupoJogador.add(jogador)
-grupoInimigo.add(enemy01, enemy02, enemy03, enemy04)
+grupoInimigo.add(enemy01)
 # =============================================================================
 
 main = True
@@ -111,8 +112,6 @@ estadoDoJogo = "menu principal"
 #Novas variáveis do tiro:
 inicio_de_jogo = perf_counter ()
 
-# qtd. moedas inicial
-jogador.moedas = 0
 
 cooldown_normal = 0.35
 cooldown_especial = 0.15
@@ -128,11 +127,13 @@ filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_pause.fill((211, 211, 211, 100))
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
 contador_rastros = 0 #Evitar que crie algum rastro que não seja a partir dos últimos movimentos
-
+wave_counter = 0 #variavel para contar as waves
+ja_entrou = 0 #p n entrar na loja infinitas vezes seguidas
 menu_principal = MenuPrincipal(tela)
 menu_pause = menuPause(tela)
 tempo_de_jogo = perf_counter() - inicio_de_jogo
 tempo_no_menu = 0
+
 while main:
     #ve se fechou o jogo
     
@@ -289,13 +290,54 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
         
-        if len(grupoInimigo) == 0:
-            dir = ("R", "L")
+        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou:
+            wave_counter += 1
+            
+            mensagem = f"HORDA {wave_counter} FINALIZADA"
+            mensagem_form = fonte_grande.render(mensagem, True, (0, 0, 0))
+            tela.blit(mensagem_form, ((250), (bgHeight/2) - 55))
+            pygame.display.flip() #para colocar a mensagem de final na tela
+            sleep(3.0)
+            #limpando os elementos da tela
+            for bad_guy in grupoInimigo:
+                bad_guy.kill()
+            for pow_pow in grupoBullets:
+                pow_pow.kill()
+            for pei_pei in grupoBala:
+                pei_pei.kill()
+            for shield in grupoEscudo:
+                shield.kill()
+            for coin in grupoMoeda:
+                coin.kill()
+            for heal in grupoCura:
+                cura.kill()
+            
+            jogador.quick_shot, tempo_pausado = abrir_loja(tela, clock, jogador, jogador.quick_shot, jogador.bullet_time)
+            inicio_de_jogo += tempo_pausado + 3
+            #ultimo_tiro += tempo_pausado
+            """if jogador.invencibilidade:
+                t_invencibilidade += tempo_pausado-3
+                t_clicks += tempo_pausado-3"""
+            """if jogador.quick_shot:
+                quick_shot_t_inicio += tempo_pausado-3
+                intervalo_tiro = cooldown_especial"""
+            """if jogador.bullet_time:
+                tempo_inicio += tempo_pausado - 3"""
+            ja_entrou = 1
+            pygame.event.clear() #tirando todos os eventos da fila, para não passar comandos p dps do intervalo
+            
+            
+            
+            
+        
+        if len(grupoInimigo) <=2:
+            sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(600, 1000), -200)
-            lim = (random.randint(300, 500), random.randint(800, 1200))
-            x = random.randint(0, 1)
-            t = random.randint(0, 2)
-            novoInim =  Inimigo(t, deltaTime, pos=coordenadas, limites_mov=lim, sentido_inicial=dir[x])
+            delta = random.randint(200, 600)
+            lim_inferior = coordenadas[0] - delta
+            lim_superior = coordenadas[0] + delta
+            tipo_inimigo = random.randint(0, 3)
+            novoInim =  Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(lim_inferior, lim_superior), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
             #print(vars(novoInim))
         #print(grupoInimigo)
@@ -582,6 +624,9 @@ while main:
             if jogador.hitbox.colliderect(bala.rect):
                 bala.kill()
                 colisao_b = True
+            #checando se a bala já saiu da tela
+            if bala.rect.topright[1] > bgHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > bgWidth or bala.rect.topright[1] < 0:
+                bala.kill()
     #Colisão do inimigo com a hitbox do player
         colisao_i = False
         for vilao in grupoInimigo:
@@ -614,6 +659,7 @@ while main:
                 #print("morreu")
                 enemy.kill()
                 jogador.add_kill()
+                ja_entrou = 0 #para entrar na loja no proximo 
     # =============================================================================
             if enemy.rect.topright[1] >= bgHeight + 6: #mata o inimigo dependendo do tamanho da tela --> 6 pixeis só de segurança
                 #print("morreu", enemy.posicao, enemy.rect)#erro sprite tá aqui, o rect tá sendo jogado pra muito longe da pos, provavelmente pela lógica da camera,
