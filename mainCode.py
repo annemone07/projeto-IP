@@ -8,7 +8,7 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
 from time import perf_counter, sleep
 from loja import abrir_loja
-from menu import MenuPrincipal, menuPause
+from menu import MenuPrincipal, menuPause, telaMorte
 
 folderPath = os.path.dirname(os.path.abspath(__file__))
 pygame.init() 
@@ -27,10 +27,10 @@ fonte = pygame.font.SysFont("arial", 40, True, False)
 fonte_grande = pygame.font.SysFont("arial", 100, True, False)
 fps=60
 
-bg = pygame.image.load(os.path.join(folderPath,"images","placeholderBG.png")).convert()
+bg = pygame.image.load(os.path.join(folderPath,"images","bgIP.png")).convert()
 bg = pygame.transform.scale(bg, (bgWidth,bgHeight))
 bgSize = bg.get_rect()
-bg_pause = pygame.image.load(os.path.join(folderPath,"images","placeholderBG_filter.png")).convert()
+bg_pause = pygame.image.load(os.path.join(folderPath,"images","bgIPpause.png")).convert()
 bg_pause = pygame.transform.scale(bg_pause, (bgWidth,bgHeight))
 
 scroll=0
@@ -38,15 +38,8 @@ tiles = math.ceil(bgHeight/bg.get_height())+2
 
 deltaTime = clock.tick(60)/1000
 
-#temporizadores
-t_invencibilidade = 0
-t_clicks = 0
-tempo_inicio = 0
-
-# =============================================================================
-#CRIAR PERSONAGENS
-# =============================================================================
-jogador = Jogador(
+def criarJogador():
+    jogadorCriado = Jogador(
         spriteImage=os.path.join(folderPath,'images', 'playerSprites', 'slime_green.png'),
         posInicial=(bgWidth / 2, bgHeight-300),
         dt=deltaTime,
@@ -54,6 +47,12 @@ jogador = Jogador(
         #grupos=self.all_sprites,
         #game=self
     )
+    return jogadorCriado
+
+# =============================================================================
+#CRIAR PERSONAGENS
+# =============================================================================
+jogador = criarJogador()
 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(500, 1000,), sentido_inicial="L")
 #enemy02 = Inimigo(i=1, dt=deltaTime, pos=(600, -200),limites_mov=(200, 1000,), sentido_inicial="R")
 #enemy03 = Inimigo(i=2, dt=deltaTime, pos=(650, -200), limites_mov=(200, 1100,), sentido_inicial="L")
@@ -87,6 +86,7 @@ pygame.time.set_timer(mudar_direcao, 1000)
 # =============================================================================
 #cria grupos
 # =============================================================================
+
 grupoItem = pygame.sprite.Group()
 grupoEscudo = pygame.sprite.Group()
 grupoQuickShot = pygame.sprite.Group()
@@ -98,10 +98,8 @@ grupoRastro = pygame.sprite.Group()
 grupoBala = pygame.sprite.Group()
 grupoInimigo = pygame.sprite.Group()
 grupoBullets = pygame.sprite.Group()
-# =============================================================================
 grupoJogador.add(jogador)
 grupoInimigo.add(enemy01)
-# =============================================================================
 
 main = True
 estadoDoJogo = "menu principal"
@@ -128,12 +126,21 @@ wave_counter = 0 #variavel para contar as waves
 ja_entrou = 0 #p n entrar na loja infinitas vezes seguidas
 menu_principal = MenuPrincipal(tela)
 menu_pause = menuPause(tela)
+tela_de_morte = telaMorte(tela)
+
+#condicionais
+zerarTempo=False
+
+#temporizadores
+t_invencibilidade = 0
+t_clicks = 0
+tempo_inicio = 0
+tempoReiniciar=0.0
+tempo_morte=0.0
 tempo_de_jogo = perf_counter() - inicio_de_jogo
 tempo_no_menu = 0
 
 while main:
-    #ve se fechou o jogo
-    
     mudar = 0 #variavel pra ver se a bala comeca a rastrear eu acho
     for event in pygame.event.get():
         if estadoDoJogo=="menu principal":
@@ -143,6 +150,52 @@ while main:
                 estadoDoJogo="jogando"
                 tempo_no_menu += perf_counter() - inicio_de_jogo
             if selecao=="Sair":
+                pygame.quit()
+                sys.exit()
+                main=False
+                estadoDoJogo="fechado"
+        elif estadoDoJogo=="tela de morte":
+            selecao = tela_de_morte.eventos(event)
+            #print(selecao)
+            if selecao=="Reiniciar":
+                jogador.vida=100
+                grupoItem.empty()
+                grupoEscudo.empty()
+                grupoQuickShot.empty()
+                grupoBulletTime.empty()
+                grupoCura.empty()
+                grupoMoeda.empty()
+                grupoJogador.empty()
+                grupoRastro.empty()
+                grupoBala.empty()
+                grupoInimigo.empty()
+                grupoBullets.empty()
+                jogador = criarJogador()
+                grupoJogador.add(jogador)
+                estadoDoJogo="jogando"
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
+                tempo_no_menu=0.0
+            elif selecao=="Menu Principal":
+                jogador.vida=100
+                grupoItem.empty()
+                grupoEscudo.empty()
+                grupoQuickShot.empty()
+                grupoBulletTime.empty()
+                grupoCura.empty()
+                grupoMoeda.empty()
+                grupoJogador.empty()
+                grupoRastro.empty()
+                grupoBala.empty()
+                grupoInimigo.empty()
+                grupoBullets.empty()
+                jogador = criarJogador()
+                grupoJogador.add(jogador)
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
+                tempo_no_menu=0.0
+                estadoDoJogo="menu principal"
+            elif selecao=="Sair":
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -268,6 +321,9 @@ while main:
     if estadoDoJogo=="menu principal":
         menu_principal.draw(tela)
     #elif estadoDoJogo == "pausado":
+    
+    elif estadoDoJogo=="tela de morte":
+        tela_de_morte.draw(tela)
         
     elif estadoDoJogo=="jogando":
         ##print("rectPLayer", jogador.rect)
@@ -347,7 +403,11 @@ while main:
         coin_form = fonte.render(coin, False, (255, 255, 255))
 
         #HUD do tempo 
-        tempo_de_jogo = perf_counter () - inicio_de_jogo - tempo_no_menu
+        tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
+        print("timers:", inicio_de_jogo, tempo_no_menu, tempo_morte, tempo_de_jogo)
+        #if zerarTempo:
+        #    tempo_de_jogo=0.0
+        #    zerarTempo=False
         timer = fonte.render(f"{tempo_de_jogo:.1f}s", False, (255, 255, 255))
         rect_timer = timer.get_rect()
         rect_timer.center = (680, 50)
@@ -631,10 +691,11 @@ while main:
                     jogador.armadura = 0
                 else:
                     jogador.armadura -= 20
-    # =============================================================================
-
-    # =============================================================================
             jogador.player_update("D")
+            if jogador.vida<=0:
+                tempo_morte=perf_counter()
+                #waveMorte = wave_counter # vai querer voltar na wave que tava quando morreu ou volta do inicio?
+                estadoDoJogo="tela de morte"
             t_invencibilidade = perf_counter()
             t_clicks = perf_counter()
             #print(f"Inimigo: {enemy01.vida}")
