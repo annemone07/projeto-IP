@@ -61,9 +61,12 @@ enemy04 = Inimigo(i=3, dt=deltaTime, pos=(400, -200), limites_mov=(200, 1100), s
 # =============================================================================
 # EVENTOS - SPAWNS
 # =============================================================================
-#Evento de spawn - Moeda
-create_Moeda = pygame.USEREVENT + 1
-pygame.time.set_timer(create_Moeda, 3000)
+#Evento de spawn - Moeda Ouro
+create_Moeda_Ouro = pygame.USEREVENT + 1
+pygame.time.set_timer(create_Moeda_Ouro, 6000)
+#Evento de spawn - Moeda Prata
+create_Moeda_Prata = pygame.USEREVENT + 11
+pygame.time.set_timer(create_Moeda_Prata, 3000)
 #Evento de spawn - Cura
 create_Cura = pygame.USEREVENT + 2
 pygame.time.set_timer(create_Cura, 7500)
@@ -83,7 +86,7 @@ pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_ti
 # =============================================================================
 mudar_direcao = pygame.USEREVENT + 10
 pygame.time.set_timer(mudar_direcao, 1000)
-# =============================================================================
+
 #cria grupos
 # =============================================================================
 grupoItem = pygame.sprite.Group()
@@ -205,14 +208,23 @@ while main:
                 )
                     grupoCura.add(cura)
     # =============================================================================
-    #cria moeda
-            if event.type == create_Moeda:
+    #cria moeda ouro
+            if event.type == create_Moeda_Ouro:
+                if len(grupoMoeda) < 5:
+                    x = random.randint(200,bgWidth-200)
+                    y = -200
+                    moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
+                        posInicial=(x, y), valor = 3)
+                    grupoMoeda.add(moeda_ouro)
+    # =============================================================================
+    #cria moeda prata
+            if event.type == create_Moeda_Prata:
                 if len(grupoMoeda) < 8:
                     x = random.randint(200,bgWidth-200)
                     y = -200
-                    moeda = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
-                        posInicial=(x, y),)
-                    grupoMoeda.add(moeda)
+                    moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
+                        posInicial=(x, y),valor = 1)
+                    grupoMoeda.add(moeda_prata)
     # =============================================================================
     #Criar a carga
             if event.type == create_charge:
@@ -222,9 +234,6 @@ while main:
                     charge = Charge(spriteImage=os.path.join(folderPath,'images','items', 'choque_do_trovao.png'),
                         posInicial=(x, y),)
                     grupoBulletTime.add(charge)
-    # =============================================================================
-
-
     # =============================================================================
     # Abrir loja usando a tecla "L"
             if event.type == pygame.KEYDOWN:
@@ -323,15 +332,15 @@ while main:
     #colisão player item
         pygame.sprite.spritecollide(jogador, grupoItem, True)    
         
-    #moedas coletado:
+    #moedas coletadas:
         moeda_coletados = []
         for moeda in grupoMoeda:
             if jogador.hitbox.colliderect(moeda.rect):
                 moeda_coletados.append(moeda)
                 moeda.kill()
 
-        for i in moeda_coletados:
-            jogador.moedas+=1
+        for moeda in moeda_coletados:
+            jogador.moedas += moeda.valor
     # =============================================================================
     #Escudo coletado:
         escudo_coletados = []
