@@ -440,6 +440,8 @@ while main:
             if jogador.hitbox.colliderect(moeda.rect):
                 moeda_coletados.append(moeda)
                 moeda.kill()
+            elif moeda.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+                moeda.kill()
 
         for moeda in moeda_coletados:
             jogador.moedas += moeda.valor
@@ -450,6 +452,9 @@ while main:
             if jogador.hitbox.colliderect(pedacos.rect):
                 escudo_coletados.append(pedacos)
                 pedacos.kill()
+            elif pedacos.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+                pedacos.kill()
+
         for i in escudo_coletados:
             jogador.escudo += 1
             if jogador.escudo >= 4:
@@ -463,6 +468,8 @@ while main:
             if jogador.hitbox.colliderect(cura.rect):
                 cura_coletados.append(cura)
                 cura.kill()
+            elif cura.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+                cura.kill()
 
         for i in cura_coletados:
             if jogador.vida < 100:
@@ -474,6 +481,9 @@ while main:
             if jogador.hitbox.colliderect(powerup.rect):
                 quick_shots_coletados.append(powerup)
                 powerup.kill()
+            elif powerup.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+                powerup.kill()
+
         if quick_shots_coletados:
             jogador.player_update("PU")
             quick_shot_t_inicio = perf_counter()
@@ -494,7 +504,9 @@ while main:
                 charges_coletados.append(carga)
                 carga.kill()
                 if jogador.charge < 5:
-                    jogador.charge += 1   
+                    jogador.charge += 1
+            elif carga.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+                carga.kill()
     #Ativando o bullet time:
         if tecla[pygame.K_t]:
             if jogador.charge > 0:
