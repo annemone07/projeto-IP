@@ -80,12 +80,12 @@ pygame.time.set_timer(create_quickshot, 12000)
 create_charge = pygame.USEREVENT + 5
 pygame.time.set_timer(create_charge, 8500)
 #eventos de disparo para cada tipo de bala
-deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000}
-create_bala0, create_bala1, create_bala2, create_bala3 = pygame.USEREVENT + 6,  pygame.USEREVENT + 7, pygame.USEREVENT + 8, pygame.USEREVENT + 9
-pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_timer(create_bala1, deltaDisparos["rajada"]), pygame.time.set_timer(create_bala2, deltaDisparos["bigger"]), pygame.time.set_timer(create_bala3, deltaDisparos["tracker"])
+deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 5000}
+create_bala0, create_bala1, create_bala2, create_bala3, create_bala4 = pygame.USEREVENT + 6,  pygame.USEREVENT + 7, pygame.USEREVENT + 8, pygame.USEREVENT + 9, pygame.USEREVENT + 10
+pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_timer(create_bala1, deltaDisparos["rajada"]), pygame.time.set_timer(create_bala2, deltaDisparos["bigger"]), pygame.time.set_timer(create_bala3, deltaDisparos["tracker"]), pygame.time.set_timer(create_bala4, deltaDisparos["laser"])
 # =============================================================================
-mudar_direcao = pygame.USEREVENT + 10
-pygame.time.set_timer(mudar_direcao, 1000)
+mudar_direcao, mudar_laser = pygame.USEREVENT + 11,  pygame.USEREVENT + 12
+pygame.time.set_timer(mudar_direcao, 1000), pygame.time.set_timer(mudar_laser, 800)
 
 #cria grupos
 # =============================================================================
@@ -144,7 +144,7 @@ tempo_de_jogo = perf_counter() - inicio_de_jogo
 tempo_no_menu = 0
 
 while main:
-    mudar = 0 #variavel pra ver se a bala comeca a rastrear eu acho
+    mudar, laser = 0, 0 #variavel pra ver se a bala comeca a rastrear eu acho
     for event in pygame.event.get():
         if estadoDoJogo=="menu principal":
             selecao = menu_principal.eventos(event)
@@ -324,6 +324,14 @@ while main:
                         enemy.disparo=1
             if event.type == mudar_direcao:
                 mudar = 1
+            
+            if event.type == create_bala4:
+                for enemy in grupoInimigo:
+                    if enemy.tipo_bala == "laser":
+                        enemy.disparo = 1
+            
+            if event.type == mudar_laser:
+                laser = 1
     # =============================================================================
 
 # =============================================================================
@@ -346,9 +354,8 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
         
-        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou:
+        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou :
             wave_counter += 1
-            
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = fonte_grande.render(mensagem, True, (0, 0, 0))
             tela.blit(mensagem_form, ((250), (bgHeight/2) - 55))
@@ -385,8 +392,8 @@ while main:
             
             
             
-        
-        if len(grupoInimigo) <=2:
+        tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
+        if len(grupoInimigo) <=2 and tempo_de_jogo > 21:
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(600, 1000), -200)
             delta = random.randint(200, 600)
@@ -629,11 +636,20 @@ while main:
                         dt=deltaTime,
                         tipo = "bigger"
                     )
-                    #print("rect inimigo roxo", (enemy.rect.centerx,enemy.rect.centery))
-                    #print("rect bullet bigger", bullet.rect)
+                
+                elif enemy.tipo_bala == "laser":
+                    bullet = Bullet(
+                        os.path.join(folderPath, "images", "enemy", "bullet.png"),
+                        ((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]),
+                        dt=deltaTime,
+                        tipo = "laser"
+                    )
+                    enemy.velocidadex = 0 #para quando atirar o laser
+                    enemy.velocidadey = -6
+
+
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
-                    print(bullet.rect.center), print(bullet.posicao), print("AQUI AGR")
                     
     # =============================================================================
                 elif enemy.tipo_bala == "tracker":
@@ -692,10 +708,14 @@ while main:
     # =============================================================================
     #Colisão do disparo do inimigo com a hitbox do player
         colisao_b = False
+        dano = 20
         for bala in grupoBullets:
             if jogador.hitbox.colliderect(bala.rect):
-                bala.kill()
+                if bala.tipo != "laser":
+                    bala.kill()
                 colisao_b = True
+                if bala.tipo == "laser":
+                    dano = bala.dados_balas["laser"]["danos"][bala.estado_laser]
             #checando se a bala já saiu da tela
             if bala.rect.topright[1] > bgHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > bgWidth or bala.rect.topright[1] < 0:
                 bala.kill()
@@ -706,12 +726,12 @@ while main:
                 colisao_i = True
         if (colisao_b or colisao_i) and not jogador.invencibilidade: #as variáveis ficam falsas até detectarem uma colisão, quando recebe um elemento, entra na condicional
             if jogador.armadura == 0:
-                jogador.vida -= 20
+                jogador.vida -= dano
             else:
                 if jogador.armadura < 20:
                     jogador.armadura = 0
                 else:
-                    jogador.armadura -= 20
+                    jogador.armadura -= dano
             jogador.player_update("D")
             if jogador.vida<=0:
                 tempo_morte=perf_counter()
@@ -722,6 +742,7 @@ while main:
             #print(f"Inimigo: {enemy01.vida}")
 
     # =============================================================================
+        enemyPos = []
         #Colisão tiro dos players com o inimigo e sua morte:
         for enemy in grupoInimigo:
             colisao_inimigo = pygame.sprite.spritecollide(enemy, grupoBala, True)
@@ -739,10 +760,13 @@ while main:
                                                         #e isso resulta em o inimigo morrer pelo seu rect ser jogado pra casa do caralho antes de qq coisa
                 enemy.kill()
 
+            if enemy.i == 4:
+                enemyPos.append(((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
+
     # =============================================================================
         #update de tudo
         grupoInimigo.update(dt_jogo, camera)
-        grupoBullets.update(dt_jogo, camera, jogador.posicao, mudar)
+        grupoBullets.update(dt_jogo, camera, jogador.posicao, mudar, laser, enemyPos)
         grupoBala.update(dt_jogo, camera, jogador.posicao)
         grupoRastro.update(deltaTime, camera) #Update do rastro
         grupoQuickShot.update(dt_jogo, camera)
