@@ -399,7 +399,7 @@ while main:
             delta = random.randint(200, 600)
             lim_inferior = coordenadas[0] - delta
             lim_superior = coordenadas[0] + delta
-            tipo_inimigo = random.randint(0, 3)
+            tipo_inimigo = random.randint(0, 4)
             novoInim =  Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(lim_inferior, lim_superior), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
             #print(vars(novoInim))
