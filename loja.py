@@ -47,9 +47,9 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
     DIRETORIO_LOJA = os.path.dirname(os.path.abspath(__file__))
 
     caminho_moeda  = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "coin 2.png")
-    caminho_cura   = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "heart pixel art 32x32.png")
+    caminho_cura   = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "med_kit.png")
     caminho_escudo = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "Escudo.png")
-    caminho_powerup= os.path.join(DIRETORIO_LOJA, 'images', 'Items', "PoweUP.png")
+    caminho_powerup= os.path.join(DIRETORIO_LOJA, 'images', 'Items', "QS_up.png")
     caminho_carga= os.path.join(DIRETORIO_LOJA, 'images', 'Items', "choque_do_trovao.png")
 
     img_moeda  = pygame.image.load(caminho_moeda).convert_alpha()

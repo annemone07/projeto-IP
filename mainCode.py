@@ -229,7 +229,7 @@ while main:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     powerupSpawnado = Quick_Shot(
-                        spriteImage=os.path.join(folderPath,'images', 'Items', 'PoweUP.png'),
+                        spriteImage=os.path.join(folderPath,'images', 'Items', 'QS_up.png'),
                         posInicial=(x, y),
                     )
                     grupoQuickShot.add(powerupSpawnado)
@@ -238,27 +238,27 @@ while main:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     cura = Cura(
-                        spriteImage=os.path.join(folderPath, 'images','items', 'heart pixel art 32x32.png'),
+                        spriteImage=os.path.join(folderPath, 'images','items', 'med_kit.png'),
                         posInicial=(x, y)
                 )
                     grupoCura.add(cura)
             #cria moeda ouro
             if event.type == create_Moeda_Ouro:
-                if len(grupoMoeda) < 5:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
                         posInicial=(x, y), valor = 3)
                     grupoMoeda.add(moeda_ouro)
-            #cria moeda prata
+    # =============================================================================
+    #cria moeda prata
             if event.type == create_Moeda_Prata:
-                if len(grupoMoeda) < 8:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
                         posInicial=(x, y),valor = 1)
                     grupoMoeda.add(moeda_prata)
-            #Criar a carga
+    # =============================================================================
+    #Criar a carga
             if event.type == create_charge:
                 if jogador.charge < 5 and not jogador.bullet_time:
                     x = random.randint(200,bgWidth-200)
@@ -418,6 +418,7 @@ while main:
                 moeda.kill()
             elif moeda.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
                 moeda.kill()
+
         for moeda in moeda_coletados:
             jogador.moedas += moeda.valor
             
@@ -444,6 +445,7 @@ while main:
                 cura.kill()
             elif cura.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
                 cura.kill()
+
         for i in cura_coletados:
             if jogador.vida < 100:
                 jogador.vida += 10
@@ -456,8 +458,6 @@ while main:
                 powerup.kill()
             elif powerup.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
                 powerup.kill()
-
-        #coletar e ativar quickShot
         if quick_shots_coletados:
             jogador.player_update("PU")
             quick_shot_t_inicio = perf_counter()
@@ -478,9 +478,9 @@ while main:
                 if jogador.charge < 5:
                     jogador.charge += 1
             elif carga.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
-                carga.kill()
-        #ativar o bulletTime:
-        if tecla[pygame.K_LSHIFT]: #deixa no shift igual uma pessoa decente
+                carga.kill()   
+    #Ativando o bullet time:
+        if tecla[pygame.K_t]:
             if jogador.charge > 0:
                 jogador.bullet_time = True
                 tempo_inicio = perf_counter()
