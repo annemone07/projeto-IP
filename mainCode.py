@@ -480,7 +480,7 @@ while main:
             elif carga.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
                 carga.kill()   
     #Ativando o bullet time:
-        if tecla[pygame.K_t]:
+        if tecla[pygame.K_LSHIFT]:
             if jogador.charge > 0:
                 jogador.bullet_time = True
                 tempo_inicio = perf_counter()
