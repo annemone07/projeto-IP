@@ -247,7 +247,7 @@ while main:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     powerupSpawnado = Quick_Shot(
-                        spriteImage=os.path.join(folderPath,'images', 'Items', 'PoweUP.png'),
+                        spriteImage=os.path.join(folderPath,'images', 'Items', 'QS_up.png'),
                         posInicial=(x, y),
                     )
                     grupoQuickShot.add(powerupSpawnado)
@@ -257,7 +257,7 @@ while main:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     cura = Cura(
-                        spriteImage=os.path.join(folderPath, 'images','items', 'heart pixel art 32x32.png'),
+                        spriteImage=os.path.join(folderPath, 'images','items', 'med_kit.png'),
                         posInicial=(x, y)
                 )
                     grupoCura.add(cura)
