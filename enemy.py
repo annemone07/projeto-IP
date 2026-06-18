@@ -3,11 +3,13 @@ import os
 import math #para deixar o código mais claro durante as operações matemáticas
 #from time import perf_counter
 clock = pygame.time.Clock()
+folderPath = os.path.dirname(os.path.abspath(__file__))
 inimigos_data = {
-            0: {"imagem" : "follow.png", "velocidade" :(700, 250), "vida" : 100, "bala" : "follow"}, 
-            1: {"imagem" : "rajada.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
-            2: {"imagem" : "bigger.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
-            3 :{"imagem" : "tracker.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"}
+            0: {"imagem" : "retangulo_vermelho.png", "velocidade" :(700, 250), "vida" : 100, "bala" : "follow"}, 
+            1: {"imagem" : "hexagono_amarelo2.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
+            2: {"imagem" : "quadrado_roxo.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
+            3 :{"imagem" : "retangulo_cinza.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"}
+            4 :{"imagem" : "retangulo_verde.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"}
             }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -16,7 +18,7 @@ class Inimigo(pygame.sprite.Sprite):
         
         super().__init__()
         folderPath = os.path.dirname(os.path.abspath(__file__))
-        
+        self.i = i
         self.dt = dt
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (128, 128))
@@ -102,7 +104,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.posicao.y -= camera.y
         self.rect.centerx = self.posicao.x - camera.x
         self.rect.centery = self.posicao.y
-        
+        print("OLHA AQUI"), print(self.rect.centery)
         """self.direcao.x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
         self.direcao.y = int(keys[pygame.K_s]) - int(keys[pygame.K_w])
         if self.direcao != (0, 0):
@@ -112,31 +114,38 @@ class Inimigo(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     
     def __init__(self, image, posicao, dt, tipo):
-        folderPath = os.path.dirname(os.path.abspath(__file__))
-        velocidades = {"follow": 600, "rajada": 500, "bigger": 400, "tracker": 450}
+        "folderPath = os.path.dirname(os.path.abspath(__file__))"
+        self.dados_balas = {"follow": {"velocidade" :600, "imagem": "bala-vermelha-retang..png"}, 
+                       "rajada": {"velocidade" : 500, "imagem" :"bala-amarela-hexa.png"}, 
+                       "bigger": {"velocidade" :400, "imagem" : "bala-roxo-retang..png" }, 
+                       "tracker": {"velocidade" :450, "imagem" : "bala-''cinza''-retang..png"},
+                       "laser" : {"velocidade" : 12, "imagem" : "balaLaser0.png", "danos": (5, 10, 20, 40)}
+                       }
         #print("teste 1")
         super().__init__()
         self.dt = dt
-        self.velocidade = velocidades[tipo]
+        self.velocidade = self.dados_balas[tipo]["velocidade"]
         self.disparo = 1
         self.tipo = tipo
-        imagem = ''
-        if self.tipo == "follow":
-            imagem = "bala-vermelha-retang..png"
-        if self.tipo == "rajada":
-            imagem = "bala-amarela-hexa.png"
-        if self.tipo == "bigger":
-            imagem = "bala-roxo-retang..png"
-        if self.tipo == "tracker":
-            imagem = "bala-''cinza''-retang..png"
-            
-        self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", imagem)).convert_alpha()
-        self.rect = self.image.get_rect()
-        self.rect.centerx = posicao[0]
-        self.rect.centery = posicao[1]
-        self.image = pygame.transform.scale(self.image, (64, 64))
-        self.rect = self.image.get_rect(center=posicao)
+        self.imagem = self.dados_balas[tipo]["imagem"]
+        if tipo != "laser":
+            self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", self.imagem)).convert_alpha()
+            self.image = pygame.transform.scale(self.image, (64, 64))
+            self.rect = self.image.get_rect()
+            self.rect.centerx = posicao[0]
+            self.rect.centery = posicao[1]
+            self.rect = self.image.get_rect(center=posicao)
+        else:
+            self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", "estadosLaser", self.imagem)).convert_alpha()
+            self.image = pygame.transform.scale(self.image, (self.image.get_rect().width, 1000))
+            self.rect = self.image.get_rect()
+            self.rect.centerx = posicao[0]
+            self.rect.centery = posicao[1] + (self.rect.height/2)
+        
+        
+        
         self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
+        self.estado_laser = 0
         
 
 
@@ -174,26 +183,31 @@ class Bullet(pygame.sprite.Sprite):
             self.dire = pygame.math.Vector2((cos*self.velocidade), (sin*self.velocidade))
             #print("AQUI porra"),print(self.dire)
 
+        if self.tipo == "laser":
+            self.dire = pygame.math.Vector2(0, self.velocidade)
+
 
     def mov(self, camera):
         #if self.tipo == "follow":    
             
             #caso especial do bigger
             
-            if self.tipo == "bigger":
-                deltax = int(self.rect.bottomright[0] - self.rect.bottomleft[0])
-                deltay = int(math.fabs(self.rect.bottomleft[1] - self.rect.topleft[1]))
-                if deltax < 300 and deltay < 300:    
-                    self.image = pygame.transform.scale(self.image, (int(deltax*1.02), int(deltay*1.02)))
-                    self.rect = self.rect.scale_by(1.02, 1.02)
-                    print("rect bullet bigger", self.rect)
-            
-            #print(self.dire)
-            self.posicao.x += (self.dire.x) * self.dt
-            self.posicao.y += (self.dire.y) *self.dt
-            #atualiza a posicao atual
-            self.rect.centerx = self.posicao.x
-            self.rect.centery = self.posicao.y
+        if self.tipo == "bigger":
+            deltax = int(self.rect.bottomright[0] - self.rect.bottomleft[0])
+            deltay = int(abs(self.rect.bottomleft[1] - self.rect.topleft[1]))
+            if deltax < 300 and deltay < 300:    
+                self.image = pygame.transform.scale(self.image, (int(deltax*1.02), int(deltay*1.02)))
+                self.rect = self.rect.scale_by(1.02, 1.02)
+                print("rect bullet bigger", self.rect)
+        
+        #print(self.dire)
+        self.posicao.x += (self.dire.x) * self.dt
+        self.posicao.y += (self.dire.y) *self.dt
+        #atualiza a posicao atual
+        self.rect.centerx = self.posicao.x
+        self.rect.centery = self.posicao.y
+
+        print("AQUI TB"), print(self.rect.topright[1])
 
 
     def mudar_disparo(self):
@@ -202,7 +216,10 @@ class Bullet(pygame.sprite.Sprite):
         else:
             self.disparo =0
 
-    def update(self, dt, camera, playerPos, mudar):
+            
+
+    def update(self, dt, camera, playerPos, mudar, laser, enemyPos):
+        k = 0
         self.mov(camera)
         self.dt = dt
         if abs(playerPos.x-self.posicao.x) >= 3000 or abs(playerPos.y-self.posicao.y) >= 3000:
@@ -210,6 +227,21 @@ class Bullet(pygame.sprite.Sprite):
             #print("Dead")
         if self.tipo == "tracker" and mudar:
             self.direcao(playerPos, self.posicao, pow="null")
+
+        if self.tipo == "laser" :
+            if laser: 
+                animacoes_laser = ("balaLaser0.png", "balaLaser1.png", "balaLaser2.png", "balaLaser3.png")
+                if self.estado_laser != 3:
+                    self.estado_laser += 1
+        
+                self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", "estadosLaser", animacoes_laser[self.estado_laser])).convert_alpha()
+                self.image = pygame.transform.scale(self.image, (self.image.get_rect().width, 1000))
+                self.rect = self.image.get_rect()
+            if k == len(enemyPos) - 1:
+                self.rect.centerx = enemyPos[k][0]
+                self.rect.centery = enemyPos[k][1] + (self.rect.height/2)
+            
+                self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
         
         
 
