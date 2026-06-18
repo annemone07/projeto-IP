@@ -249,16 +249,14 @@ while main:
                     moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
                         posInicial=(x, y), valor = 3)
                     grupoMoeda.add(moeda_ouro)
-    # =============================================================================
-    #cria moeda prata
+            #cria moeda prata
             if event.type == create_Moeda_Prata:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
                         posInicial=(x, y),valor = 1)
                     grupoMoeda.add(moeda_prata)
-    # =============================================================================
-    #Criar a carga
+            #Criar a carga
             if event.type == create_charge:
                 if jogador.charge < 5 and not jogador.bullet_time:
                     x = random.randint(200,bgWidth-200)
@@ -479,7 +477,7 @@ while main:
                     jogador.charge += 1
             elif carga.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
                 carga.kill()   
-    #Ativando o bullet time:
+        #Ativando o bullet time:
         if tecla[pygame.K_LSHIFT]:
             if jogador.charge > 0:
                 jogador.bullet_time = True
