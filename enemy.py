@@ -146,6 +146,7 @@ class Bullet(pygame.sprite.Sprite):
         
         self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
         self.estado_laser = 0
+        self.contador_mover = 0
         
 
 
@@ -225,8 +226,9 @@ class Bullet(pygame.sprite.Sprite):
         if abs(playerPos.x-self.posicao.x) >= 3000 or abs(playerPos.y-self.posicao.y) >= 3000:
             self.kill()
             #print("Dead")
-        if self.tipo == "tracker" and mudar:
+        if self.tipo == "tracker" and mudar and self.contador_mover < 3:
             self.direcao(playerPos, self.posicao, pow="null")
+            self.contador_mover += 1
 
         if self.tipo == "laser" :
             if laser: 

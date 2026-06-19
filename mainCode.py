@@ -36,7 +36,7 @@ scroll=0
 tiles = math.ceil(bgHeight/bg.get_height())+2
 
 #criar inimigo(s) inicial
-enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(500, 1000,), sentido_inicial="L")
+enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
 #enemy02 = Inimigo(i=1, dt=deltaTime, pos=(600, -200),limites_mov=(200, 1000,), sentido_inicial="R")
 #enemy03 = Inimigo(i=2, dt=deltaTime, pos=(650, -200), limites_mov=(200, 1100,), sentido_inicial="L")
 #enemy04 = Inimigo(i=3, dt=deltaTime, pos=(400, -200), limites_mov=(200, 1100), sentido_inicial="R")
@@ -157,7 +157,7 @@ def resetarVariaveis():
     grupoInimigo.empty()
     grupoBullets.empty()
     jogador = criarJogador()
-    enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(500, 1000,), sentido_inicial="L")
+    enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
     wave_counter=0
     inicio_de_jogo=perf_counter()
     tempo_no_menu=0.0
@@ -367,14 +367,11 @@ while main:
         tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
         
         #spawn novos inimigos
-        if len(grupoInimigo) <=2 and tempo_de_jogo > 21:
+        if (len(grupoInimigo) <=2 and tempo_de_jogo > 21):
             sentido = random.choice(["R", "L"])
-            coordenadas = (random.randint(600, 1000), -200)
-            delta = random.randint(200, 600)
-            lim_inferior = coordenadas[0] - delta
-            lim_superior = coordenadas[0] + delta
+            coordenadas = (random.randint(300, bgWidth - 300), -200)
             tipo_inimigo = random.randint(0, 4)
-            novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(lim_inferior, lim_superior), sentido_inicial=sentido)
+            novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, bgWidth - 300), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
 
         #HUD da vida
@@ -564,13 +561,14 @@ while main:
                         grupoBullets.add(bullet)
                         bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
                 elif enemy.tipo_bala == "bigger":
-                    print(enemy.rect.center), print("TÁ AQUI")
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         (enemy.rect.centerx,enemy.rect.centery),
                         dt=deltaTime,
                         tipo = "bigger"
                     )
+                    grupoBullets.add(bullet)
+                    bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
                 elif enemy.tipo_bala == "laser":
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
@@ -589,9 +587,9 @@ while main:
                     dt=deltaTime,
                     tipo = "tracker" 
                     )
-
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
+                #ativa o cooldown do disparo do inimigo
                 enemy.disparo=0
                 
         grupoJogador.update(deltaTime, camera) #Update do player antes por conta da criação do rastro
