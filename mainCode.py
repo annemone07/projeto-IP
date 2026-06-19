@@ -139,7 +139,7 @@ filtro_bullet_time = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_bullet_time.fill((0, 0, 0, 150))
 filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_pause.fill((211, 211, 211, 100))
-
+boss_fight = 0
 def resetarVariaveis():
     global jogador, grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, wave_counter
     global grupoMoeda, grupoRastro, grupoInimigo, grupoBala, grupoBullets, inicio_de_jogo, tempo_no_menu
@@ -161,7 +161,7 @@ def resetarVariaveis():
     wave_counter=0
     inicio_de_jogo=perf_counter()
     tempo_no_menu=0.0
-
+wave_counter = 5
 while main:
     print(grupoInimigo)
     mudar, laser = 0, 0 #variavel pra ver se a bala comeca a rastrear eu acho
@@ -337,7 +337,8 @@ while main:
         dt_jogo = deltaTime
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
-        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou :
+
+        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou and not boss_fight:
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = fonte_grande.render(mensagem, True, (0, 0, 0))
@@ -345,29 +346,23 @@ while main:
             pygame.display.flip() #para colocar a mensagem de final na tela
             sleep(3.0)
             #limpando os elementos da tela
-            for bad_guy in grupoInimigo:
-                bad_guy.kill()
-            for pow_pow in grupoBullets:
-                pow_pow.kill()
-            for pei_pei in grupoBala:
-                pei_pei.kill()
-            for shield in grupoEscudo:
-                shield.kill()
-            for coin in grupoMoeda:
-                coin.kill()
-            for heal in grupoCura:
-                cura.kill()
+            resetarVariaveis()
             
             jogador.quick_shot, tempo_pausado = abrir_loja(tela, clock, jogador, jogador.quick_shot, jogador.bullet_time)
             inicio_de_jogo += tempo_pausado + 3
             ja_entrou = 1
-            pygame.event.clear() #tirando todos os eventos da fila, para não passar comandos p dps do intervalo
-            
+            pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
+        
+        if wave_counter % 5 == 0:
+            boss = Inimigo("boss", deltaTime, pos=(bgWidth/2, 200), limites_mov=(0, 0), sentido_inicial="null")
+            grupoInimigo.add(boss)
+            boss_fight = 1
+
         #calculo temporizador atual
         tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
         
         #spawn novos inimigos
-        if (len(grupoInimigo) <=2 and tempo_de_jogo > 21):
+        if (len(grupoInimigo) <=2 and tempo_de_jogo > 21) and not boss_fight:
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(300, bgWidth - 300), -200)
             tipo_inimigo = random.randint(0, 4)

@@ -9,8 +9,9 @@ inimigos_data = {
             1: {"imagem" : "rajada.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
             2: {"imagem" : "bigger.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
             3 :{"imagem" : "tracker.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"},
-            4 :{"imagem" : "retangulo_verde.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"}
-              }
+            4 :{"imagem" : "retangulo_verde.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"},
+            "boss": {"imagem" : "boss.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+               }
 
 class Inimigo(pygame.sprite.Sprite):
     
@@ -22,6 +23,8 @@ class Inimigo(pygame.sprite.Sprite):
         self.dt = dt
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (128, 128))
+        if self.i == "boss":
+            self.image = pygame.transform.scale(self.image, (pygame.display.Info().current_w - 100, self.image.height))
         #print(self.imagens[i])
         self.rect = self.image.get_rect()
         #print(self.rect)
@@ -98,13 +101,13 @@ class Inimigo(pygame.sprite.Sprite):
 
 
     def update(self, dt, camera):
-        self.dir()
         self.dt = dt
-        #print("camera", camera.y)
-        self.posicao.y -= camera.y
-        self.rect.centerx = self.posicao.x - camera.x
-        self.rect.centery = self.posicao.y
-        print("OLHA AQUI"), print(self.rect.centery)
+        if self.i != "boss":  
+            self.dir()  
+            self.posicao.y -= camera.y
+            self.rect.centerx = self.posicao.x - camera.x
+            self.rect.centery = self.posicao.y
+        #print("OLHA AQUI"), print(self.rect.centery)
         """self.direcao.x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
         self.direcao.y = int(keys[pygame.K_s]) - int(keys[pygame.K_w])
         if self.direcao != (0, 0):
