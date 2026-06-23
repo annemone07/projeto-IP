@@ -9,22 +9,16 @@ from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
 from time import perf_counter, sleep
 from loja import abrir_loja
 from menu import MenuPrincipal, menuPause, telaMorte
+from config import folderPath, camera, bgWidth, bgHeight, telaSizePlaceholder, tela, fonte, fonte_grande, fps
+from funcoes import criarJogador, resetarVariaveis, sons
 
 #configs permanentes
-folderPath = os.path.dirname(os.path.abspath(__file__))
 pygame.init() 
-camera = pygame.math.Vector2(0, -6)
+pygame.mixer.init()
+pygame.mixer.set_num_channels(32)
+pygame.display.set_caption("nome do jogo") #alterar para o nome do jogo dps
 clock = pygame.time.Clock()
 deltaTime = clock.tick(60)/1000
-bgHeight = pygame.display.Info().current_h
-bgWidth = pygame.display.Info().current_w
-#tamanhoTela:tuple = pygame.display.get_desktop_sizes()[0]
-telaSizePlaceholder = (bgWidth,bgHeight)
-tela = pygame.display.set_mode(telaSizePlaceholder)
-pygame.display.set_caption("nome do jogo") #alterar para o nome do jogo dps
-fonte = pygame.font.SysFont("arial", 40, True, False)
-fonte_grande = pygame.font.SysFont("arial", 100, True, False)
-fps=60
 
 #variáveis do BG scrollante
 bg = pygame.image.load(os.path.join(folderPath,"images","bgIP.png")).convert()
@@ -103,19 +97,8 @@ tempo_morte=0.0
 tempo_de_jogo = perf_counter() - inicio_de_jogo
 tempo_no_menu = 0
 
-def criarJogador():
-    jogadorCriado = Jogador(
-        spriteImage=os.path.join(folderPath,'images', 'playerSprites', 'slime_green.png'),
-        posInicial=(bgWidth / 2, bgHeight-300),
-        dt=deltaTime,
-        tamanhoMapa=(bgWidth,bgHeight)
-        #grupos=self.all_sprites,
-        #game=self
-    )
-    return jogadorCriado
-
 #configs primeiro load
-jogador = criarJogador()
+jogador = criarJogador(deltaTime)
 
 #criar grupos de sprite
 grupoItem = pygame.sprite.Group()
@@ -130,6 +113,8 @@ grupoBala = pygame.sprite.Group()
 grupoInimigo = pygame.sprite.Group()
 grupoBullets = pygame.sprite.Group()
 
+grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets)
+
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
 contador_rastros = 0 #Evitar que crie algum rastro que não seja a partir dos últimos movimentos
@@ -139,6 +124,7 @@ filtro_bullet_time = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_bullet_time.fill((0, 0, 0, 150))
 filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_pause.fill((211, 211, 211, 100))
+
 boss_fight = 0
 def resetarVariaveis():
     global jogador, grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, wave_counter
@@ -163,6 +149,7 @@ def resetarVariaveis():
     tempo_no_menu=0.0
 wave_counter = 5
 while main:
+    grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets)
     print(grupoInimigo)
     mudar, laser = 0, 0 #variavel pra ver se a bala comeca a rastrear eu acho
     #todos os eventos
@@ -183,6 +170,7 @@ while main:
             selecao = menu_principal.eventos(event)
             if selecao=="Iniciar":
                 estadoDoJogo="jogando"
+                sons(estadoDoJogo)
                 grupoJogador.add(jogador)
                 grupoInimigo.add(enemy01)
                 tempo_no_menu += perf_counter() - inicio_de_jogo
@@ -192,18 +180,31 @@ while main:
                 main=False
                 estadoDoJogo="fechado"
         elif estadoDoJogo=="tela de morte":
+            sons(estadoDoJogo)
             selecao = tela_de_morte.eventos(event)
             if selecao=="Reiniciar":
-                resetarVariaveis()
+                resetarVariaveis(grupoGrupos)
+                jogador = criarJogador(deltaTime)
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
+                tempo_no_menu=0.0
                 grupoJogador.add(jogador)
                 grupoInimigo.add(enemy01)
                 estadoDoJogo="jogando"
+                sons(estadoDoJogo)
                 wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
             elif selecao=="Menu Principal":
-                resetarVariaveis()
+                resetarVariaveis(grupoGrupos)
+                jogador = criarJogador(deltaTime)
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
+                tempo_no_menu=0.0
                 estadoDoJogo="menu principal"
+                sons(estadoDoJogo)
             elif selecao=="Sair":
                 pygame.quit()
                 sys.exit()
@@ -214,6 +215,7 @@ while main:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     estadoDoJogo = "pausado"
+                    sons(estadoDoJogo)
                     tempo_atual = perf_counter() - tempo_inicio
             #Criar o escudo:
             if event.type == create_escudo:
@@ -312,11 +314,13 @@ while main:
             #despausar
             if selecao == "Retomar":
                 estadoDoJogo = "jogando"
+                sons(estadoDoJogo)
                 tempo_no_menu += perf_counter() - tempo_atual
                 menu_pause.opcaoAtual = 0
             #opções (eventualmente)
             elif selecao == "Opções":
                 estadoDoJogo = "jogando" #modificar para criar um menu de opções dps
+                sons(estadoDoJogo)
             #sair
             elif selecao == "Sair":
                 pygame.quit()
