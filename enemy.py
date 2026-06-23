@@ -20,11 +20,13 @@ class Inimigo(pygame.sprite.Sprite):
         folderPath = os.path.dirname(os.path.abspath(__file__))
         self.i = i
         self.dt = dt
+        
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (128, 128))
         #print(self.imagens[i])
         self.rect = self.image.get_rect()
         #print(self.rect)
+
         self.rect.centerx = pos[0]
         self.rect.centery = pos[1]
         self.velocidadex = inimigos_data[i]["velocidade"][0]
