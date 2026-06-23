@@ -29,7 +29,7 @@ bg_pause = pygame.transform.scale(bg_pause, (bgWidth,bgHeight))
 scroll=0
 tiles = math.ceil(bgHeight/bg.get_height())+2
 
-#criar inimigo(s) inicial
+#criar inimigo(s) inicial, para o futuro tutorial
 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
 #enemy02 = Inimigo(i=1, dt=deltaTime, pos=(600, -200),limites_mov=(200, 1000,), sentido_inicial="R")
 #enemy03 = Inimigo(i=2, dt=deltaTime, pos=(650, -200), limites_mov=(200, 1100,), sentido_inicial="L")
@@ -61,13 +61,17 @@ pygame.time.set_timer(create_charge, 8500)
 
 #eventos de disparo para cada tipo de bala
 deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 5000}
+balas_possiveis = ("follow", "rajada", "bigger", "tracker")
 create_bala0, create_bala1, create_bala2, create_bala3, create_bala4 = pygame.USEREVENT + 6,  pygame.USEREVENT + 7, pygame.USEREVENT + 8, pygame.USEREVENT + 9, pygame.USEREVENT + 10
 pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_timer(create_bala1, deltaDisparos["rajada"]), pygame.time.set_timer(create_bala2, deltaDisparos["bigger"]), pygame.time.set_timer(create_bala3, deltaDisparos["tracker"]), pygame.time.set_timer(create_bala4, deltaDisparos["laser"])
 
 #variáveis do disparo do inimigo 
 mudar_direcao, mudar_laser = pygame.USEREVENT + 11,  pygame.USEREVENT + 12
 pygame.time.set_timer(mudar_direcao, 1000), pygame.time.set_timer(mudar_laser, 800)
-
+#timers do boss
+disparo_boss, criar_laser = pygame.USEREVENT + 13, pygame.USEREVENT + 14
+pygame.time.set_timer(disparo_boss, 500), pygame.time.set_timer(criar_laser, 10000)
+boss_laser, limpar_laser_boss = 0, 0
 #variaveis globais entre as cenas
 main = True
 estadoDoJogo = "menu principal"
@@ -120,38 +124,17 @@ rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o ra
 contador_rastros = 0 #Evitar que crie algum rastro que não seja a partir dos últimos movimentos
 wave_counter = 0 #variavel para contar as waves
 ja_entrou = 0 #p n entrar na loja infinitas vezes seguidas
+acabou_sair = 0 #para a boss fight
 filtro_bullet_time = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_bullet_time.fill((0, 0, 0, 150))
 filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_pause.fill((211, 211, 211, 100))
 
 boss_fight = 0
-def resetarVariaveis():
-    global jogador, grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, wave_counter
-    global grupoMoeda, grupoRastro, grupoInimigo, grupoBala, grupoBullets, inicio_de_jogo, tempo_no_menu
-    global enemy01
-    jogador.vida=100
-    grupoItem.empty()
-    grupoEscudo.empty()
-    grupoQuickShot.empty()
-    grupoBulletTime.empty()
-    grupoCura.empty()
-    grupoMoeda.empty()
-    grupoJogador.empty()
-    grupoRastro.empty()
-    grupoBala.empty()
-    grupoInimigo.empty()
-    grupoBullets.empty()
-    jogador = criarJogador()
-    enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
-    wave_counter=0
-    inicio_de_jogo=perf_counter()
-    tempo_no_menu=0.0
-wave_counter = 5
 while main:
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets)
     print(grupoInimigo)
-    mudar, laser = 0, 0 #variavel pra ver se a bala comeca a rastrear eu acho
+    mudar, laser = 0, 0 #variaveis para as balas com condições especiais
     #todos os eventos
     for event in pygame.event.get():
         #condição de parada
@@ -183,7 +166,7 @@ while main:
             sons(estadoDoJogo)
             selecao = tela_de_morte.eventos(event)
             if selecao=="Reiniciar":
-                resetarVariaveis(grupoGrupos)
+                resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
                 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
                 wave_counter=0
@@ -197,7 +180,7 @@ while main:
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
             elif selecao=="Menu Principal":
-                resetarVariaveis(grupoGrupos)
+                resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
                 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
                 wave_counter=0
@@ -309,6 +292,12 @@ while main:
                         enemy.disparo = 1
             if event.type == mudar_laser:
                 laser = 1
+            #bala do boss
+            if (event.type == disparo_boss) and boss_fight:
+                boss.disparo = 1
+            if event.type == criar_laser:
+                boss_laser = 1
+                
         elif estadoDoJogo=="pausado":
             selecao = menu_pause.eventos(event)
             #despausar
@@ -350,17 +339,75 @@ while main:
             pygame.display.flip() #para colocar a mensagem de final na tela
             sleep(3.0)
             #limpando os elementos da tela
-            resetarVariaveis()
+            resetarVariaveis(grupoGrupos, 1)
             
             jogador.quick_shot, tempo_pausado = abrir_loja(tela, clock, jogador, jogador.quick_shot, jogador.bullet_time)
             inicio_de_jogo += tempo_pausado + 3
             ja_entrou = 1
+            acabou_sair = 0
             pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
         
-        if wave_counter % 5 == 0:
-            boss = Inimigo("boss", deltaTime, pos=(bgWidth/2, 200), limites_mov=(0, 0), sentido_inicial="null")
+        if wave_counter % 5 == 0 and wave_counter != 0 and not boss_fight and not acabou_sair:
+            boss = Inimigo("boss", deltaTime, pos=(bgWidth/2, -100), limites_mov=(0, 0), sentido_inicial="null")
             grupoInimigo.add(boss)
             boss_fight = 1
+
+        if boss_fight:
+            if boss.vida >0 and boss.disparo:
+                tipo = random.choice(balas_possiveis)
+                if tipo == "rajada":
+                    for pow in (0, 4, 7):    
+                        bullet = Bullet(
+                            os.path.join(folderPath, "images", "enemy", "bullet.png"),
+                            (boss.rect.centerx,boss.rect.centery),
+                            dt=deltaTime,
+                            tipo = "rajada",
+                            boss = 1
+                        )
+                        grupoBullets.add(bullet)
+                        bullet.direcao((jogador.rect.center), (boss.rect.center), pow)
+
+                else:
+                    bullet = Bullet(
+                        os.path.join(folderPath, "images", "enemy", "bullet.png"),
+                        (boss.rect.centerx,boss.rect.centery),
+                        dt=deltaTime,
+                        tipo = tipo,
+                        boss = 1
+                    )
+                    grupoBullets.add(bullet)
+                    bullet.direcao((jogador.rect.center), (boss.rect.center), pow)
+                if boss_laser:
+                    tipo = "laser"
+                    boss_laser = 0
+                    bullet = Bullet(
+                        os.path.join(folderPath, "images", "enemy", "bullet.png"),
+                        (boss.rect.centerx,boss.rect.centery),
+                        dt=deltaTime,
+                        tipo = tipo,
+                        boss = 1
+                    )
+                    grupoBullets.add(bullet)
+                    bullet.direcao((jogador.rect.center), (boss.rect.center), pow)
+
+
+                boss.disparo = 0
+
+            elif boss.vida <= 0:
+                boss_fight = 0
+                boss.kill()
+                acabou_sair = 1
+                mensagem_fim = "LUTA CONCLUIDA"
+                mensagem_form_fim = fonte_grande.render(mensagem_fim, True, (0, 0, 0))
+                tela.blit(mensagem_form_fim, ((300), (bgHeight/2) - 55))
+                pygame.display.flip() #para colocar a mensagem de final na tela
+                sleep(3.0)
+                #limpando os elementos da tela
+                resetarVariaveis(grupoGrupos, 1)
+                jogador.quick_shot, tempo_pausado = abrir_loja(tela, clock, jogador, jogador.quick_shot, jogador.bullet_time)
+                inicio_de_jogo += tempo_pausado + 3
+                ja_entrou = 1
+                pygame.event.clear()
 
         #calculo temporizador atual
         tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
@@ -498,10 +545,7 @@ while main:
         if abs(scroll)>bg.get_height():
             scroll=0
             
-        #Colocar as novas HUDs na tela:
-        tela.blit(hp_form, (18, 18))
-        tela.blit(coin_form, (200, 18))
-        tela.blit(escudos_form, (20, 68))
+        
 
         pos_x_inicial = 18 + escudos_form.get_width() + 15#Ele tem que ficar 15 pixels dps da quantidade de escudo
         tamanho_quadrado = 30 #Lado do quadrado 
@@ -511,19 +555,10 @@ while main:
             y = 75
             pygame.draw.rect(tela, (100, 180, 255), (x, y, tamanho_quadrado, tamanho_quadrado))
 
-        #Representação das cargas
-        tela.blit(cargas_form, (18, 108))
-        pos_x_inicial_carga = 18 + cargas_form.get_width() + 15
-        largura_imagem = 30
-        espacamento_carga = 8
-        for i in range(jogador.charge):
-            x = pos_x_inicial_carga + (i * (largura_imagem + espacamento_carga))
-            y = 122 
-            tela.blit(carga_icon, (x, y))
+        
 
         #printar timer na tela
-        tela.blit(timer, (((bgWidth-timer.get_width())/2), 10))
-        tela.blit(kills_form, (bgWidth-kills_form.get_width()-20, 10))
+        
         
         #Tiro do jogador 
         if tecla[pygame.K_SPACE]:
@@ -545,7 +580,8 @@ while main:
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         (enemy.rect.centerx,enemy.rect.centery),
                         dt=deltaTime,
-                        tipo = "follow"
+                        tipo = "follow",
+                        boss = 0
                     )
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
@@ -556,6 +592,7 @@ while main:
                             (enemy.rect.centerx,enemy.rect.centery),
                             dt=deltaTime,
                             tipo = "rajada",
+                            boss = 0
                         )
                         grupoBullets.add(bullet)
                         bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
@@ -564,7 +601,8 @@ while main:
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         (enemy.rect.centerx,enemy.rect.centery),
                         dt=deltaTime,
-                        tipo = "bigger"
+                        tipo = "bigger",
+                        boss = 0
                     )
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
@@ -573,7 +611,8 @@ while main:
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         ((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]),
                         dt=deltaTime,
-                        tipo = "laser"
+                        tipo = "laser",
+                        boss = 0
                     )
                     enemy.velocidadex = 0 #para quando atirar o laser
                     enemy.velocidadey = -6
@@ -584,7 +623,8 @@ while main:
                     os.path.join(folderPath, "images", "enemy", "bullet.png"),
                     (enemy.rect.centerx,enemy.rect.centery),
                     dt=deltaTime,
-                    tipo = "tracker" 
+                    tipo = "tracker",
+                    boss = 0
                     )
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
@@ -604,12 +644,7 @@ while main:
                 if contador_rastros > 1:
                     grupoRastro.add(novo_rastro)
                     
-        #Filtro Cinza do bullet_time
-        if jogador.bullet_time:
-            tela.blit(filtro_bullet_time, (0, 0))
-        grupoRastro.draw(tela)
-        #Pra bala não terem o filtro
-        grupoBala.draw(tela)
+        
         
         if not jogador.invencibilidade:
             grupoJogador.draw(tela)
@@ -632,6 +667,9 @@ while main:
                 colisao_b = True
                 if bala.tipo == "laser":
                     dano = bala.dados_balas["laser"]["danos"][bala.estado_laser]
+                    if boss_fight and bala.estado_laser == 4 and limpar_laser_boss:
+                        bala.kill()
+                        limpar_laser_boss = 0
             #checando se a bala já saiu da tela
             if bala.rect.topright[1] > bgHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > bgWidth or bala.rect.topright[1] < 0:
                 bala.kill()
@@ -671,7 +709,7 @@ while main:
             if enemy.rect.topright[1] >= bgHeight + 6: 
                 enemy.kill()
 
-            if enemy.i == 4:
+            if enemy.i == 4 or boss_fight:
                 enemyPos.append(((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
 
         #update de tudo
@@ -695,7 +733,41 @@ while main:
         grupoCura.draw(tela)
 
 
+        #Colocar as novas HUDs na tela:
+        tela.blit(hp_form, (18, 18))
+        tela.blit(coin_form, (200, 18))
+        tela.blit(escudos_form, (20, 68))
+        #Filtro Cinza do bullet_time
+        if jogador.bullet_time:
+            tela.blit(filtro_bullet_time, (0, 0))
+        grupoRastro.draw(tela)
+        #Pra bala não terem o filtro
+        grupoBala.draw(tela)
+        tela.blit(timer, (((bgWidth-timer.get_width())/2), 10))
+        tela.blit(kills_form, (bgWidth-kills_form.get_width()-20, 10))
+        #Representação das cargas
+        tela.blit(cargas_form, (18, 108))
+        pos_x_inicial_carga = 18 + cargas_form.get_width() + 15
+        largura_imagem = 30
+        espacamento_carga = 8
+        for i in range(jogador.charge):
+            x = pos_x_inicial_carga + (i * (largura_imagem + espacamento_carga))
+            y = 122 
+            tela.blit(carga_icon, (x, y))
+
+
     if estadoDoJogo == "pausado":
+        #DESENHAR INIMIGOS
+        grupoInimigo.draw(tela)
+        grupoBullets.draw(tela)
+        grupoQuickShot.draw(tela)
+        grupoBulletTime.draw(tela)#Desenhar a carga na tela
+        grupoEscudo.draw(tela) 
+        grupoMoeda.draw(tela)
+        grupoCura.draw(tela)
+        grupoJogador.draw(tela)
+        menu_pause.draw_texto(tela, telaSizePlaceholder)
+        #NOVAS HUD
         menu_pause.draw_tela(tela, bg_pause)
         tela.blit(hp_form, (18, 18))
         tela.blit(coin_form, (200, 18))
@@ -708,15 +780,6 @@ while main:
 
         tela.blit(timer, (((bgWidth-timer.get_width())/2), 10))
         tela.blit(kills_form, (bgWidth-kills_form.get_width()-20, 10))
-        grupoInimigo.draw(tela)
-        grupoBullets.draw(tela)
-        grupoQuickShot.draw(tela)
-        grupoBulletTime.draw(tela)#Desenhar a carga na tela
-        grupoEscudo.draw(tela) 
-        grupoMoeda.draw(tela)
-        grupoCura.draw(tela)
-        grupoJogador.draw(tela)
-        menu_pause.draw_texto(tela, telaSizePlaceholder)
 
     #flip atualiza a tela
     pygame.display.update()
