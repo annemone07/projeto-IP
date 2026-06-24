@@ -24,8 +24,8 @@ deltaTime = clock.tick(60)/1000
 bg = pygame.image.load(os.path.join(folderPath,"images","bgIP.png")).convert()
 bg = pygame.transform.scale(bg, (bgWidth,bgHeight))
 bgSize = bg.get_rect()
-bg_pause = pygame.image.load(os.path.join(folderPath,"images","bgIPpause.png")).convert()
-bg_pause = pygame.transform.scale(bg_pause, (bgWidth,bgHeight))
+"""bg_pause = pygame.image.load(os.path.join(folderPath,"images","bgIPpause.png")).convert()
+bg_pause = pygame.transform.scale(bg_pause, (bgWidth,bgHeight))"""
 scroll=0
 tiles = math.ceil(bgHeight/bg.get_height())+2
 
@@ -125,7 +125,7 @@ acabou_sair = 0 #para a boss fight
 filtro_bullet_time = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_bullet_time.fill((0, 0, 0, 150))
 filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
-filtro_pause.fill((211, 211, 211, 100))
+filtro_pause.fill((0, 0, 0, 180))
 
 boss_fight = 0
 while main:
@@ -246,20 +246,8 @@ while main:
                     charge = Charge(spriteImage=os.path.join(folderPath,'images','items', 'choque_do_trovao.png'),
                         posInicial=(x, y),)
                     grupoBulletTime.add(charge)
-            # Abrir loja usando a tecla "L"
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_l:
-                    jogador.quick_shot, tempo_pausado = abrir_loja(tela, clock, jogador, jogador.quick_shot, jogador.bullet_time)
-                    inicio_de_jogo += tempo_pausado
-                    ultimo_tiro += tempo_pausado
-                    if jogador.invencibilidade:
-                        t_invencibilidade += tempo_pausado
-                        t_clicks += tempo_pausado
-                    if jogador.quick_shot:
-                        quick_shot_t_inicio += tempo_pausado
-                        intervalo_tiro = cooldown_especial
-                    if jogador.bullet_time:
-                        tempo_inicio += tempo_pausado
+            # Abrir loja usando a tecla "L" DESATIVADO!!!
+            
             #criar bala que padrão
             if event.type == create_bala0:
                 for enemy in grupoInimigo:
@@ -754,6 +742,8 @@ while main:
 
 
     if estadoDoJogo == "pausado":
+        menu_pause.draw_tela(tela, bg)
+        tela.blit(filtro_pause, (0, 0))
         #DESENHAR INIMIGOS
         grupoInimigo.draw(tela)
         grupoBullets.draw(tela)
@@ -763,9 +753,9 @@ while main:
         grupoMoeda.draw(tela)
         grupoCura.draw(tela)
         grupoJogador.draw(tela)
-        menu_pause.draw_texto(tela, telaSizePlaceholder)
+        
         #NOVAS HUD
-        menu_pause.draw_tela(tela, bg_pause)
+        
         tela.blit(hp_form, (18, 18))
         tela.blit(coin_form, (200, 18))
         tela.blit(escudos_form, (20, 68))
@@ -777,6 +767,7 @@ while main:
 
         tela.blit(timer, (((bgWidth-timer.get_width())/2), 10))
         tela.blit(kills_form, (bgWidth-kills_form.get_width()-20, 10))
+        menu_pause.draw_texto(tela, telaSizePlaceholder)
 
     #flip atualiza a tela
     pygame.display.update()

@@ -83,7 +83,7 @@ class Bullet(pygame.sprite.Sprite):
                        "rajada": {"velocidade" : 500, "imagem" :"bala-amarela-hexa.png"}, 
                        "bigger": {"velocidade" :400, "imagem" : "bala-roxo-retang..png" }, 
                        "tracker": {"velocidade" :450, "imagem" : "bala-''cinza''-retang..png"},
-                       "laser" : {"velocidade" : 12, "imagem" : "balaLaser3.png", "danos": (5, 10, 20, 40, 80, 100)}
+                       "laser" : {"velocidade" : 12, "imagem" : "balaLaser3.png", "danos": (10, 20, 40, 80, 100)}
                        }
         #print("teste 1")
         super().__init__()
@@ -187,7 +187,6 @@ class Bullet(pygame.sprite.Sprite):
             
 
     def update(self, dt, camera, playerPos, mudar, laser, enemyPos):
-        k = 0
         self.mov(camera)
         self.dt = dt
         if abs(playerPos.x-self.posicao.x) >= 3000 or abs(playerPos.y-self.posicao.y) >= 3000:
@@ -202,12 +201,12 @@ class Bullet(pygame.sprite.Sprite):
             if laser: 
                 if not self.boss:
                     continuar = 1
-                    estados_laser = (10, 15, 20, 25, 40)
+                    estados_laser = (10, 20, 30, 50, 60)
                     if self.estado_laser != 4:
                         self.estado_laser += 1
                 if self.boss:
-                    estados_laser = (10, 20, 40, 80, 100, 200)
-                    if self.estado_laser !=5:
+                    estados_laser = (20, 40, 80, 100, 200)
+                    if self.estado_laser !=4:
                         self.estado_laser += 1
                         continuar = 1
 
@@ -215,15 +214,14 @@ class Bullet(pygame.sprite.Sprite):
                     self.kill()
                 else:
                     self.image = pygame.transform.scale(self.image, (estados_laser[self.estado_laser], 1000))
-                    diff_x = (estados_laser[self.estado_laser] - estados_laser[self.estado_laser -1])/estados_laser[self.estado_laser - 1]
-                    
+                    self.rect = self.image.get_rect()
+            
 
                     
-            if k == len(enemyPos) - 1 and continuar:
-                self.rect.centerx = enemyPos[k][0]
-                self.rect.centery = enemyPos[k][1] + (self.rect.height/2)
-                self.rect = self.rect.scale_by(diff_x, 1)
-            
+            if 0 == len(enemyPos) - 1: #atualiza o laser p ficar sempre embaixo do inimigo, só tenta atualizar se tiver passado pelo menos 1 inimigo com laser
+                self.rect.centerx = enemyPos[0][0] 
+                self.rect.centery = enemyPos[0][1] + (self.rect.height/2)
+                
                 self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
         
         
