@@ -31,9 +31,6 @@ tiles = math.ceil(bgHeight/bg.get_height())+2
 
 #criar inimigo(s) inicial, para o futuro tutorial
 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
-#enemy02 = Inimigo(i=1, dt=deltaTime, pos=(600, -200),limites_mov=(200, 1000,), sentido_inicial="R")
-#enemy03 = Inimigo(i=2, dt=deltaTime, pos=(650, -200), limites_mov=(200, 1100,), sentido_inicial="L")
-#enemy04 = Inimigo(i=3, dt=deltaTime, pos=(400, -200), limites_mov=(200, 1100), sentido_inicial="R")
 
 #Evento de spawn - Moeda Ouro
 create_Moeda_Ouro = pygame.USEREVENT + 1
@@ -41,7 +38,7 @@ pygame.time.set_timer(create_Moeda_Ouro, 6000)
 
 #Evento de spawn - Moeda Prata
 create_Moeda_Prata = pygame.USEREVENT + 11
-pygame.time.set_timer(create_Moeda_Prata, 3000)
+pygame.time.set_timer(create_Moeda_Prata, 5000)
 
 #Evento de spawn - Cura
 create_Cura = pygame.USEREVENT + 2
@@ -168,7 +165,7 @@ while main:
             if selecao=="Reiniciar":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(bgWidth/2, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
                 wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
@@ -182,7 +179,7 @@ while main:
             elif selecao=="Menu Principal":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(bgWidth/2, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
                 wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
@@ -415,7 +412,7 @@ while main:
         #spawn novos inimigos
         if (len(grupoInimigo) <=2 and tempo_de_jogo > 21) and not boss_fight:
             sentido = random.choice(["R", "L"])
-            coordenadas = (random.randint(300, bgWidth - 300), -200)
+            coordenadas = (random.randint(350, bgWidth - 350), -200)
             tipo_inimigo = random.randint(0, 4)
             novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, bgWidth - 300), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
