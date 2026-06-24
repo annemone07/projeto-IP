@@ -48,23 +48,15 @@ class Inimigo(pygame.sprite.Sprite):
             self.disparo = 1
         else:
             self.disparo = 0"""
-    
-
-    def _mudar_sentido(self):
-        if self.sentido_inicial == "R":
-            self.sentido_inicial = "L"
-        elif self.sentido_inicial == "L":
-            self.sentido_inicial = "R"
-        
-
+            
     def dir(self):
         
         ##print(self.posicao) #trocar isso aqui por um timer fixo (subir por x segundos, direita por y segundos, etc)
         #if self.velocidadex != 0 and self.velocidadey!=0:
-        if self.posicao.x >= self.limites_mov[1]:
-            self._mudar_sentido()
-        elif self.posicao.x <= self.limites_mov[0]:
-            self._mudar_sentido()
+        if self.posicao.x > self.limites_mov[1] and self.sentido_inicial == "R":
+            self.sentido_inicial = "L"
+        elif self.posicao.x <= self.limites_mov[0] and self.sentido_inicial == "L":
+            self.sentido_inicial = "R"
 
         if self.sentido_inicial == "R":
             self.posicao.x += self.velocidadex * self.dt
@@ -72,33 +64,6 @@ class Inimigo(pygame.sprite.Sprite):
             self.posicao.x -= self.velocidadex * self.dt
         
         self.posicao.y -= self.velocidadey * self.dt
-
-        """elif self.velocidadex != 0:
-            if self.posicao.x >= self.limites_mov[1]:
-                self._mudar_sentido()
-            elif self.posicao.x <= self.limites_mov[0]:
-                self._mudar_sentido()
-            
-            if self.sentido_inicial == "R":
-                self.posicao.x += self.velocidadex * self.dt
-            elif self.sentido_inicial == "L":
-                self.posicao.x -= self.velocidadex * self.dt"""
-
-        """elif self.velocidadey != 0:
-            if self.posicao.y >= self.limites_mov[3]:
-                self._mudar_sentido()
-            elif self.posicao.y <= self.limites_mov[2]:
-                self._mudar_sentido()
-
-            if self.sentido_inicial == "R":
-                self.posicao.y += self.velocidadey * self.dt
-            elif self.sentido_inicial == "L":
-                self.posicao.y -= self.velocidadey * self.dt"""
-                #print("DESCE CARALHO PORRA")
-
-            #print(f"POSICAO DESSE CORNO {self.posicao}")
-
-
 
     def update(self, dt, camera):
         self.dt = dt
@@ -109,11 +74,6 @@ class Inimigo(pygame.sprite.Sprite):
             self.rect.centerx = self.posicao.x - camera.x
             self.rect.centery = self.posicao.y
         #print("OLHA AQUI"), print(self.rect.centery)
-        """self.direcao.x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
-        self.direcao.y = int(keys[pygame.K_s]) - int(keys[pygame.K_w])
-        if self.direcao != (0, 0):
-            self.direcao = self.direcao.normalize()"""
-        
 
 class Bullet(pygame.sprite.Sprite):
     

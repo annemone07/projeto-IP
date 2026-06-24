@@ -24,7 +24,7 @@ class Jogador(pygame.sprite.Sprite):
         self.animacoes = self.fatiar_spritesheet(self.sheet)
         self.estadoAnimacao = "run"
         self.frameAtual = 0
-        self.velocidade = 500
+        self.velocidade = 1000
         self.image = self.animacoes["run"][2] #pygame.image.load(os.path.join(folderPath, "images", "playerSprites", "climb-0.png")).convert_alpha()
         self.rect = self.image.get_rect()
         #Criando a hitbox:
