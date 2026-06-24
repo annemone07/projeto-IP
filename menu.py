@@ -11,6 +11,7 @@ class MenuPrincipal():
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
         self.opcoes = ["Iniciar", "Opções", "Sair"]
         self.opcaoSelecionada = 0
+        self.dadosGrupo = {"equipe": "Equipe 3", "membros": ("jfag", "rma10", "phcps", "flg", "rtal", "aspr")}
     
     def draw(self, tela):
         tela.blit(self.bg, (0,0))
@@ -22,6 +23,16 @@ class MenuPrincipal():
                 cor = (0,0,0)
             renderedText = self.fonte.render(text, True, cor)
             tela.blit(renderedText, (100,100+i*60))
+        eq_rend = self.fonte.render(self.dadosGrupo["equipe"], True, (0, 0, 0))
+        #membros_rend = self.fonte.render(self.dadosGrupo["membros"], True, (255, 255, 255))
+        tela.blit(eq_rend, (950, 500))
+        for n in range(len(self.dadosGrupo["membros"])):
+            memb_rend = self.fonte.render(self.dadosGrupo["membros"][n], True, (0, 0, 0))
+            if n % 2 == 0:
+                tela.blit(memb_rend, (900, 580 + 35*n))
+            else:
+                tela.blit(memb_rend, (1050, 580 + 35*(n-1)))
+
     
     def eventos(self, event):
         #print(event)
