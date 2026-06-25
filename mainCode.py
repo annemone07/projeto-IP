@@ -8,7 +8,7 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
 from time import perf_counter, sleep
 from loja import abrir_loja
-from menu import MenuPrincipal, menuPause, telaMorte
+from menu import MenuPrincipal, menuPause, telaMorte, Creditos
 from config import folderPath, camera, bgWidth, bgHeight, telaSizePlaceholder, tela, fonte, fonte_grande, fps
 from funcoes import criarJogador, resetarVariaveis, sons
 
@@ -21,7 +21,7 @@ clock = pygame.time.Clock()
 deltaTime = clock.tick(60)/1000
 
 #variáveis do BG scrollante
-bg = pygame.image.load(os.path.join(folderPath,"images","bgIP.png")).convert()
+bg = pygame.image.load(os.path.join(folderPath,"images","backgrounds","bgIP.png")).convert()
 bg = pygame.transform.scale(bg, (bgWidth,bgHeight))
 bgSize = bg.get_rect()
 """bg_pause = pygame.image.load(os.path.join(folderPath,"images","bgIPpause.png")).convert()
@@ -88,6 +88,7 @@ duracao =  5
 menu_principal = MenuPrincipal(tela)
 menu_pause = menuPause(tela)
 tela_de_morte = telaMorte(tela)
+creditos = Creditos(tela)
 
 #temporizadores
 t_invencibilidade = 0
@@ -154,7 +155,10 @@ while main:
                 grupoJogador.add(jogador)
                 grupoInimigo.add(enemy01)
                 tempo_no_menu += perf_counter() - inicio_de_jogo
-            if selecao=="Sair":
+            elif selecao=="Creditos":
+                estadoDoJogo="creditos"
+                sons(estadoDoJogo)
+            elif selecao=="Sair":
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -190,6 +194,11 @@ while main:
                 sys.exit()
                 main=False
                 estadoDoJogo="fechado"
+        elif estadoDoJogo == "creditos":
+            selecao=creditos.eventos(event)
+            if selecao=="Voltar":
+                estadoDoJogo="menu principal"
+                sons(menu_principal)
         elif estadoDoJogo == "jogando":
             #pausar
             if event.type == pygame.KEYDOWN:
@@ -198,7 +207,7 @@ while main:
                     sons(estadoDoJogo)
                     tempo_atual = perf_counter() - tempo_inicio
             #Criar o escudo:
-            if event.type == create_escudo:
+            if event.type == create_escudo and random.randint(1,7)==1: #chance de spawnar
                 if jogador.armadura < 100:
                         x = random.randint(200,bgWidth-200)
                         y = -200
@@ -207,7 +216,7 @@ while main:
                             posInicial=(x, y))
                         grupoEscudo.add(escudoSpawnado)
             #Criar o powerUP:
-            if event.type == create_quickshot:
+            if event.type == create_quickshot and random.randint(1,7)==1: #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     powerupSpawnado = Quick_Shot(
@@ -216,7 +225,7 @@ while main:
                     )
                     grupoQuickShot.add(powerupSpawnado)
             #cria cura
-            if event.type == create_Cura:
+            if event.type == create_Cura and random.randint(1,9)==1: #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     cura = Cura(
@@ -224,22 +233,22 @@ while main:
                         posInicial=(x, y)
                 )
                     grupoCura.add(cura)
-            #cria moeda ouro
-            if event.type == create_Moeda_Ouro:
+            #cria moeda ouro 
+            if event.type == create_Moeda_Ouro and random.randint(1,9)==1: #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
                         posInicial=(x, y), valor = 3)
                     grupoMoeda.add(moeda_ouro)
             #cria moeda prata
-            if event.type == create_Moeda_Prata:
+            if event.type == create_Moeda_Prata and random.randint(1,5)==1: #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
                         posInicial=(x, y),valor = 1)
                     grupoMoeda.add(moeda_prata)
             #Criar a carga
-            if event.type == create_charge:
+            if event.type == create_charge and random.randint(1,7)==1: #chance de spawnar
                 if jogador.charge < 5 and not jogador.bullet_time:
                     x = random.randint(200,bgWidth-200)
                     y = -200
@@ -304,10 +313,10 @@ while main:
              
     if estadoDoJogo=="menu principal":
         menu_principal.draw(tela)
-    
     elif estadoDoJogo=="tela de morte":
         tela_de_morte.draw(tela)
-        
+    elif estadoDoJogo=="creditos":
+        creditos.draw(tela)
     elif estadoDoJogo=="jogando":
         deltaTime = clock.tick(60)/1000
         if deltaTime>1.0:
@@ -742,8 +751,12 @@ while main:
 
 
     if estadoDoJogo == "pausado":
-        menu_pause.draw_tela(tela, bg)
-        tela.blit(filtro_pause, (0, 0))
+        #menu_pause.draw_tela(tela, bg)
+        appender=0
+        while(appender<tiles):
+            tela.blit(bg, (0, -bg.get_height()*appender+scroll))
+            appender+=1
+        
         #DESENHAR INIMIGOS
         grupoInimigo.draw(tela)
         grupoBullets.draw(tela)
@@ -753,6 +766,9 @@ while main:
         grupoMoeda.draw(tela)
         grupoCura.draw(tela)
         grupoJogador.draw(tela)
+        
+        tela.blit(filtro_pause, (0, 0))
+        
         
         #NOVAS HUD
         
