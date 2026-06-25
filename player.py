@@ -25,7 +25,7 @@ class Jogador(pygame.sprite.Sprite):
         self.estadoAnimacao = "run"
         self.frameAtual = 0
         self.velocidade = 1000
-        self.image = self.animacoes["run"][2] #pygame.image.load(os.path.join(folderPath, "images", "playerSprites", "climb-0.png")).convert_alpha()
+        self.image = self.animacoes["run"][0] #pygame.image.load(os.path.join(folderPath, "images", "playerSprites", "climb-0.png")).convert_alpha()
         self.rect = self.image.get_rect()
         #Criando a hitbox:
         self.hitbox = pygame.Rect(0, 0, 100, 100)
@@ -45,11 +45,11 @@ class Jogador(pygame.sprite.Sprite):
         
 
     def fatiar_spritesheet(self,sheet):
-        larguraSprite=24
-        alturaSprite=24
+        larguraSprite=48
+        alturaSprite=48
         animacoes = {"run":[]}
-        for linha in range(3):
-            for coluna in range(4):
+        for linha in range(5):
+            for coluna in range(5):
                 x = larguraSprite*coluna
                 y = alturaSprite*linha
                 sprite = sheet.subsurface(pygame.Rect(x,y, larguraSprite, alturaSprite))
@@ -76,7 +76,7 @@ class Jogador(pygame.sprite.Sprite):
         nextPosY = (self.posicao.y + self.direction.y * self.velocidade * self.deltaTime)# - 6 colocar movimentação padrão do player
         #print("nextPosX", nextPosX)
         #print("nextPosY", nextPosY)        
-        if nextPosX >= self.rect[2]/3 and nextPosX <= (self.tamanhoMapa[0])-self.rect[2]/3:
+        if nextPosX >= self.rect[0]/3 and nextPosX <= (self.tamanhoMapa[0])-self.rect[0]/3:
             self.posicao.x = nextPosX
             self.rect.centerx = self.posicao.x
         #print("tamanho", tamanhoMapa)
@@ -102,20 +102,28 @@ class Jogador(pygame.sprite.Sprite):
             else: 
                 self.quick_shot = True
 
-    def image_update(self, tipo): #animação 2-default, animação 10-dano, animação 4-dano+PU, animação 6-PU
-        if tipo == "D":    
+    def image_update(self, tipo): #animação 0-default, animação 4-dano, animação 6-dano+PU, animação 5-PU
+        if self.vida <= 25:
+            sb = 3
+        elif self.vida <= 50:
+            sb = 2
+        elif self.vida <= 75:
+            sb = 1
+        else:
+            sb = 0
+        if tipo == "D":#Default   
             if self.invencibilidade:
-                self.image = self.animacoes["run"][2]
+                self.image = self.animacoes["run"][sb]
             else:
-                self.image = self.animacoes["run"][10]
+                self.image = self.animacoes["run"][sb+4]
                 if self.quick_shot:
-                    self.image = self.animacoes["run"][4]
-        elif tipo == "PU":
+                    self.image = self.animacoes["run"][sb+12]
+        elif tipo == "PU":#Power UP
             if self.quick_shot:
-                self.image = self.animacoes["run"][2]
+                self.image = self.animacoes["run"][0]
                 #print("VOLTA NORMAL KRL")
             else:
-                self.image = self.animacoes["run"][6]
+                self.image = self.animacoes["run"][sb+8]
             #if self.invencibilidade: seria p mudar tb se pegar o pu enquanto no dano --acho paia
                 #self.image = self.animacoes["run"][4]
 
