@@ -85,7 +85,7 @@ class Bullet(pygame.sprite.Sprite):
                        "rajada": {"velocidade" : 500, "imagem" :"bala-amarela-hexa.png"}, 
                        "bigger": {"velocidade" :400, "imagem" : "bala-roxo-retang..png" }, 
                        "tracker": {"velocidade" :450, "imagem" : "bala-''cinza''-retang..png"},
-                       "laser" : {"velocidade" : 12, "imagem" : "balaLaser3.png", "danos": (10, 20, 40, 80, 100)}
+                       "laser" : {"velocidade" : 12, "imagem" : "laser-bonito.png", "danos": (10, 20, 40, 80, 100)}
                        }
         #print("teste 1")
         super().__init__()
