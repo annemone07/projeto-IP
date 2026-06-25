@@ -8,7 +8,7 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
 from time import perf_counter, sleep
 from loja import abrir_loja
-from menu import MenuPrincipal, menuPause, telaMorte
+from menu import MenuPrincipal, menuPause, telaMorte, Creditos
 from config import folderPath, camera, bgWidth, bgHeight, telaSizePlaceholder, tela, fonte, fonte_grande, fps
 from funcoes import criarJogador, resetarVariaveis, sons
 
@@ -21,19 +21,16 @@ clock = pygame.time.Clock()
 deltaTime = clock.tick(60)/1000
 
 #variáveis do BG scrollante
-bg = pygame.image.load(os.path.join(folderPath,"images","bgIP.png")).convert()
+bg = pygame.image.load(os.path.join(folderPath,"images","backgrounds","bgIP.png")).convert()
 bg = pygame.transform.scale(bg, (bgWidth,bgHeight))
 bgSize = bg.get_rect()
-bg_pause = pygame.image.load(os.path.join(folderPath,"images","bgIPpause.png")).convert()
-bg_pause = pygame.transform.scale(bg_pause, (bgWidth,bgHeight))
+"""bg_pause = pygame.image.load(os.path.join(folderPath,"images","bgIPpause.png")).convert()
+bg_pause = pygame.transform.scale(bg_pause, (bgWidth,bgHeight))"""
 scroll=0
 tiles = math.ceil(bgHeight/bg.get_height())+2
 
 #criar inimigo(s) inicial, para o futuro tutorial
 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
-#enemy02 = Inimigo(i=1, dt=deltaTime, pos=(600, -200),limites_mov=(200, 1000,), sentido_inicial="R")
-#enemy03 = Inimigo(i=2, dt=deltaTime, pos=(650, -200), limites_mov=(200, 1100,), sentido_inicial="L")
-#enemy04 = Inimigo(i=3, dt=deltaTime, pos=(400, -200), limites_mov=(200, 1100), sentido_inicial="R")
 
 #Evento de spawn - Moeda Ouro
 create_Moeda_Ouro = pygame.USEREVENT + 1
@@ -41,7 +38,7 @@ pygame.time.set_timer(create_Moeda_Ouro, 6000)
 
 #Evento de spawn - Moeda Prata
 create_Moeda_Prata = pygame.USEREVENT + 11
-pygame.time.set_timer(create_Moeda_Prata, 3000)
+pygame.time.set_timer(create_Moeda_Prata, 5000)
 
 #Evento de spawn - Cura
 create_Cura = pygame.USEREVENT + 2
@@ -91,6 +88,7 @@ duracao =  5
 menu_principal = MenuPrincipal(tela)
 menu_pause = menuPause(tela)
 tela_de_morte = telaMorte(tela)
+creditos = Creditos(tela)
 
 #temporizadores
 t_invencibilidade = 0
@@ -128,7 +126,7 @@ acabou_sair = 0 #para a boss fight
 filtro_bullet_time = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_bullet_time.fill((0, 0, 0, 150))
 filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
-filtro_pause.fill((211, 211, 211, 100))
+filtro_pause.fill((0, 0, 0, 180))
 
 boss_fight = 0
 while main:
@@ -157,7 +155,10 @@ while main:
                 grupoJogador.add(jogador)
                 grupoInimigo.add(enemy01)
                 tempo_no_menu += perf_counter() - inicio_de_jogo
-            if selecao=="Sair":
+            elif selecao=="Creditos":
+                estadoDoJogo="creditos"
+                sons(estadoDoJogo)
+            elif selecao=="Sair":
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -168,7 +169,7 @@ while main:
             if selecao=="Reiniciar":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(bgWidth/2, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
                 wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
@@ -182,7 +183,7 @@ while main:
             elif selecao=="Menu Principal":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(bgWidth/2, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
                 wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
@@ -193,6 +194,11 @@ while main:
                 sys.exit()
                 main=False
                 estadoDoJogo="fechado"
+        elif estadoDoJogo == "creditos":
+            selecao=creditos.eventos(event)
+            if selecao=="Voltar":
+                estadoDoJogo="menu principal"
+                sons(menu_principal)
         elif estadoDoJogo == "jogando":
             #pausar
             if event.type == pygame.KEYDOWN:
@@ -201,7 +207,7 @@ while main:
                     sons(estadoDoJogo)
                     tempo_atual = perf_counter() - tempo_inicio
             #Criar o escudo:
-            if event.type == create_escudo:
+            if event.type == create_escudo and random.randint(1,7)==1: #chance de spawnar
                 if jogador.armadura < 100:
                         x = random.randint(200,bgWidth-200)
                         y = -200
@@ -210,7 +216,7 @@ while main:
                             posInicial=(x, y))
                         grupoEscudo.add(escudoSpawnado)
             #Criar o powerUP:
-            if event.type == create_quickshot:
+            if event.type == create_quickshot and random.randint(1,7)==1: #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     powerupSpawnado = Quick_Shot(
@@ -219,7 +225,7 @@ while main:
                     )
                     grupoQuickShot.add(powerupSpawnado)
             #cria cura
-            if event.type == create_Cura:
+            if event.type == create_Cura and random.randint(1,9)==1: #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     cura = Cura(
@@ -227,42 +233,30 @@ while main:
                         posInicial=(x, y)
                 )
                     grupoCura.add(cura)
-            #cria moeda ouro
-            if event.type == create_Moeda_Ouro:
+            #cria moeda ouro 
+            if event.type == create_Moeda_Ouro and random.randint(1,9)==1: #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
                         posInicial=(x, y), valor = 3)
                     grupoMoeda.add(moeda_ouro)
             #cria moeda prata
-            if event.type == create_Moeda_Prata:
+            if event.type == create_Moeda_Prata and random.randint(1,5)==1: #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
                         posInicial=(x, y),valor = 1)
                     grupoMoeda.add(moeda_prata)
             #Criar a carga
-            if event.type == create_charge:
+            if event.type == create_charge and random.randint(1,7)==1: #chance de spawnar
                 if jogador.charge < 5 and not jogador.bullet_time:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     charge = Charge(spriteImage=os.path.join(folderPath,'images','items', 'choque_do_trovao.png'),
                         posInicial=(x, y),)
                     grupoBulletTime.add(charge)
-            # Abrir loja usando a tecla "L"
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_l:
-                    jogador.quick_shot, tempo_pausado = abrir_loja(tela, clock, jogador, jogador.quick_shot, jogador.bullet_time)
-                    inicio_de_jogo += tempo_pausado
-                    ultimo_tiro += tempo_pausado
-                    if jogador.invencibilidade:
-                        t_invencibilidade += tempo_pausado
-                        t_clicks += tempo_pausado
-                    if jogador.quick_shot:
-                        quick_shot_t_inicio += tempo_pausado
-                        intervalo_tiro = cooldown_especial
-                    if jogador.bullet_time:
-                        tempo_inicio += tempo_pausado
+            # Abrir loja usando a tecla "L" DESATIVADO!!!
+            
             #criar bala que padrão
             if event.type == create_bala0:
                 for enemy in grupoInimigo:
@@ -319,10 +313,10 @@ while main:
              
     if estadoDoJogo=="menu principal":
         menu_principal.draw(tela)
-    
     elif estadoDoJogo=="tela de morte":
         tela_de_morte.draw(tela)
-        
+    elif estadoDoJogo=="creditos":
+        creditos.draw(tela)
     elif estadoDoJogo=="jogando":
         deltaTime = clock.tick(60)/1000
         if deltaTime>1.0:
@@ -415,7 +409,7 @@ while main:
         #spawn novos inimigos
         if (len(grupoInimigo) <=2 and tempo_de_jogo > 21) and not boss_fight:
             sentido = random.choice(["R", "L"])
-            coordenadas = (random.randint(300, bgWidth - 300), -200)
+            coordenadas = (random.randint(350, bgWidth - 350), -200)
             tipo_inimigo = random.randint(0, 4)
             novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, bgWidth - 300), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
@@ -757,6 +751,12 @@ while main:
 
 
     if estadoDoJogo == "pausado":
+        #menu_pause.draw_tela(tela, bg)
+        appender=0
+        while(appender<tiles):
+            tela.blit(bg, (0, -bg.get_height()*appender+scroll))
+            appender+=1
+        
         #DESENHAR INIMIGOS
         grupoInimigo.draw(tela)
         grupoBullets.draw(tela)
@@ -766,9 +766,12 @@ while main:
         grupoMoeda.draw(tela)
         grupoCura.draw(tela)
         grupoJogador.draw(tela)
-        menu_pause.draw_texto(tela, telaSizePlaceholder)
+        
+        tela.blit(filtro_pause, (0, 0))
+        
+        
         #NOVAS HUD
-        menu_pause.draw_tela(tela, bg_pause)
+        
         tela.blit(hp_form, (18, 18))
         tela.blit(coin_form, (200, 18))
         tela.blit(escudos_form, (20, 68))
@@ -780,6 +783,7 @@ while main:
 
         tela.blit(timer, (((bgWidth-timer.get_width())/2), 10))
         tela.blit(kills_form, (bgWidth-kills_form.get_width()-20, 10))
+        menu_pause.draw_texto(tela, telaSizePlaceholder)
 
     #flip atualiza a tela
     pygame.display.update()
