@@ -5,12 +5,12 @@ import math #para deixar o código mais claro durante as operações matemática
 clock = pygame.time.Clock()
 folderPath = os.path.dirname(os.path.abspath(__file__))
 inimigos_data = {
-            0: {"imagem" : "follow.png", "velocidade" :(700, 250), "vida" : 100, "bala" : "follow"}, 
-            1: {"imagem" : "rajada.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
-            2: {"imagem" : "bigger.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
-            3 :{"imagem" : "tracker.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"},
-            4 :{"imagem" : "retangulo_verde.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"},
-            "boss": {"imagem" : "boss.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+            0: {"imagem" : "Follow-W1.png", "velocidade" :(700, 250), "vida" : 100, "bala" : "follow"}, 
+            1: {"imagem" : "Rajada-W1.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
+            2: {"imagem" : "Bigger-W1.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
+            3 :{"imagem" : "Tracker-W1.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"},
+            4 :{"imagem" : "Laser-W1.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"},
+            "Boss-W1": {"imagem" : "boss.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -23,7 +23,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.dt = dt
         
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (128, 128))
+        self.image = pygame.transform.scale(self.image, (256, 256))
         if self.i == "boss":
             self.image = pygame.transform.scale(self.image, (pygame.display.Info().current_w - 100, 200))
         #print(self.imagens[i])
