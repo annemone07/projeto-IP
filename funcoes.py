@@ -23,7 +23,7 @@ def criarJogador(deltaTime):
     return jogadorCriado
 
 def resetarVariaveis(grupoGrupos, intermediario):
-    grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets = grupoGrupos
+    grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser = grupoGrupos
     grupoItem.empty()
     grupoEscudo.empty()
     grupoQuickShot.empty()
@@ -34,6 +34,7 @@ def resetarVariaveis(grupoGrupos, intermediario):
     grupoBala.empty()
     grupoInimigo.empty()
     grupoBullets.empty()
+    grupoLaser.empty()
     if not intermediario:
         grupoJogador.empty()
     
