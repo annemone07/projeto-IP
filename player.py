@@ -42,6 +42,7 @@ class Jogador(pygame.sprite.Sprite):
         self.charge = 0
         self.bullet_time = False
         self.moedas = 0
+        self.mask = pygame.mask.from_surface(self.image)
         
 
     def fatiar_spritesheet(self,sheet):
@@ -76,12 +77,12 @@ class Jogador(pygame.sprite.Sprite):
         nextPosY = (self.posicao.y + self.direction.y * self.velocidade * self.deltaTime)# - 6 colocar movimentação padrão do player
         #print("nextPosX", nextPosX)
         #print("nextPosY", nextPosY)        
-        if nextPosX >= self.rect[0]/3 and nextPosX <= (self.tamanhoMapa[0])-self.rect[0]/3:
+        if nextPosX >= 0 and nextPosX <= (self.tamanhoMapa[0]):
             self.posicao.x = nextPosX
             self.rect.centerx = self.posicao.x
         #print("tamanho", tamanhoMapa)
         #print("tamanho+", tamanhoMapa[1]+camera.y)
-        if nextPosY <= (self.tamanhoMapa[1])-self.rect[3]/4: #nextPosY >= self.rect[3]/4 and
+        if nextPosY <= (self.tamanhoMapa[1])-self.rect[3]/4 and nextPosY >= self.rect[3]/4: #nextPosY >= self.rect[3]/4 and
             self.posicao.y = nextPosY+2
             self.rect.centery = self.posicao.y
         
@@ -171,7 +172,7 @@ class Bala(pygame.sprite.Sprite):
         self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
         self.velocidade = 600
         self.dire = pygame.math.Vector2(0, 0)
-        
+        self.mask = pygame.mask.from_surface(self.image)
         
         
     def direcao(self, posA, posB):

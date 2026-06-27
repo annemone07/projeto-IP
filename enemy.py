@@ -5,7 +5,7 @@ import math #para deixar o código mais claro durante as operações matemática
 clock = pygame.time.Clock()
 folderPath = os.path.dirname(os.path.abspath(__file__))
 inimigos_data = {
-            0: {"imagem" : "Follow-W1.png", "velocidade" :(700, 250), "vida" : 100, "bala" : "follow"}, 
+            0: {"imagem" : "Follow-W1.png", "velocidade" :(550, 250), "vida" : 100, "bala" : "follow"}, 
             1: {"imagem" : "Rajada-W1.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
             2: {"imagem" : "Bigger-W1.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
             3 :{"imagem" : "Tracker-W1.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"},
@@ -24,11 +24,11 @@ class Inimigo(pygame.sprite.Sprite):
         
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (256, 256))
-        if self.i == "boss":
+        if self.i == "Boss-W1":
             self.image = pygame.transform.scale(self.image, (pygame.display.Info().current_w - 100, 200))
         #print(self.imagens[i])
         self.rect = self.image.get_rect()
-        #print(self.rect)
+        self.mask = pygame.mask.from_surface(self.image)
 
         self.rect.centerx = pos[0]
         self.rect.centery = pos[1]
@@ -43,13 +43,10 @@ class Inimigo(pygame.sprite.Sprite):
         self.disparo = 1
         #self.dDisparo = dDisparo #intervalo entre os disparos
         #self.t_disparo = 0
+        if self.i == 4:
+            self.rect = self.rect.inflate(0, -45)
+        
 
-    """def timer_disparo(self):
-        self.t_disparo = perf_counter()
-        if self.disparo == 0:
-            self.disparo = 1
-        else:
-            self.disparo = 0"""
             
     def dir(self):
         
@@ -69,12 +66,14 @@ class Inimigo(pygame.sprite.Sprite):
 
     def update(self, dt, camera):
         self.dt = dt
-        if self.i != "boss" or (self.i == "boss" and self.rect.bottomleft[1]< 200):  
-            if self.i != "boss":    
+        if self.i != "Boss-W1" or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 200):  
+            if self.i != "Boss-W1":    
                 self.dir()  
             self.posicao.y -= camera.y
             self.rect.centerx = self.posicao.x - camera.x
             self.rect.centery = self.posicao.y
+
+            #self.hitbox.center = self.rect.center
         #print("OLHA AQUI"), print(self.rect.centery)
 
 class Bullet(pygame.sprite.Sprite):
@@ -102,6 +101,8 @@ class Bullet(pygame.sprite.Sprite):
             self.rect.centerx = posicao[0]
             self.rect.centery = posicao[1]
             self.rect = self.image.get_rect(center=posicao)
+            self.dano = 20
+            print(f"POSICAO FINAL{self.rect.center}")
         else:
             self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", "estadosLaser", self.imagem)).convert_alpha()
             self.image = pygame.transform.scale(self.image, (30, 1000))
@@ -110,12 +111,16 @@ class Bullet(pygame.sprite.Sprite):
             self.rect.centery = posicao[1] + (self.rect.height/2)
         
             self.primeira_pos = (posicao[0], posicao[1] + (self.rect.height/2))
+            self.dano = 10
+            self.ja_laser = 0
         
         
         
         self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
         self.estado_laser = 0
         self.contador_mover = 0
+        self.mask = pygame.mask.from_surface(self.image)
+
         
 
 
@@ -168,7 +173,7 @@ class Bullet(pygame.sprite.Sprite):
             if deltax < 300 and deltay < 300:    
                 self.image = pygame.transform.scale(self.image, (int(deltax*1.02), int(deltay*1.02)))
                 self.rect = self.rect.scale_by(1.02, 1.02)
-                print("rect bullet bigger", self.rect)
+                #print("rect bullet bigger", self.rect)
         
         #print(self.dire)
         self.posicao.x += (self.dire.x) * self.dt
@@ -177,7 +182,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.centerx = self.posicao.x
         self.rect.centery = self.posicao.y
 
-        print("AQUI TB"), print(self.rect.topright[1])
+        #print("AQUI TB"), print(self.rect.topright[1])
 
 
     def mudar_disparo(self):
@@ -217,14 +222,15 @@ class Bullet(pygame.sprite.Sprite):
                 else:
                     self.image = pygame.transform.scale(self.image, (estados_laser[self.estado_laser], 1000))
                     self.rect = self.image.get_rect()
-            
-
-                    
-            if 0 == len(enemyPos) - 1: #atualiza o laser p ficar sempre embaixo do inimigo, só tenta atualizar se tiver passado pelo menos 1 inimigo com laser
+                    self.dano = self.dados_balas["laser"]["danos"][self.estado_laser]
+                      
+            if len(enemyPos) == 0:
+                self.kill()
+            else: #atualiza o laser p ficar sempre embaixo do inimigo, só tenta atualizar se tiver passado pelo menos 1 inimigo com laser   
                 self.rect.centerx = enemyPos[0][0] 
                 self.rect.centery = enemyPos[0][1] + (self.rect.height/2)
-                
                 self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
+            
         
         
 

@@ -57,8 +57,9 @@ create_charge = pygame.USEREVENT + 5
 pygame.time.set_timer(create_charge, 8500)
 
 #eventos de disparo para cada tipo de bala
-deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 5000}
+deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 6000}
 balas_possiveis = ("follow", "rajada", "bigger", "tracker")
+pontos_possiveis = ((bgWidth/2, 200), ((bgWidth/2) - 250, 200), ((bgWidth/2) - 500, 200), ((bgWidth/2) + 250, 200), ((bgWidth/2) +500, 200))
 create_bala0, create_bala1, create_bala2, create_bala3, create_bala4 = pygame.USEREVENT + 6,  pygame.USEREVENT + 7, pygame.USEREVENT + 8, pygame.USEREVENT + 9, pygame.USEREVENT + 10
 pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_timer(create_bala1, deltaDisparos["rajada"]), pygame.time.set_timer(create_bala2, deltaDisparos["bigger"]), pygame.time.set_timer(create_bala3, deltaDisparos["tracker"]), pygame.time.set_timer(create_bala4, deltaDisparos["laser"])
 
@@ -114,8 +115,9 @@ grupoRastro = pygame.sprite.Group()
 grupoBala = pygame.sprite.Group()
 grupoInimigo = pygame.sprite.Group()
 grupoBullets = pygame.sprite.Group()
+grupoLaser = pygame.sprite.Group()
 
-grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets)
+grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
 
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
@@ -131,7 +133,7 @@ filtro_pause.fill((0, 0, 0, 180))
 boss_fight = 0
 while main:
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets)
-    print(grupoInimigo)
+    #print(grupoInimigo)
     mudar, laser = 0, 0 #variaveis para as balas com condições especiais
     #todos os eventos
     for event in pygame.event.get():
@@ -282,7 +284,7 @@ while main:
                 mudar = 1
             if event.type == create_bala4:
                 for enemy in grupoInimigo:
-                    if enemy.tipo_bala == "laser":
+                    if enemy.tipo_bala == "laser" and not enemy.ja_laser:
                         enemy.disparo = 1
             if event.type == mudar_laser:
                 laser = 1
@@ -342,47 +344,49 @@ while main:
             pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
         
         if wave_counter % 5 == 0 and wave_counter != 0 and not boss_fight and not acabou_sair:
-            boss = Inimigo("boss", deltaTime, pos=(bgWidth/2, -100), limites_mov=(0, 0), sentido_inicial="null")
+            boss = Inimigo("Boss-W1", deltaTime, pos=(bgWidth/2, -100), limites_mov=(0, 0), sentido_inicial="null")
             grupoInimigo.add(boss)
             boss_fight = 1
 
         if boss_fight:
             if boss.vida >0 and boss.disparo:
+                centro_bala = random.choice(pontos_possiveis)
                 tipo = random.choice(balas_possiveis)
+                print(f"OLHA AQ{centro_bala}")
                 if tipo == "rajada":
                     for pow in (0, 4, 7):    
                         bullet = Bullet(
                             os.path.join(folderPath, "images", "enemy", "bullet.png"),
-                            (boss.rect.centerx,boss.rect.centery),
+                            (centro_bala),
                             dt=deltaTime,
                             tipo = "rajada",
                             boss = 1
                         )
                         grupoBullets.add(bullet)
-                        bullet.direcao((jogador.rect.center), (boss.rect.center), pow)
+                        bullet.direcao((jogador.rect.center), centro_bala, pow)
 
                 else:
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
-                        (boss.rect.centerx,boss.rect.centery),
+                        (centro_bala),
                         dt=deltaTime,
                         tipo = tipo,
                         boss = 1
                     )
                     grupoBullets.add(bullet)
-                    bullet.direcao((jogador.rect.center), (boss.rect.center), pow)
+                    bullet.direcao((jogador.rect.center), centro_bala, pow)
                 if boss_laser:
                     tipo = "laser"
                     boss_laser = 0
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
-                        (boss.rect.centerx,boss.rect.centery),
+                        (centro_bala),
                         dt=deltaTime,
                         tipo = tipo,
                         boss = 1
                     )
-                    grupoBullets.add(bullet)
-                    bullet.direcao((jogador.rect.center), (boss.rect.center), pow)
+                    grupoLaser.add(bullet)
+                    bullet.direcao((jogador.rect.center), centro_bala, pow)
 
 
                 boss.disparo = 0
@@ -410,7 +414,10 @@ while main:
         if (len(grupoInimigo) <=2 and tempo_de_jogo > 21) and not boss_fight:
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(350, bgWidth - 350), -200)
-            tipo_inimigo = random.randint(0, 4)
+            if not len(grupoLaser):    
+                tipo_inimigo = random.randint(0, 4)
+            else:
+                tipo_inimigo = random.randint(0, 3)
             novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, bgWidth - 300), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
 
@@ -601,16 +608,17 @@ while main:
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
                 elif enemy.tipo_bala == "laser":
+                    enemy.ja_laser = 1
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         ((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]),
                         dt=deltaTime,
                         tipo = "laser",
-                        boss = 0
+                        boss = 0,
                     )
                     enemy.velocidadex = 0 #para quando atirar o laser
                     enemy.velocidadey = -6
-                    grupoBullets.add(bullet)
+                    grupoLaser.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
                 elif enemy.tipo_bala == "tracker":
                     bullet = Bullet(
@@ -653,25 +661,22 @@ while main:
             
         #Colisão do disparo do inimigo com a hitbox do player
         colisao_b = False
-        dano = 20
-        for bala in grupoBullets:
-            if jogador.hitbox.colliderect(bala.rect):
-                if bala.tipo != "laser":
-                    bala.kill()
-                colisao_b = True
-                if bala.tipo == "laser":
-                    dano = bala.dados_balas["laser"]["danos"][bala.estado_laser]
-                    if boss_fight and bala.estado_laser == 4 and limpar_laser_boss:
-                        bala.kill()
-                        limpar_laser_boss = 0
-            #checando se a bala já saiu da tela
+        
+        if pygame.sprite.spritecollide(jogador, grupoBullets, True, ):
+            colisao_b = True
+            dano = 20
+        if pygame.sprite.spritecollide(jogador, grupoLaser, False, pygame.sprite.collide_mask):
+            colisao_b = True
+            for laser in grupoLaser:
+                if laser.rect.colliderect(jogador.rect):
+                    dano = laser.dano
+        for bala in grupoBullets:#checando se a bala já saiu da tela
             if bala.rect.topright[1] > bgHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > bgWidth or bala.rect.topright[1] < 0:
                 bala.kill()
                 
         #Colisão do inimigo com a hitbox do player
         colisao_i = False
-        for vilao in grupoInimigo:
-            if jogador.hitbox.colliderect(vilao.rect):
+        if pygame.sprite.spritecollide(jogador, grupoInimigo, False, pygame.sprite.collide_mask):
                 colisao_i = True
         if (colisao_b or colisao_i) and not jogador.invencibilidade: #as variáveis ficam falsas até detectarem uma colisão, quando recebe um elemento, entra na condicional
             if jogador.armadura == 0:
@@ -691,7 +696,7 @@ while main:
         enemyPos = []
         #Colisão tiro dos players com o inimigo e sua morte:
         for enemy in grupoInimigo:
-            colisao_inimigo = pygame.sprite.spritecollide(enemy, grupoBala, True)
+            colisao_inimigo = pygame.sprite.spritecollide(enemy, grupoBala, True, pygame.sprite.collide_mask)
             if colisao_inimigo:
                 enemy.vida -= 20
                 #print(f"Inimigo: {enemy01.vida}")
@@ -716,6 +721,7 @@ while main:
         grupoEscudo.update(dt_jogo, camera)
         grupoMoeda.update(dt_jogo, camera)
         grupoCura.update(dt_jogo, camera)
+        grupoLaser.update(dt_jogo, camera, jogador.posicao, mudar, laser, enemyPos)
         
         #desenha tudo na tela
         grupoInimigo.draw(tela)
@@ -725,6 +731,7 @@ while main:
         grupoEscudo.draw(tela) 
         grupoMoeda.draw(tela)
         grupoCura.draw(tela)
+        grupoLaser.draw(tela)
 
 
         #Colocar as novas HUDs na tela:
