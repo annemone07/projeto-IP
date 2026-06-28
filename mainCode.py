@@ -30,7 +30,7 @@ scroll=0
 tiles = math.ceil(bgHeight/bg.get_height())+2
 
 #criar inimigo(s) inicial, para o futuro tutorial
-enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
+
 
 #Evento de spawn - Moeda Ouro
 create_Moeda_Ouro = pygame.USEREVENT + 1
@@ -167,6 +167,7 @@ while main:
                 estadoDoJogo = "jogando"
                 modo = "tutorial"
                 grupoJogador.add(jogador)
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, bgWidth - 300), sentido_inicial="L")
                 contador_de_teclas_mov, contador_de_teclas_espaco, contador_itens, fim_tutorial = 0, 0, 0, 0
             elif selecao=="Creditos":
                 estadoDoJogo="creditos"
