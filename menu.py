@@ -38,7 +38,7 @@ class MenuPrincipal():
     def eventos(self, event):
         #print(event)
             #print(evento)
-        print(event)
+        #print(event)
         if event.type == pygame.QUIT:
             return "sair"
         elif event.type == pygame.KEYDOWN:

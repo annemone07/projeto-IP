@@ -59,7 +59,7 @@ pygame.time.set_timer(create_charge, 8500)
 #eventos de disparo para cada tipo de bala
 deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 6000}
 balas_possiveis = ("follow", "rajada", "bigger", "tracker")
-pontos_possiveis = ((bgWidth/2, 200), ((bgWidth/2) - 250, 200), ((bgWidth/2) - 500, 200), ((bgWidth/2) + 250, 200), ((bgWidth/2) +500, 200))
+pontos_possiveis = ((bgWidth/2, 200), ((bgWidth/2)+150, 200), ((bgWidth/2)-150, 200), ((bgWidth/2)+500, 200), ((bgWidth/2)-500, 200))
 create_bala0, create_bala1, create_bala2, create_bala3, create_bala4 = pygame.USEREVENT + 6,  pygame.USEREVENT + 7, pygame.USEREVENT + 8, pygame.USEREVENT + 9, pygame.USEREVENT + 10
 pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_timer(create_bala1, deltaDisparos["rajada"]), pygame.time.set_timer(create_bala2, deltaDisparos["bigger"]), pygame.time.set_timer(create_bala3, deltaDisparos["tracker"]), pygame.time.set_timer(create_bala4, deltaDisparos["laser"])
 
@@ -70,6 +70,9 @@ pygame.time.set_timer(mudar_direcao, 1000), pygame.time.set_timer(mudar_laser, 8
 disparo_boss, criar_laser = pygame.USEREVENT + 13, pygame.USEREVENT + 14
 pygame.time.set_timer(disparo_boss, 500), pygame.time.set_timer(criar_laser, 10000)
 boss_laser, limpar_laser_boss = 0, 0
+#kamikaze
+ativar_kamikaze = pygame.USEREVENT + 15
+pygame.time.set_timer(ativar_kamikaze, 7000)
 #variaveis globais entre as cenas
 main = True
 estadoDoJogo = "menu principal"
@@ -293,6 +296,12 @@ while main:
                 boss.disparo = 1
             if event.type == criar_laser:
                 boss_laser = 1
+
+            if event.type == ativar_kamikaze:
+                for enemy in grupoInimigo:
+                    if enemy.tipo_bala == "self":
+                        enemy.disparo = 1
+                        print("PERMITINDO ATIRAR")
                 
         elif estadoDoJogo=="pausado":
             selecao = menu_pause.eventos(event)
@@ -415,9 +424,9 @@ while main:
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(350, bgWidth - 350), -200)
             if not len(grupoLaser):    
-                tipo_inimigo = random.randint(0, 4)
+                tipo_inimigo = random.randint(0, 5)
             else:
-                tipo_inimigo = random.randint(0, 3)
+                tipo_inimigo = random.randint(0, 4)
             novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, bgWidth - 300), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
 
@@ -576,6 +585,7 @@ while main:
         #checa os inimigos ativos para disparar
         for enemy in grupoInimigo:
             if (enemy.disparo) and  enemy.rect.bottomleft[1] >15:
+                print("ENTROU AQUI")
                 if enemy.tipo_bala == "follow": 
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
@@ -630,6 +640,12 @@ while main:
                     )
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
+
+                elif enemy.tipo_bala == "self":
+                    enemy.follow(enemy.rect.center, jogador.rect.center)
+                    print("COMECOU A RASTREAR")
+
+
                 #ativa o cooldown do disparo do inimigo
                 enemy.disparo=0
                 
@@ -661,8 +677,7 @@ while main:
             
         #Colisão do disparo do inimigo com a hitbox do player
         colisao_b = False
-        
-        if pygame.sprite.spritecollide(jogador, grupoBullets, True, ):
+        if pygame.sprite.spritecollide(jogador, grupoBullets, True):
             colisao_b = True
             dano = 20
         if pygame.sprite.spritecollide(jogador, grupoLaser, False, pygame.sprite.collide_mask):
@@ -678,6 +693,7 @@ while main:
         colisao_i = False
         if pygame.sprite.spritecollide(jogador, grupoInimigo, False, pygame.sprite.collide_mask):
                 colisao_i = True
+                dano = 10
         if (colisao_b or colisao_i) and not jogador.invencibilidade: #as variáveis ficam falsas até detectarem uma colisão, quando recebe um elemento, entra na condicional
             if jogador.armadura == 0:
                 jogador.vida -= dano
