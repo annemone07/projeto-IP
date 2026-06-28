@@ -92,3 +92,31 @@ class Charge(itemGeral):
         self.image = pygame.image.load(spriteImage).convert_alpha()
         self.image = pygame.transform.scale(self.image, (64, 64))
         self.rect = self.image.get_rect(center=posInicial)
+# =============================================================================
+
+# =============================================================================
+class Ima(pygame.sprite.Sprite):
+    def __init__(self, spriteImage, posInicial):
+        super().__init__()
+        self.image = pygame.image.load(spriteImage).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (64, 64))
+        self.rect = self.image.get_rect(center=posInicial)
+        self.posicao = pygame.math.Vector2(posInicial)
+        self.dt = 0
+
+    def atracao(self, pos_moeda_x, pos_moeda_y, pos_jogador_x, pos_jogador_y):
+        pos_jogador = pygame.math.Vector2(pos_jogador_x, pos_jogador_y)
+        pos_moeda = pygame.math.Vector2(pos_moeda_x, pos_moeda_y)
+        direcao = pos_jogador - pos_moeda
+        distancia = direcao.length()
+        if 0 < distancia < 250:
+            pos_moeda += direcao.normalize() * 8
+            return pos_moeda.x, pos_moeda.y
+        return pos_moeda_x, pos_moeda_y
+
+    def update(self, dt, camera):
+        self.dt = dt
+        self.posicao.y += 500 * dt
+        self.rect.centerx = self.posicao.x
+        self.rect.centery = self.posicao.y
+# =============================================================================
