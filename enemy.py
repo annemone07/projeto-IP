@@ -48,6 +48,7 @@ class Inimigo(pygame.sprite.Sprite):
         #self.t_disparo = 0
         if self.i == 4: #para deixar o laser alinhado
             self.rect = self.rect.inflate(0, -45)
+            self.ja_laser = 0
         self.stop = 0 #para o kamikaze
         
 
@@ -144,7 +145,7 @@ class Bullet(pygame.sprite.Sprite):
         
             self.primeira_pos = (posicao[0], posicao[1] + (self.rect.height/2))
             self.dano = 10
-            self.ja_laser = 0
+            
         
         
         
