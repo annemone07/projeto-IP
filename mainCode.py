@@ -833,7 +833,7 @@ while main:
                     spriteImage=os.path.join(folderPath,'images', 'Items', 'Escudo.png'),
                     posInicial=(x, y))
                 
-                x += 10
+                x += 70
                 if x > bgWidth - 200: #obrigando o med kit a spawnar perto do escudo so p pegar na mesma hitbox e n dar problema p seguir a lógica
                     x -= 20
                 y = -200
