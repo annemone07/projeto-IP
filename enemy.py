@@ -42,11 +42,11 @@ class Inimigo(pygame.sprite.Sprite):
         self.sentido_inicial = sentido_inicial
         self.tipo_bala = inimigos_data[i]["bala"]
         self.disparo = 1
-        if self.i == 5:
+        if self.i == 4:
             self.disparo = 0
         #self.dDisparo = dDisparo #intervalo entre os disparos
         #self.t_disparo = 0
-        if self.i == 4: #para deixar o laser alinhado
+        if self.i == 5: #para deixar o laser alinhado
             self.rect = self.rect.inflate(0, -45)
             self.ja_laser = 0
         self.stop = 0 #para o kamikaze
