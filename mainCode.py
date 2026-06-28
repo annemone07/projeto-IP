@@ -8,7 +8,7 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
 from time import perf_counter, sleep
 from loja import abrir_loja
-from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial
+from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade
 from config import folderPath, camera, bgWidth, bgHeight, telaSizePlaceholder, tela, fonte, fonte_grande, fps, fonte_media
 from funcoes import criarJogador, resetarVariaveis, sons
 
@@ -94,6 +94,8 @@ menu_pause = menuPause(tela)
 tela_de_morte = telaMorte(tela)
 creditos = Creditos(tela)
 fim_do_tutorial = menuFimTutorial(tela)
+escolher_modo = menuModos(tela)
+escolher_dificuldade = menuDificuldade(tela)
 
 #temporizadores
 t_invencibilidade = 0
@@ -133,12 +135,11 @@ filtro_bullet_time = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_bullet_time.fill((0, 0, 0, 150))
 filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_pause.fill((0, 0, 0, 180))
-
+minimo_inimigos=(3, 3, 4, 5, 6, 7, 10)
 boss_fight = 0
 while main:
-    jogador.vida=100
-    print("wave", wave_counter)
-    ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
+    #print("wave", wave_counter)
+    #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
     #print(grupoInimigo)
     mudar, laser = 0, 0 #variaveis para as balas com condições especiais
@@ -158,13 +159,9 @@ while main:
         #um if pra cada estado do jogo
         if estadoDoJogo=="menu principal":
             selecao = menu_principal.eventos(event)
-            if selecao=="Iniciar":
-                estadoDoJogo="jogando"
-                sons(estadoDoJogo)
-                grupoJogador.add(jogador)
-                #grupoInimigo.add(enemy01)
-                tempo_no_menu += perf_counter() - inicio_de_jogo
-                modo = "jogando"
+            if selecao=="Jogar":
+                estadoDoJogo="escolher modo"
+                
             elif selecao == "Tutorial":
                 estadoDoJogo = "jogando"
                 modo = "tutorial"
@@ -224,6 +221,40 @@ while main:
                 sys.exit()
                 main = False
                 estadoDoJogo = "fechado"
+
+        elif estadoDoJogo == "escolher modo":
+            selecao = escolher_modo.eventos(event)
+                
+            if selecao == "Infinito":
+                modo = "infinito"
+                estadoDoJogo = "escolher dificuldade"
+
+            elif selecao == "Boss":
+                modo = "boss"
+                estadoDoJogo = "jogando"
+                sons(estadoDoJogo)
+                grupoJogador.add(jogador)
+                tempo_no_menu += perf_counter() - inicio_de_jogo
+            elif selecao == "Voltar":
+                estadoDoJogo = "menu principal"
+
+        elif estadoDoJogo == "escolher dificuldade":
+            selecao = escolher_dificuldade.eventos(event)
+            if selecao != None:
+                modo = "infinito"
+                estadoDoJogo = "jogando"
+                sons(estadoDoJogo)
+                grupoJogador.add(jogador)
+                tempo_no_menu += perf_counter() - inicio_de_jogo
+                if selecao == "Fácil":
+                    wave_counter= 1
+                elif selecao == "Médio":
+                    wave_counter = 3
+                elif selecao == "Difícil":
+                    wave_counter = 5
+                elif selecao == "Impossível":
+                    wave_counter = 6
+
         elif estadoDoJogo == "jogando":
             #pausar
             if event.type == pygame.KEYDOWN:
@@ -330,7 +361,7 @@ while main:
                 for enemy in grupoInimigo:
                     if enemy.tipo_bala == "self":
                         enemy.disparo = 1
-                        print("PERMITINDO ATIRAR")                
+                        #print("PERMITINDO ATIRAR")                
         elif estadoDoJogo=="pausado":
             selecao = menu_pause.eventos(event)
             #despausar
@@ -352,11 +383,16 @@ while main:
     if estadoDoJogo=="menu principal":
         menu_principal.draw(tela)
     elif estadoDoJogo=="tela de morte":
-        tela_de_morte.draw(tela)
+        tela_de_morte.draw(tela, jogador.kills)
     elif estadoDoJogo=="creditos":
         creditos.draw(tela)
     elif estadoDoJogo == "fim do tutorial":
         fim_do_tutorial.draw(tela, telaSizePlaceholder, bg)
+    elif estadoDoJogo == "escolher modo":
+        escolher_modo.draw(tela)
+    elif estadoDoJogo == "escolher dificuldade":
+        escolher_dificuldade.draw(tela)
+        
     elif estadoDoJogo=="jogando":
         deltaTime = clock.tick(60)/1000
         if deltaTime>1.0:
@@ -365,7 +401,7 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
 
-        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou and not boss_fight and modo == "jogando":
+        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou and not boss_fight and modo == "boss":
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = fonte_grande.render(mensagem, True, (0, 0, 0))
@@ -381,7 +417,7 @@ while main:
             acabou_sair = 0
             pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
         
-        if wave_counter % 5 == 0 and wave_counter != 0 and not boss_fight and not acabou_sair:
+        if wave_counter % 5 == 0 and wave_counter != 0 and not boss_fight and not acabou_sair and modo == "boss":
             boss = Inimigo("Boss-W1", deltaTime, pos=(bgWidth/2, -100), limites_mov=(0, 0), sentido_inicial="null")
             grupoInimigo.add(boss)
             boss_fight = 1
@@ -432,12 +468,16 @@ while main:
                 boss.disparo = 0
 
             elif boss.vida <= 0:
+                tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
                 boss_fight = 0
                 boss.kill()
                 acabou_sair = 1
                 mensagem_fim = "LUTA CONCLUIDA"
+                mensagem_tempo = f"TEMPO TOTAL {tempo_de_jogo:0.1f}s"
                 mensagem_form_fim = fonte_grande.render(mensagem_fim, True, (0, 0, 0))
+                mensagem_form_tempo = fonte_media.render(mensagem_tempo, True, (0, 0, 0))
                 tela.blit(mensagem_form_fim, ((300), (bgHeight/2) - 55))
+                tela.blit(mensagem_form_tempo, ((300), (bgHeight/2) + 55))
                 pygame.display.flip() #para colocar a mensagem de final na tela
                 sleep(3.0)
                 #limpando os elementos da tela
@@ -451,7 +491,7 @@ while main:
         tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
         
         #spawn novos inimigos
-        if (len(grupoInimigo) <=2 and not boss_fight and modo == "jogando"):
+        if (len(grupoInimigo) < minimo_inimigos[wave_counter] and not boss_fight and (modo == "boss" or modo == "infinito")):
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(350, bgWidth - 350), -200)
             if not len(grupoLaser):    
@@ -463,6 +503,7 @@ while main:
 
         #HUD da vida
         hp = f"Vida: {jogador.vida}"
+        #print(hp)
         hp_form = fonte.render(hp, False, (255, 255, 255))
 
         #HUD do escudo
@@ -617,7 +658,7 @@ while main:
         #checa os inimigos ativos para disparar
         for enemy in grupoInimigo:
             if (enemy.disparo) and  enemy.rect.bottomleft[1] >15:
-                print("ENTROU AQUI")
+                #print("ENTROU AQUI")
                 if enemy.tipo_bala == "follow": 
                     sons("balaInimigo") #balaPlayer, balaInimigo, balaShotgunInimigo, laser
                     bullet = Bullet(
@@ -678,8 +719,8 @@ while main:
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
 
                 elif enemy.tipo_bala == "self":
-                    enemy.follow(enemy.rect.center, jogador.rect.center)
-                    print("COMECOU A RASTREAR")
+                    enemy.follow((bgWidth/2, bgHeight/2), jogador.rect.center)
+                    #print("COMECOU A RASTREAR")
 
 
                 #ativa o cooldown do disparo do inimigo
@@ -713,7 +754,7 @@ while main:
             
         #Colisão do disparo do inimigo com a hitbox do player
         colisao_b = False
-        if pygame.sprite.spritecollide(jogador, grupoBullets, True):
+        if pygame.sprite.spritecollide(jogador, grupoBullets, True, pygame.sprite.collide_mask):
             colisao_b = True
             dano = 20
         if pygame.sprite.spritecollide(jogador, grupoLaser, False, pygame.sprite.collide_mask):
@@ -728,8 +769,11 @@ while main:
         #Colisão do inimigo com a hitbox do player
         colisao_i = False
         if pygame.sprite.spritecollide(jogador, grupoInimigo, False, pygame.sprite.collide_mask):
-                colisao_i = True
-                dano = 10
+            colisao_i = True
+            dano = 10
+            for bad in grupoInimigo:
+                if bad.rect.colliderect(jogador.rect) and bad.i == 4:
+                    bad.kill()
         if (colisao_b or colisao_i) and not jogador.invencibilidade: #as variáveis ficam falsas até detectarem uma colisão, quando recebe um elemento, entra na condicional
             if jogador.armadura == 0:
                 jogador.vida -= dano
@@ -757,10 +801,10 @@ while main:
                 enemy.kill()
                 jogador.add_kill()
                 ja_entrou = 0 #para entrar na loja no proximo 
-            if enemy.rect.topright[1] >= bgHeight + 6: 
+            if enemy.rect.topright[1] >= bgHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > bgWidth + 6: 
                 enemy.kill()
 
-            if enemy.i == 4 or boss_fight:
+            if enemy.i == 5 or boss_fight:
                 enemyPos.append(((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
 
         #update de tudo
@@ -776,8 +820,9 @@ while main:
         grupoLaser.update(dt_jogo, camera, jogador.posicao, mudar, laser, enemyPos)
         
         #desenha tudo na tela
-        grupoInimigo.draw(tela)
+        
         grupoBullets.draw(tela)
+        grupoInimigo.draw(tela)
         grupoQuickShot.draw(tela)
         grupoBulletTime.draw(tela)#Desenhar a carga na tela
         grupoEscudo.draw(tela) 
@@ -911,8 +956,8 @@ while main:
             appender+=1
         
         #DESENHAR INIMIGOS
-        grupoInimigo.draw(tela)
         grupoBullets.draw(tela)
+        grupoInimigo.draw(tela)
         grupoQuickShot.draw(tela)
         grupoBulletTime.draw(tela)#Desenhar a carga na tela
         grupoEscudo.draw(tela) 
