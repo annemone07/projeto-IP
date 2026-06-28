@@ -9,7 +9,7 @@ inimigos_data = {
             1: {"imagem" : "Rajada-W1.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
             2: {"imagem" : "Bigger-W1.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
             3 :{"imagem" : "Tracker-W1.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"},
-            4: {"imagem" : "Kamikaze-W1.png", "velocidade": (900, 200), "vida": 50, "bala": "self"},
+            4: {"imagem" : "Kamikaze-W1.png", "velocidade": (1500, 200), "vida": 50, "bala": "self"},
             5 :{"imagem" : "Laser-W1.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"},
             "Boss-W1": {"imagem" : "boss-W1.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
@@ -54,7 +54,7 @@ class Inimigo(pygame.sprite.Sprite):
 
             
     def dir(self):
-        
+        #print("TA ENTRANDO AQUI AINDA")
         ##print(self.posicao) #trocar isso aqui por um timer fixo (subir por x segundos, direita por y segundos, etc)
         #if self.velocidadex != 0 and self.velocidadey!=0:
         if self.posicao.x > self.limites_mov[1] and self.sentido_inicial == "R":
@@ -70,41 +70,54 @@ class Inimigo(pygame.sprite.Sprite):
         self.posicao.y -= self.velocidadey * self.dt
 
     def follow(self, posSelf, posJog):
+        #print("NAO PODE MAIS ENTRAR")
         dx = (posJog[0] - posSelf[0])
         dy = (posJog[1] - posSelf[1])
         if dx !=0: #para evitar divisao por zero    
             ang = (math.atan(dy/dx))
+            angG = math.degrees(ang)
         else:
             ang = (math.pi)/2
-        angG = math.degrees(ang)
+            angG = 0
         cos = math.cos(ang)
         sin = math.sin(ang)
+        #angG = - angG
         if (dx <=0 and dy <= 0) or (dy >= 0 and dx<=0): #caso precise inverter alguma coordenada
             cos = -cos
             sin = -sin
+            #angG = -angG
+        if (dy <= 0):
+            angG += 180
+        
         
         self.tracking = pygame.Vector2(cos*self.velocidadex, sin*self.velocidadex)
+
+        """if dy<=0 and dx<= 0:
+            self.tracking = pygame.Vector2(-50, -50)"""
         self.stop = 1
         #rotacionando
         self.image = pygame.transform.rotate(self.image, angG)
-        self.rect = self.image.get_rect()
+        if not(dy<= 0 and dx<= 0):
+            self.rect = self.image.get_rect()
         print(angG)
 
     def update(self, dt, camera):
         self.dt = dt
-        if (self.i in (0, 1, 2, 3 ,4) or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 200)) or (self.i ==5 and self.stop == 0):  
+        if (self.i in (0, 1, 2, 3 ,5) or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 200)) or (self.i ==4 and self.stop == 0):  
             if self.i != "Boss-W1":    
                 self.dir()  
             self.posicao.y -= camera.y
             self.rect.centerx = self.posicao.x - camera.x
             self.rect.centery = self.posicao.y
         
-        elif (self.i == 5 and self.stop == 1):
+        if (self.i == 4 and self.stop == 1):
             self.posicao.x += self.tracking[0] * dt
-            self.posicao.y += (self.tracking[1] * dt)
+            self.posicao.y += self.tracking[1] * dt
 
             self.rect.centerx = self.posicao.x
             self.rect.centery = self.posicao.y
+
+            print(f"ppsicao{self.rect.center}")
 
             #self.hitbox.center = self.rect.center
         #print("OLHA AQUI"), print(self.rect.centery)
@@ -205,7 +218,8 @@ class Bullet(pygame.sprite.Sprite):
             deltay = int(abs(self.rect.bottomleft[1] - self.rect.topleft[1]))
             if deltax < 300 and deltay < 300:    
                 self.image = pygame.transform.scale(self.image, (int(deltax*1.02), int(deltay*1.02)))
-                self.rect = self.rect.scale_by(1.02, 1.02)
+                self.rect = self.image.get_rect()
+                self.mask = pygame.mask.from_surface(self.image)
                 #print("rect bullet bigger", self.rect)
         
         #print(self.dire)
