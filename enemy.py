@@ -41,6 +41,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.sentido_inicial = sentido_inicial
         self.tipo_bala = inimigos_data[i]["bala"]
         self.disparo = 1
+        self.ja_laser = 0
         #self.dDisparo = dDisparo #intervalo entre os disparos
         #self.t_disparo = 0
         if self.i == 4:

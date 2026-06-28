@@ -5,7 +5,7 @@ from enemy import Inimigo, Bullet
 import sys
 import os
 import random
-from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
+from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge, Shotgun
 from time import perf_counter, sleep
 from loja import abrir_loja
 from menu import MenuPrincipal, menuPause, telaMorte, Creditos
@@ -56,18 +56,22 @@ pygame.time.set_timer(create_quickshot, 12000)
 create_charge = pygame.USEREVENT + 5
 pygame.time.set_timer(create_charge, 8500)
 
+#Evento de spawn - Shotgun:
+create_shotgun = pygame.USEREVENT + 6
+pygame.time.set_timer(create_shotgun, 9500)
+
 #eventos de disparo para cada tipo de bala
 deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 6000}
 balas_possiveis = ("follow", "rajada", "bigger", "tracker")
 pontos_possiveis = ((bgWidth/2, 200), ((bgWidth/2) - 250, 200), ((bgWidth/2) - 500, 200), ((bgWidth/2) + 250, 200), ((bgWidth/2) +500, 200))
-create_bala0, create_bala1, create_bala2, create_bala3, create_bala4 = pygame.USEREVENT + 6,  pygame.USEREVENT + 7, pygame.USEREVENT + 8, pygame.USEREVENT + 9, pygame.USEREVENT + 10
+create_bala0, create_bala1, create_bala2, create_bala3, create_bala4 = pygame.USEREVENT + 7,  pygame.USEREVENT + 8, pygame.USEREVENT + 9, pygame.USEREVENT + 10, pygame.USEREVENT + 11
 pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_timer(create_bala1, deltaDisparos["rajada"]), pygame.time.set_timer(create_bala2, deltaDisparos["bigger"]), pygame.time.set_timer(create_bala3, deltaDisparos["tracker"]), pygame.time.set_timer(create_bala4, deltaDisparos["laser"])
 
 #variáveis do disparo do inimigo 
-mudar_direcao, mudar_laser = pygame.USEREVENT + 11,  pygame.USEREVENT + 12
+mudar_direcao, mudar_laser = pygame.USEREVENT + 12,  pygame.USEREVENT + 13
 pygame.time.set_timer(mudar_direcao, 1000), pygame.time.set_timer(mudar_laser, 800)
 #timers do boss
-disparo_boss, criar_laser = pygame.USEREVENT + 13, pygame.USEREVENT + 14
+disparo_boss, criar_laser = pygame.USEREVENT + 14, pygame.USEREVENT + 15
 pygame.time.set_timer(disparo_boss, 500), pygame.time.set_timer(criar_laser, 10000)
 boss_laser, limpar_laser_boss = 0, 0
 #variaveis globais entre as cenas
@@ -108,6 +112,9 @@ grupoItem = pygame.sprite.Group()
 grupoEscudo = pygame.sprite.Group()
 grupoQuickShot = pygame.sprite.Group()
 grupoBulletTime = pygame.sprite.Group()
+
+grupoShotgun =  pygame.sprite.Group()
+
 grupoCura = pygame.sprite.Group()
 grupoMoeda = pygame.sprite.Group()
 grupoJogador = pygame.sprite.Group()
@@ -117,7 +124,7 @@ grupoInimigo = pygame.sprite.Group()
 grupoBullets = pygame.sprite.Group()
 grupoLaser = pygame.sprite.Group()
 
-grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
+grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
 
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
@@ -132,8 +139,7 @@ filtro_pause.fill((0, 0, 0, 180))
 
 boss_fight = 0
 while main:
-    grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets)
-    #print(grupoInimigo)
+    grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)    #print(grupoInimigo)
     mudar, laser = 0, 0 #variaveis para as balas com condições especiais
     #todos os eventos
     for event in pygame.event.get():
@@ -257,6 +263,14 @@ while main:
                     charge = Charge(spriteImage=os.path.join(folderPath,'images','items', 'choque_do_trovao.png'),
                         posInicial=(x, y),)
                     grupoBulletTime.add(charge)
+            #Criar a shotgun
+            if event.type == create_shotgun and random.randint(1,2)==1:
+                if not jogador.arma == 'shotgun':
+                    x = random.randint(200,bgWidth-200)
+                    y = -200
+                    shotgun = Shotgun(spriteImage=os.path.join(folderPath,'images','items', 'shotgun.png'),
+                        posInicial=(x, y),)
+                    grupoShotgun.add(shotgun)
             # Abrir loja usando a tecla "L" DESATIVADO!!!
             
             #criar bala que padrão
@@ -504,6 +518,7 @@ while main:
             jogador.player_update("PU")
             quick_shot_t_inicio = perf_counter()
             intervalo_tiro = cooldown_especial
+
         if jogador.quick_shot:
             tempo_passado = perf_counter() - quick_shot_t_inicio
             if tempo_passado >= 5: #dura 5 segundos
@@ -520,7 +535,18 @@ while main:
                 if jogador.charge < 5:
                     jogador.charge += 1
             elif carga.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
-                carga.kill()   
+                carga.kill() 
+
+        #Pegar a shotgun:
+        shotgun_coletada = []
+        for shotgun in grupoShotgun:
+            if jogador.hitbox.colliderect(shotgun.rect):
+                shotgun_coletada.append(shotgun)
+                shotgun.kill()
+                jogador.arma = 'shotgun'
+            elif shotgun.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+                shotgun.kill() 
+
         #Ativando o bullet time:
         if tecla[pygame.K_LSHIFT]:
             if jogador.charge > 0:
@@ -547,7 +573,6 @@ while main:
             scroll=0
             
         
-
         pos_x_inicial = 18 + escudos_form.get_width() + 15#Ele tem que ficar 15 pixels dps da quantidade de escudo
         tamanho_quadrado = 30 #Lado do quadrado 
         espacamento = 8       
@@ -555,22 +580,24 @@ while main:
             x = pos_x_inicial + (i * (tamanho_quadrado + espacamento))
             y = 75
             pygame.draw.rect(tela, (100, 180, 255), (x, y, tamanho_quadrado, tamanho_quadrado))
-
-        
-
+            
         #printar timer na tela
-        
-        
         #Tiro do jogador 
         if tecla[pygame.K_SPACE]:
             if perf_counter() - ultimo_tiro >= intervalo_tiro:
-                if not jogador.quick_shot:
-                    projetil = Bala(os.path.join(folderPath,"images","playerSprites","bala-player.png"),jogador.rect.center,dt=deltaTime)
-                #quick_shot
-                if jogador.quick_shot:
-                    projetil = Bala(os.path.join(folderPath, "images", "Items", "quick_shot.png"),jogador.rect.center,dt=deltaTime)
-                projetil.dire = pygame.math.Vector2(0, -projetil.velocidade)
-                grupoBala.add(projetil)
+                if jogador.arma == 'shotgun':
+                    angulos_shotgun = [-10, 0, 10]
+                else:
+                    angulos_shotgun = [0]
+                for angulo in angulos_shotgun:
+                    # Cria a bala normalmente
+                    if not jogador.quick_shot: 
+                        projetil = Bala(os.path.join(folderPath,"images","playerSprites","bala-player.png"), jogador.rect.center, dt=deltaTime)
+                    else: # quick_shot
+                        projetil = Bala(os.path.join(folderPath, "images", "Items", "quick_shot.png"), jogador.rect.center, dt=deltaTime)
+                    direcao_base = pygame.math.Vector2(0, -projetil.velocidade)
+                    projetil.dire = direcao_base.rotate(angulo)
+                    grupoBala.add(projetil)
                 ultimo_tiro = perf_counter()
                 
         #checa os inimigos ativos para disparar
@@ -718,6 +745,7 @@ while main:
         grupoRastro.update(deltaTime, camera) #Update do rastro
         grupoQuickShot.update(dt_jogo, camera)
         grupoBulletTime.update(dt_jogo, camera) #Update das cargas
+        grupoShotgun.update(dt_jogo, camera)
         grupoEscudo.update(dt_jogo, camera)
         grupoMoeda.update(dt_jogo, camera)
         grupoCura.update(dt_jogo, camera)
@@ -728,6 +756,7 @@ while main:
         grupoBullets.draw(tela)
         grupoQuickShot.draw(tela)
         grupoBulletTime.draw(tela)#Desenhar a carga na tela
+        grupoShotgun.draw(tela)
         grupoEscudo.draw(tela) 
         grupoMoeda.draw(tela)
         grupoCura.draw(tela)

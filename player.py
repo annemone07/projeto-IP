@@ -42,6 +42,7 @@ class Jogador(pygame.sprite.Sprite):
         self.charge = 0
         self.bullet_time = False
         self.moedas = 0
+        self.arma = 'normal'#Tipo da arma do player
         self.mask = pygame.mask.from_surface(self.image)
         
 
@@ -175,20 +176,24 @@ class Bala(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         
         
-    def direcao(self, posA, posB):
+    def direcao(self, posA, posB, inclinação=0):
         ##print(posA)
        # print()
        # print(posB)
         dx = (posA[0] - posB[0])
         dy = (posA[1] - posB[1])
-        ang = (math.atan(dy/dx))
-        cos = math.cos(ang)
-        sin = math.sin(ang)
-        if (dx <=0 and dy <= 0) or (dy >= 0 and dx<=0): #caso precise inverter alguma coordenada
-            cos = -cos
-            sin = -sin
-        
+
+        ang_base = (math.atan2(dy/dx))
+        ang_final = ang_base + math.radians(inclinação)
+        cos = math.cos(ang_final)
+        sin = math.sin(ang_final)
+
         self.dire = pygame.math.Vector2(math.ceil(cos*self.velocidade), math.ceil(sin*self.velocidade))
+
+        """ if (dx <=0 and dy <= 0) or (dy >= 0 and dx<=0): #caso precise inverter alguma coordenada
+            cos = -cos
+            sin = -sin"""
+        
         #if (dx, dy) != (0, 0):
           #  self.dire = self.dire.normalize()
        # print(), print(self.dire)
@@ -196,7 +201,7 @@ class Bala(pygame.sprite.Sprite):
     def mov(self, camera):
         #print(self.dire)
         self.posicao.x += (self.dire.x + camera.x) * self.dt
-        self.posicao.y += (self.dire.y + camera.y) *self.dt
+        self.posicao.y += (self.dire.y + camera.y) * self.dt
         #print(self.fix_dir)
         self.rect.centerx = self.posicao.x
         self.rect.centery = self.posicao.y
