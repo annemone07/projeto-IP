@@ -10,7 +10,7 @@ class MenuPrincipal():
         self.tamanho = (bgWidth,bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
-        self.opcoes = ["Iniciar", "Opções", "Sair", "Creditos"]
+        self.opcoes = ["Iniciar", "Tutorial", "Opções", "Sair", "Creditos"]
         self.opcaoSelecionada = 0
         self.dadosGrupo = {"equipe": "Equipe 3", "membros": ("jfag", "rma10", "phcps", "flg", "rtal", "aspr")}
     
@@ -38,7 +38,7 @@ class MenuPrincipal():
     def eventos(self, event):
         #print(event)
             #print(evento)
-        #print(event)
+        print(event)
         if event.type == pygame.QUIT:
             return "sair"
         elif event.type == pygame.KEYDOWN:
@@ -139,3 +139,41 @@ class Creditos():
                 return self.opcoes[self.opcaoSelecionada]
         print(self.opcaoSelecionada)
         return None
+    
+
+
+
+class menuFimTutorial():
+    def __init__(self, tela:pygame.surface):
+        self.fonte = pygame.font.SysFont("Arial", 50, True, False)
+        self.opcoes = ("Menu principal", "Opções", "Sair")
+        self.tamanho = tela.get_size()
+        self.opcaoAtual = 0
+
+    #def draw_tela(self, tela, bg):
+        
+
+    def draw(self, tela, tam_tela, bg):
+        tela.blit(bg, (0, 0))
+        texto_pause = self.fonte.render("FIM DO TUTORIAL", True, (255, 255, 255))
+        tela.blit(texto_pause, (tam_tela[0]/2 - 200, 100))
+        for i in range(len(self.opcoes)):
+            if i == self.opcaoAtual:
+                cor = (254, 56, 103)
+            else:
+                cor = (255, 255, 255)
+            texto_for = self.fonte.render(self.opcoes[i], True, cor)
+            tela.blit(texto_for, ((tam_tela[0]/2 - 100) , 200 + i*80))
+
+
+    def eventos(self, event):
+        if event.type == pygame.QUIT:
+            return "sair"
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s:
+                self.opcaoAtual = (self.opcaoAtual + 1) % 3
+            elif event.key == pygame.K_w:
+                self.opcaoAtual = (self.opcaoAtual - 1)%3
+            elif event.key == pygame.K_RETURN:
+                return self.opcoes[self.opcaoAtual]
+            return None

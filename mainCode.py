@@ -8,8 +8,8 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
 from time import perf_counter, sleep
 from loja import abrir_loja
-from menu import MenuPrincipal, menuPause, telaMorte, Creditos
-from config import folderPath, camera, bgWidth, bgHeight, telaSizePlaceholder, tela, fonte, fonte_grande, fps
+from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial
+from config import folderPath, camera, bgWidth, bgHeight, telaSizePlaceholder, tela, fonte, fonte_grande, fps, fonte_media
 from funcoes import criarJogador, resetarVariaveis, sons
 
 #configs permanentes
@@ -93,6 +93,7 @@ menu_principal = MenuPrincipal(tela)
 menu_pause = menuPause(tela)
 tela_de_morte = telaMorte(tela)
 creditos = Creditos(tela)
+fim_do_tutorial = menuFimTutorial(tela)
 
 #temporizadores
 t_invencibilidade = 0
@@ -135,6 +136,7 @@ filtro_pause.fill((0, 0, 0, 180))
 
 boss_fight = 0
 while main:
+    ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
     #print(grupoInimigo)
     mudar, laser = 0, 0 #variaveis para as balas com condições especiais
@@ -158,8 +160,14 @@ while main:
                 estadoDoJogo="jogando"
                 sons(estadoDoJogo)
                 grupoJogador.add(jogador)
-                grupoInimigo.add(enemy01)
+                #grupoInimigo.add(enemy01)
                 tempo_no_menu += perf_counter() - inicio_de_jogo
+                modo = "jogando"
+            elif selecao == "Tutorial":
+                estadoDoJogo = "jogando"
+                modo = "tutorial"
+                grupoJogador.add(jogador)
+                contador_de_teclas_mov, contador_de_teclas_espaco, contador_itens, fim_tutorial = 0, 0, 0, 0
             elif selecao=="Creditos":
                 estadoDoJogo="creditos"
                 sons(estadoDoJogo)
@@ -204,6 +212,16 @@ while main:
             if selecao=="Voltar":
                 estadoDoJogo="menu principal"
                 sons(menu_principal)
+
+        elif estadoDoJogo == "fim do tutorial":
+            selecao = fim_do_tutorial.eventos(event)
+            if selecao == "Menu principal":
+                estadoDoJogo = "menu principal"
+            elif selecao == "Sair":
+                pygame.quit()
+                sys.exit()
+                main = False
+                estadoDoJogo = "fechado"
         elif estadoDoJogo == "jogando":
             #pausar
             if event.type == pygame.KEYDOWN:
@@ -212,57 +230,63 @@ while main:
                     sons(estadoDoJogo)
                     tempo_atual = perf_counter() - tempo_inicio
             #Criar o escudo:
-            if event.type == create_escudo and random.randint(1,7)==1: #chance de spawnar
+            if event.type == create_escudo and random.randint(1,7)==1 and modo == "jogando": #chance de spawnar
                 if jogador.armadura < 100:
                         x = random.randint(200,bgWidth-200)
                         y = -200
                         escudoSpawnado = ParteEscudo(
                             spriteImage=os.path.join(folderPath,'images', 'Items', 'Escudo.png'),
                             posInicial=(x, y))
+                        shield = 1
                         grupoEscudo.add(escudoSpawnado)
             #Criar o powerUP:
-            if event.type == create_quickshot and random.randint(1,7)==1: #chance de spawnar
+            if event.type == create_quickshot and random.randint(1,7)==1 and modo == "jogando": #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     powerupSpawnado = Quick_Shot(
                         spriteImage=os.path.join(folderPath,'images', 'Items', 'QS_up.png'),
                         posInicial=(x, y),
                     )
+                    qs = 1   
                     grupoQuickShot.add(powerupSpawnado)
             #cria cura
-            if event.type == create_Cura and random.randint(1,9)==1: #chance de spawnar
+            if event.type == create_Cura and random.randint(1,9)==1 and modo == "jogando": #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     cura = Cura(
                         spriteImage=os.path.join(folderPath, 'images','items', 'med_kit.png'),
                         posInicial=(x, y)
-                )
+                    )
+                    heal = 1
                     grupoCura.add(cura)
             #cria moeda ouro 
-            if event.type == create_Moeda_Ouro and random.randint(1,9)==1: #chance de spawnar
+            if event.type == create_Moeda_Ouro and random.randint(1,9)==1 and modo == "jogando": #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
                         posInicial=(x, y), valor = 3)
+                    ouro =1
                     grupoMoeda.add(moeda_ouro)
             #cria moeda prata
-            if event.type == create_Moeda_Prata and random.randint(1,5)==1: #chance de spawnar
+            if event.type == create_Moeda_Prata and random.randint(1,5)==1 and modo == "jogando": #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
                         posInicial=(x, y),valor = 1)
+                    prata = 1
                     grupoMoeda.add(moeda_prata)
             #Criar a carga
-            if event.type == create_charge and random.randint(1,7)==1: #chance de spawnar
+            if event.type == create_charge and random.randint(1,7)==1 and modo == "jogando": #chance de spawnar
                 if jogador.charge < 5 and not jogador.bullet_time:
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     charge = Charge(spriteImage=os.path.join(folderPath,'images','items', 'choque_do_trovao.png'),
                         posInicial=(x, y),)
+                    bt = 1
                     grupoBulletTime.add(charge)
             # Abrir loja usando a tecla "L" DESATIVADO!!!
             
-            #criar bala que padrão
+            #criar bala padrão
             if event.type == create_bala0:
                 for enemy in grupoInimigo:
                     if enemy.tipo_bala == "follow" :
@@ -282,13 +306,16 @@ while main:
                 for enemy in grupoInimigo:
                     if enemy.tipo_bala == "tracker":
                         enemy.disparo=1
-            #criar bala que
+            #mudança direção da bala que segue
             if event.type == mudar_direcao:
                 mudar = 1
+            #criar laser
             if event.type == create_bala4:
                 for enemy in grupoInimigo:
-                    if enemy.tipo_bala == "laser" and not enemy.ja_laser:
-                        enemy.disparo = 1
+                    if enemy.tipo_bala == "laser":
+                        if not enemy.ja_laser:
+                            enemy.disparo = 1
+            #mudar estado do laser
             if event.type == mudar_laser:
                 laser = 1
             #bala do boss
@@ -296,7 +323,7 @@ while main:
                 boss.disparo = 1
             if event.type == criar_laser:
                 boss_laser = 1
-
+            #inimigo kamikaze começar a seguir
             if event.type == ativar_kamikaze:
                 for enemy in grupoInimigo:
                     if enemy.tipo_bala == "self":
@@ -328,6 +355,8 @@ while main:
         tela_de_morte.draw(tela)
     elif estadoDoJogo=="creditos":
         creditos.draw(tela)
+    elif estadoDoJogo == "fim do tutorial":
+        fim_do_tutorial.draw(tela, telaSizePlaceholder, bg)
     elif estadoDoJogo=="jogando":
         deltaTime = clock.tick(60)/1000
         if deltaTime>1.0:
@@ -336,7 +365,7 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
 
-        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou and not boss_fight:
+        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou and not boss_fight and modo == "jogando":
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = fonte_grande.render(mensagem, True, (0, 0, 0))
@@ -420,7 +449,7 @@ while main:
         tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
         
         #spawn novos inimigos
-        if (len(grupoInimigo) <=2 and tempo_de_jogo > 21) and not boss_fight:
+        if (len(grupoInimigo) <=2 and not boss_fight and modo == "jogando"):
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(350, bgWidth - 350), -200)
             if not len(grupoLaser):    
@@ -772,6 +801,100 @@ while main:
             y = 122 
             tela.blit(carga_icon, (x, y))
 
+        if modo == "tutorial":
+            if contador_de_teclas_mov in range(0, 10):
+                sug = "use W-A-S-D para se movimentar"
+            if contador_de_teclas_mov >= 10 and perf_counter() - inicio_de_jogo > 3 and contador_de_teclas_espaco == 0:
+                sug = "aperte espaço para atirar"
+                #grupoInimigo.add(enemy01)
+            if (contador_de_teclas_mov + contador_de_teclas_espaco) >= 10 and contador_de_teclas_espaco !=0 and len(grupoMoeda) == 0 and jogador.moedas == 0 and perf_counter() - inicio_de_jogo > 6:
+                x = random.randint(200,bgWidth-200)
+                y = -200
+                moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
+                    posInicial=(x, y), valor = 3)
+                
+                x = random.randint(200,bgWidth-200)
+                y = -200
+                moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
+                    posInicial=(x, y),valor = 1)
+                
+                
+                grupoMoeda.add(moeda_ouro)
+                grupoMoeda.add(moeda_prata)
+                
+                sug = "moedas compram itens na loja"
+            
+            if jogador.moedas > 0 and len(grupoEscudo) == 0 and len(grupoCura) == 0 and jogador.escudo == 0:
+                sug = "cura e escudo recuperam sua vida"
+                x = random.randint(200,bgWidth-200)
+                y = -200
+                escudoSpawnado = ParteEscudo(
+                    spriteImage=os.path.join(folderPath,'images', 'Items', 'Escudo.png'),
+                    posInicial=(x, y))
+                
+                x += 10
+                if x > bgWidth - 200: #obrigando o med kit a spawnar perto do escudo so p pegar na mesma hitbox e n dar problema p seguir a lógica
+                    x -= 20
+                y = -200
+                cura = Cura(
+                    spriteImage=os.path.join(folderPath, 'images','items', 'med_kit.png'),
+                    posInicial=(x, y)
+                )
+                
+                grupoCura.add(cura)
+                grupoEscudo.add(escudoSpawnado)
+
+            if len(grupoEscudo) >= 0 and len(grupoCura) >= 0 and intervalo_tiro ==cooldown_normal and jogador.escudo > 0 and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0:
+                sug = "quick shot faz atirar mais rápido"
+                
+                x = random.randint(200,bgWidth-200)
+                y = -200
+                powerupSpawnado = Quick_Shot(
+                    spriteImage=os.path.join(folderPath,'images', 'Items', 'QS_up.png'),
+                    posInicial=(x, y),
+                )
+
+                grupoQuickShot.add(powerupSpawnado)
+
+            if len(quick_shots_coletados) > 0 and not jogador.bullet_time and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0:
+                sug = "aperte shift para o bullet time"
+                
+
+                x = random.randint(200,bgWidth-200)
+                y = -200
+                charge = Charge(spriteImage=os.path.join(folderPath,'images','items', 'choque_do_trovao.png'),
+                    posInicial=(x, y),)
+                grupoBulletTime.add(charge)
+
+            if tecla[pygame.K_LSHIFT]:
+                fim_tutorial =1
+            
+
+            if fim_tutorial:
+                sug = "mate o inimigo"
+                grupoInimigo.add(enemy01)
+
+            if enemy01.vida <= 0:
+                sleep(0.5)
+                estadoDoJogo = "fim do tutorial"
+
+
+                
+            if tecla[pygame.K_w]:
+                contador_de_teclas_mov += 1
+            elif tecla[pygame.K_s]:
+                contador_de_teclas_mov += 1
+            elif tecla[pygame.K_a]:
+                contador_de_teclas_mov += 1
+            elif tecla[pygame.K_d]:
+                contador_de_teclas_mov += 1
+            elif tecla[pygame.K_SPACE]:
+                contador_de_teclas_espaco += 1
+            
+            
+
+            sug_form = fonte_media.render(sug, True, (0, 0, 0))
+            tela.blit(sug_form, (bgWidth/2-320, 200))
 
     if estadoDoJogo == "pausado":
         #menu_pause.draw_tela(tela, bg)
