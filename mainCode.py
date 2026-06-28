@@ -42,19 +42,19 @@ pygame.time.set_timer(create_Moeda_Prata, 5000)
 
 #Evento de spawn - Cura
 create_Cura = pygame.USEREVENT + 2
-pygame.time.set_timer(create_Cura, 7500)
+pygame.time.set_timer(create_Cura, 2000)
 
 #Evento de spawn - Escudo
 create_escudo = pygame.USEREVENT + 3
-pygame.time.set_timer(create_escudo, 7000)
+pygame.time.set_timer(create_escudo, 3000)
 
 #Evento de spawn - Quick_shot
 create_quickshot = pygame.USEREVENT + 4
-pygame.time.set_timer(create_quickshot, 12000)
+pygame.time.set_timer(create_quickshot, 2000)
 
 #Evento de spawn - Cargas
 create_charge = pygame.USEREVENT + 5
-pygame.time.set_timer(create_charge, 8500)
+pygame.time.set_timer(create_charge, 2200)
 
 #eventos de disparo para cada tipo de bala
 deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 6000}
@@ -136,6 +136,8 @@ filtro_pause.fill((0, 0, 0, 180))
 
 boss_fight = 0
 while main:
+    jogador.vida=100
+    print("wave", wave_counter)
     ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
     #print(grupoInimigo)
@@ -213,7 +215,6 @@ while main:
             if selecao=="Voltar":
                 estadoDoJogo="menu principal"
                 sons(menu_principal)
-
         elif estadoDoJogo == "fim do tutorial":
             selecao = fim_do_tutorial.eventos(event)
             if selecao == "Menu principal":
@@ -251,7 +252,7 @@ while main:
                     qs = 1   
                     grupoQuickShot.add(powerupSpawnado)
             #cria cura
-            if event.type == create_Cura and random.randint(1,9)==1 and modo == "jogando": #chance de spawnar
+            if event.type == create_Cura and random.randint(1,10)==1 and modo == "jogando": #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     cura = Cura(
@@ -329,8 +330,7 @@ while main:
                 for enemy in grupoInimigo:
                     if enemy.tipo_bala == "self":
                         enemy.disparo = 1
-                        print("PERMITINDO ATIRAR")
-                
+                        print("PERMITINDO ATIRAR")                
         elif estadoDoJogo=="pausado":
             selecao = menu_pause.eventos(event)
             #despausar
@@ -348,8 +348,7 @@ while main:
                 pygame.quit()
                 sys.exit()
                 main=False
-                estadoDoJogo="fechado"
-             
+                estadoDoJogo="fechado"   
     if estadoDoJogo=="menu principal":
         menu_principal.draw(tela)
     elif estadoDoJogo=="tela de morte":
@@ -393,6 +392,7 @@ while main:
                 tipo = random.choice(balas_possiveis)
                 print(f"OLHA AQ{centro_bala}")
                 if tipo == "rajada":
+                    sons("balaShotgunInimigo")
                     for pow in (0, 4, 7):    
                         bullet = Bullet(
                             os.path.join(folderPath, "images", "enemy", "bullet.png"),
@@ -403,8 +403,8 @@ while main:
                         )
                         grupoBullets.add(bullet)
                         bullet.direcao((jogador.rect.center), centro_bala, pow)
-
                 else:
+                    sons("balaInimigo")
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         (centro_bala),
@@ -415,6 +415,7 @@ while main:
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), centro_bala, pow)
                 if boss_laser:
+                    sons("laser")
                     tipo = "laser"
                     boss_laser = 0
                     bullet = Bullet(
@@ -529,7 +530,7 @@ while main:
 
         for i in cura_coletados:
             if jogador.vida < 100:
-                jogador.vida += 10
+                jogador.vida += 30
     
         #Quick Shot coletado:
         quick_shots_coletados = []
@@ -603,6 +604,7 @@ while main:
         #Tiro do jogador 
         if tecla[pygame.K_SPACE]:
             if perf_counter() - ultimo_tiro >= intervalo_tiro:
+                sons("balaPlayer")
                 if not jogador.quick_shot:
                     projetil = Bala(os.path.join(folderPath,"images","playerSprites","bala-player.png"),jogador.rect.center,dt=deltaTime)
                 #quick_shot
@@ -617,6 +619,7 @@ while main:
             if (enemy.disparo) and  enemy.rect.bottomleft[1] >15:
                 print("ENTROU AQUI")
                 if enemy.tipo_bala == "follow": 
+                    sons("balaInimigo") #balaPlayer, balaInimigo, balaShotgunInimigo, laser
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         (enemy.rect.centerx,enemy.rect.centery),
@@ -627,6 +630,7 @@ while main:
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
                 elif enemy.tipo_bala == "rajada":
+                    sons("balaShotgunInimigo")
                     for pow in range(7):    
                         bullet = Bullet(
                             os.path.join(folderPath, "images", "enemy", "bullet.png"),
@@ -638,6 +642,7 @@ while main:
                         grupoBullets.add(bullet)
                         bullet.direcao((jogador.rect.center), (enemy.rect.center), pow)
                 elif enemy.tipo_bala == "bigger":
+                    sons("balaInimigo")
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
                         (enemy.rect.centerx,enemy.rect.centery),
@@ -648,6 +653,7 @@ while main:
                     grupoBullets.add(bullet)
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
                 elif enemy.tipo_bala == "laser":
+                    sons("laser")
                     enemy.ja_laser = 1
                     bullet = Bullet(
                         os.path.join(folderPath, "images", "enemy", "bullet.png"),
