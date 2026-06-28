@@ -135,7 +135,7 @@ filtro_pause.fill((0, 0, 0, 180))
 
 boss_fight = 0
 while main:
-    grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets)
+    grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
     #print(grupoInimigo)
     mudar, laser = 0, 0 #variaveis para as balas com condições especiais
     #todos os eventos
