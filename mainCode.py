@@ -272,7 +272,7 @@ while main:
                     sons(estadoDoJogo)
                     tempo_atual = perf_counter() - tempo_inicio
             #Criar o escudo:
-            if event.type == create_escudo and random.randint(1,7)==1 and modo == "jogando": #chance de spawnar
+            if event.type == create_escudo and random.randint(1,7)==1 and (modo == "boss" or modo == "infinito") : #chance de spawnar
                 if jogador.armadura < 100:
                         x = random.randint(200,bgWidth-200)
                         y = -200
@@ -282,7 +282,7 @@ while main:
                         shield = 1
                         grupoEscudo.add(escudoSpawnado)
             #Criar o powerUP:
-            if event.type == create_quickshot and random.randint(1,7)==1 and modo == "jogando": #chance de spawnar
+            if event.type == create_quickshot and random.randint(1,7)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     powerupSpawnado = Quick_Shot(
@@ -292,7 +292,7 @@ while main:
                     qs = 1   
                     grupoQuickShot.add(powerupSpawnado)
             #cria cura
-            if event.type == create_Cura and random.randint(1,10)==1 and modo == "jogando": #chance de spawnar
+            if event.type == create_Cura and random.randint(1,10)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     cura = Cura(
@@ -302,7 +302,7 @@ while main:
                     heal = 1
                     grupoCura.add(cura)
             #cria moeda ouro 
-            if event.type == create_Moeda_Ouro and random.randint(1,9)==1 and modo == "jogando": #chance de spawnar
+            if event.type == create_Moeda_Ouro and random.randint(1,9)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
@@ -310,7 +310,7 @@ while main:
                     ouro =1
                     grupoMoeda.add(moeda_ouro)
             #cria moeda prata
-            if event.type == create_Moeda_Prata and random.randint(1,5)==1 and modo == "jogando": #chance de spawnar
+            if event.type == create_Moeda_Prata and random.randint(1,5)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
@@ -318,7 +318,7 @@ while main:
                     prata = 1
                     grupoMoeda.add(moeda_prata)
             #Criar a carga
-            if event.type == create_charge and random.randint(1,7)==1 and modo == "jogando": #chance de spawnar
+            if event.type == create_charge and random.randint(1,7)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                 if jogador.charge < 5 and not jogador.bullet_time:
                     x = random.randint(200,bgWidth-200)
                     y = -200
@@ -328,7 +328,7 @@ while main:
                     grupoBulletTime.add(charge)
 
             #Criar o ima
-            if event.type == create_ima and random.randint(1,9)==1:
+            if event.type == create_ima and random.randint(1,9)==1 and  (modo == "boss" or modo == "infinito"):
                 #print('criando ima')
                 #print('tentou ser criado')
                 x = random.randint(200,bgWidth-200)
@@ -905,8 +905,8 @@ while main:
                 sug = "use W-A-S-D para se movimentar"
             if contador_de_teclas_mov >= 10 and perf_counter() - inicio_de_jogo > 3 and contador_de_teclas_espaco == 0:
                 sug = "aperte espaço para atirar"
-                #grupoInimigo.add(enemy01)
-            if (contador_de_teclas_mov + contador_de_teclas_espaco) >= 10 and contador_de_teclas_espaco !=0 and len(grupoMoeda) == 0 and jogador.moedas == 0 and perf_counter() - inicio_de_jogo > 6:
+            if (contador_de_teclas_mov + contador_de_teclas_espaco) >= 10 and contador_de_teclas_espaco !=0 and len(grupoMoeda) == 0 and jogador.moedas <= 8 and perf_counter() - inicio_de_jogo > 6:
+                sug = "moedas compram itens na loja"
                 x = random.randint(200,bgWidth-200)
                 y = -200
                 moeda_ouro = Moedas(spriteImage=os.path.join(folderPath,'images','items', 'coin 2.png'),
@@ -920,10 +920,19 @@ while main:
                 
                 grupoMoeda.add(moeda_ouro)
                 grupoMoeda.add(moeda_prata)
+
+                if jogador.moedas > 1:
+                    x = random.randint(200,bgWidth-200)
+                    y = -50
+                    ima = Ima(spriteImage=os.path.join(folderPath,'images','items', 'icon ima.png'),
+                        posInicial=(x, y),)
+                    grupoIma.add(ima)  
+                    
+                    sug = "use o imã para puxar moedas"
+
                 
-                sug = "moedas compram itens na loja"
             
-            if jogador.moedas > 0 and len(grupoEscudo) == 0 and len(grupoCura) == 0 and jogador.escudo == 0:
+            if jogador.moedas > 8 and len(grupoEscudo) == 0 and len(grupoCura) == 0 and jogador.escudo == 0:
                 sug = "cura e escudo recuperam sua vida"
                 x = random.randint(200,bgWidth-200)
                 y = -200
