@@ -5,7 +5,7 @@ from enemy import Inimigo, Bullet
 import sys
 import os
 import random
-from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge
+from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge, Ima
 from time import perf_counter, sleep
 from loja import abrir_loja
 from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial
@@ -73,6 +73,11 @@ boss_laser, limpar_laser_boss = 0, 0
 #kamikaze
 ativar_kamikaze = pygame.USEREVENT + 15
 pygame.time.set_timer(ativar_kamikaze, 7000)
+
+#ima
+create_ima = pygame.USEREVENT + 16
+pygame.time.set_timer(create_ima, 10000)
+
 #variaveis globais entre as cenas
 main = True
 estadoDoJogo = "menu principal"
@@ -120,8 +125,10 @@ grupoBala = pygame.sprite.Group()
 grupoInimigo = pygame.sprite.Group()
 grupoBullets = pygame.sprite.Group()
 grupoLaser = pygame.sprite.Group()
+grupoIma = pygame.sprite.Group()
 
-grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
+
+grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoIma)
 
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
@@ -133,7 +140,8 @@ filtro_bullet_time = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_bullet_time.fill((0, 0, 0, 150))
 filtro_pause = pygame.Surface(telaSizePlaceholder, pygame.SRCALPHA)
 filtro_pause.fill((0, 0, 0, 180))
-
+tempo_ima_ativo = -999
+duracao_ima = 20
 boss_fight = 0
 while main:
     jogador.vida=100
@@ -286,6 +294,17 @@ while main:
                         posInicial=(x, y),)
                     bt = 1
                     grupoBulletTime.add(charge)
+
+            #Criar o ima
+            if event.type == create_ima and random.randint(1,9)==1:
+                #print('criando ima')
+                #print('tentou ser criado')
+                x = random.randint(200,bgWidth-200)
+                y = -200
+                ima = Ima(spriteImage=os.path.join(folderPath,'images','items', 'icon ima.png'),
+                    posInicial=(x, y),)
+                grupoIma.add(ima)      
+
             # Abrir loja usando a tecla "L" DESATIVADO!!!
             
             #criar bala padrão
@@ -330,7 +349,7 @@ while main:
                 for enemy in grupoInimigo:
                     if enemy.tipo_bala == "self":
                         enemy.disparo = 1
-                        print("PERMITINDO ATIRAR")                
+                        print("PERMITINDO ATIRAR")         
         elif estadoDoJogo=="pausado":
             selecao = menu_pause.eventos(event)
             #despausar
@@ -560,7 +579,33 @@ while main:
                 if jogador.charge < 5:
                     jogador.charge += 1
             elif carga.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
-                carga.kill()   
+                carga.kill() 
+
+          #Coletar o Imã
+        imas_coletados = []
+        for ima in grupoIma:
+            if jogador.hitbox.colliderect(ima.rect):
+                imas_coletados.append(ima)
+                ima.kill()
+            elif ima.rect.topright[1] > bgHeight + 6:
+                ima.kill()
+        #print('ima identificado')
+        if imas_coletados:
+            #print('ima coletado')
+            tempo_ima_ativo = perf_counter()
+
+        # Atrair moedas se imã estiver ativo
+        if perf_counter() - tempo_ima_ativo < duracao_ima:
+            for moeda in grupoMoeda:
+                nova_x, nova_y = Ima.atracao(
+                    None,
+                    moeda.posicao.x, moeda.posicao.y,
+                    jogador.rect.centerx, jogador.rect.centery
+                )
+                moeda.posicao.x = nova_x
+                moeda.posicao.y = nova_y
+                moeda.rect.centerx = nova_x
+                moeda.rect.centery = nova_y        
         #Ativando o bullet time:
         if tecla[pygame.K_LSHIFT]:
             if jogador.charge > 0:
@@ -774,7 +819,8 @@ while main:
         grupoMoeda.update(dt_jogo, camera)
         grupoCura.update(dt_jogo, camera)
         grupoLaser.update(dt_jogo, camera, jogador.posicao, mudar, laser, enemyPos)
-        
+        grupoIma.update(dt_jogo, camera)
+
         #desenha tudo na tela
         grupoInimigo.draw(tela)
         grupoBullets.draw(tela)
@@ -784,7 +830,7 @@ while main:
         grupoMoeda.draw(tela)
         grupoCura.draw(tela)
         grupoLaser.draw(tela)
-
+        grupoIma.draw(tela)
 
         #Colocar as novas HUDs na tela:
         tela.blit(hp_form, (18, 18))
