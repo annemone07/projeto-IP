@@ -14,7 +14,7 @@ class Jogador(pygame.sprite.Sprite):
     def __init__(self, spriteImage, posInicial, dt, tamanhoMapa):
         
         super().__init__()
-        
+
         self.tamanhoMapa = tamanhoMapa
         self.deltaTime = dt
         self.images = []
@@ -43,6 +43,7 @@ class Jogador(pygame.sprite.Sprite):
         self.bullet_time = False
         self.moedas = 0
         self.arma = 'normal'#Tipo da arma do player
+        self.cartuchos = 0 #Balas da shotgun
         self.mask = pygame.mask.from_surface(self.image)
         
 
@@ -113,6 +114,9 @@ class Jogador(pygame.sprite.Sprite):
             sb = 1
         else:
             sb = 0
+        if self.arma == "shotgun":
+            sb += 16
+            
         if tipo == "D":#Default   
             if self.invencibilidade:
                 self.image = self.animacoes["run"][sb]
