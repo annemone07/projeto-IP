@@ -10,7 +10,7 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
     tempo_de_entrada = perf_counter()
 
     LARGURA, ALTURA = tela.get_size()
-
+    
     # Cores (RGB)
     BRANCO    = (255, 255, 255)
     PRETO     = (0, 0, 0)

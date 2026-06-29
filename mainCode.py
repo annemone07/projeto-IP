@@ -659,7 +659,9 @@ while main:
                 moeda.posicao.y = nova_y
                 moeda.rect.centerx = nova_x
                 moeda.rect.centery = nova_y
-        #Pegar a shotgun:
+
+
+#Pegar a shotgun: -------------------------------------------------------------------------------------------------------------------------------------
         shotgun_coletada = []
         for shotgun in grupoShotgun:
             if jogador.hitbox.colliderect(shotgun.rect):
@@ -667,7 +669,10 @@ while main:
                 shotgun.kill()
                 jogador.arma = 'shotgun'
             elif shotgun.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
-                shotgun.kill() 
+                shotgun.kill()
+#Pegar a shotgun: -------------------------------------------------------------------------------------------------------------------------------------
+
+
         #Ativando o bullet time:
         if tecla[pygame.K_LSHIFT]:
             if jogador.charge > 0:
