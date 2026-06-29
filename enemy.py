@@ -99,7 +99,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, angG)
         if not(dy<= 0 and dx<= 0):
             self.rect = self.image.get_rect()
-        print(angG)
+        #print(angG)
 
     def update(self, dt, camera):
         self.dt = dt
@@ -117,7 +117,7 @@ class Inimigo(pygame.sprite.Sprite):
             self.rect.centerx = self.posicao.x
             self.rect.centery = self.posicao.y
 
-            print(f"ppsicao{self.rect.center}")
+            #print(f"ppsicao{self.rect.center}")
 
             #self.hitbox.center = self.rect.center
         #print("OLHA AQUI"), print(self.rect.centery)
@@ -148,7 +148,7 @@ class Bullet(pygame.sprite.Sprite):
             self.rect.centery = posicao[1]
             self.rect = self.image.get_rect(center=posicao)
             self.dano = 20
-            print(f"POSICAO FINAL{self.rect.center}")
+            #print(f"POSICAO FINAL{self.rect.center}")
         else:
             self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", "estadosLaser", self.imagem)).convert_alpha()
             self.image = pygame.transform.scale(self.image, (30, 1000))

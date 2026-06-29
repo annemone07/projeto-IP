@@ -146,6 +146,7 @@ minimo_inimigos=(3, 3, 4, 5, 6, 7, 10)
 tempo_ima_ativo = -999
 duracao_ima = 20
 boss_fight = 0
+pode_spawn_laser = 1
 while main:
     #print("wave", wave_counter)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
@@ -514,10 +515,16 @@ while main:
         if (len(grupoInimigo) < minimo_inimigos[wave_counter] and not boss_fight and (modo == "boss" or modo == "infinito")):
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(350, bgWidth - 350), -200)
-            if not len(grupoLaser):    
+            print(grupoLaser)
+            if pode_spawn_laser:    
                 tipo_inimigo = random.randint(0, 5)
+                print("SPAWN COM LASER")
             else:
+                print("SPAWN SEM LASER")
                 tipo_inimigo = random.randint(0, 4)
+
+            if tipo_inimigo == 5:
+                pode_spawn_laser = 0
             novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, bgWidth - 300), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
 
@@ -811,6 +818,10 @@ while main:
         for bala in grupoBullets:#checando se a bala já saiu da tela
             if bala.rect.topright[1] > bgHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > bgWidth or bala.rect.topright[1] < 0:
                 bala.kill()
+        for bala in grupoLaser:
+            if bala.rect.topright[1] > bgHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > bgWidth or bala.rect.topright[1] < 0:
+                bala.kill()
+                pode_spawn_laser = 1
                 
         #Colisão do inimigo com a hitbox do player
         colisao_i = False
