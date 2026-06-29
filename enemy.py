@@ -271,12 +271,14 @@ class Bullet(pygame.sprite.Sprite):
                     self.rect = self.image.get_rect()
                     self.dano = self.dados_balas["laser"]["danos"][self.estado_laser]
                       
-            if len(enemyPos) == 0:
-                self.kill()
-            else: #atualiza o laser p ficar sempre embaixo do inimigo, só tenta atualizar se tiver passado pelo menos 1 inimigo com laser   
-                self.rect.centerx = enemyPos[0][0] 
-                self.rect.centery = enemyPos[0][1] + (self.rect.height/2)
-                self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
+            """if len(enemyPos) == 0:
+                self.kill()"""
+            #else: #atualiza o laser p ficar sempre embaixo do inimigo, só tenta atualizar se tiver passado pelo menos 1 inimigo com laser  
+            for k in range(len(enemyPos)):
+                if enemyPos[k][2] == self.ord:
+                    self.rect.centerx = enemyPos[k][0] 
+                    self.rect.centery = enemyPos[k][1] + (self.rect.height/2)
+                    self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
             
         
         

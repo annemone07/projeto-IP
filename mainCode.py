@@ -447,7 +447,7 @@ while main:
             if boss.vida >0 and boss.disparo:
                 centro_bala = random.choice(pontos_possiveis)
                 tipo = random.choice(balas_possiveis)
-                print(f"OLHA AQ{centro_bala}")
+                #print(f"OLHA AQ{centro_bala}")
                 if tipo == "rajada":
                     sons("balaShotgunInimigo")
                     for pow in (0, 4, 7):    
@@ -515,17 +515,19 @@ while main:
         if (len(grupoInimigo) < minimo_inimigos[wave_counter] and not boss_fight and (modo == "boss" or modo == "infinito")):
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(350, bgWidth - 350), -200)
-            print(grupoLaser)
+            #print(grupoLaser)
             if pode_spawn_laser:    
                 tipo_inimigo = random.randint(0, 5)
-                print("SPAWN COM LASER")
+                #print("SPAWN COM LASER")
             else:
-                print("SPAWN SEM LASER")
+                #print("SPAWN SEM LASER")
                 tipo_inimigo = random.randint(0, 4)
 
-            if tipo_inimigo == 5:
-                pode_spawn_laser = 0
+            tipo_inimigo = 5
             novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, bgWidth - 300), sentido_inicial=sentido)
+            if tipo_inimigo == 5:
+                #pode_spawn_laser = 0
+                novoInim.ord = len(grupoLaser)
             grupoInimigo.add(novoInim)
 
         #HUD da vida
@@ -756,6 +758,7 @@ while main:
                         tipo = "laser",
                         boss = 0,
                     )
+                    bullet.ord = len(grupoLaser)
                     enemy.velocidadex = 0 #para quando atirar o laser
                     enemy.velocidadey = -6
                     grupoLaser.add(bullet)
@@ -848,21 +851,31 @@ while main:
             
         enemyPos = []
         #Colisão tiro dos players com o inimigo e sua morte:
+        """print("OLHA AQ")
+        print(list(grupoInimigo)[0].vida)"""
         for enemy in grupoInimigo:
+            inimigo_morto=0
             colisao_inimigo = pygame.sprite.spritecollide(enemy, grupoBala, True, pygame.sprite.collide_mask)
             if colisao_inimigo:
                 enemy.vida -= 20
                 #print(f"Inimigo: {enemy01.vida}")
             if enemy.vida <= 0:
-                #print("morreu")
-                enemy.kill()
                 jogador.add_kill()
                 ja_entrou = 0 #para entrar na loja no proximo 
+                inimigo_morto = 1
             if enemy.rect.topright[1] >= bgHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > bgWidth + 6: 
+                inimigo_morto =1
+            
+            if inimigo_morto and enemy.i ==5:
+                for piu in grupoLaser:
+                    if enemy.ord == piu.ord:
+                        piu.kill()
+
                 enemy.kill()
 
+
             if enemy.i == 5 or boss_fight:
-                enemyPos.append(((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
+                enemyPos.append((enemy.rect.width/2 + enemy.rect.bottomleft[0],enemy.rect.bottomright[1], enemy.ord))
 
         #update de tudo
         grupoInimigo.update(dt_jogo, camera)
@@ -1031,6 +1044,7 @@ while main:
         grupoMoeda.draw(tela)
         grupoCura.draw(tela)
         grupoJogador.draw(tela)
+        grupoLaser.draw(tela)
         
         tela.blit(filtro_pause, (0, 0))
         
