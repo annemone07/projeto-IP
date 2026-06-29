@@ -51,8 +51,8 @@ class Jogador(pygame.sprite.Sprite):
         larguraSprite=48
         alturaSprite=48
         animacoes = {"run":[]}
-        for linha in range(5):
-            for coluna in range(5):
+        for linha in range(4):
+            for coluna in range(8):
                 x = larguraSprite*coluna
                 y = alturaSprite*linha
                 sprite = sheet.subsurface(pygame.Rect(x,y, larguraSprite, alturaSprite))
@@ -92,47 +92,45 @@ class Jogador(pygame.sprite.Sprite):
         self.hitbox.center = self.rect.center
     
     def player_update(self, tipo):
-        self.image_update(tipo)
         if tipo == "D":
-            if self.invencibilidade:
-                self.invencibilidade = False
-            else:
-                self.invencibilidade = True
-        ##print(self.invencibilidade)
+            self.invencibilidade = not self.invencibilidade
+
         elif tipo == "PU":
-            if self.quick_shot:
-                self.quick_shot = False
-            else: 
-                self.quick_shot = True
+            self.quick_shot = not self.quick_shot
 
-    def image_update(self, tipo): #animação 0-default, animação 4-dano, animação 6-dano+PU, animação 5-PU
+        elif tipo == "kabum":
+            if self.arma == "normal":
+                self.arma = "shotgun"
+            else:
+                self.arma = "normal"
+
+        self.image_update()
+
+    def image_update(self):
+        # ---------------- VIDA ---------------- #
         if self.vida <= 25:
-            sb = 3
+            indice = 3
         elif self.vida <= 50:
-            sb = 2
+            indice = 2
         elif self.vida <= 75:
-            sb = 1
+            indice = 1
         else:
-            sb = 0
+            indice = 0
+        # --------------- SHOTGUN -------------- #
         if self.arma == "shotgun":
-            sb += 16
-            
-        if tipo == "D":#Default   
-            if self.invencibilidade:
-                self.image = self.animacoes["run"][sb]
-            else:
-                self.image = self.animacoes["run"][sb+4]
-                if self.quick_shot:
-                    self.image = self.animacoes["run"][sb+12]
-        elif tipo == "PU":#Power UP
-            if self.quick_shot:
-                self.image = self.animacoes["run"][0]
-                #print("VOLTA NORMAL KRL")
-            else:
-                self.image = self.animacoes["run"][sb+8]
-            #if self.invencibilidade: seria p mudar tb se pegar o pu enquanto no dano --acho paia
-                #self.image = self.animacoes["run"][4]
+            indice += 16
+        # ------------ QUICK SHOT -------------- #
+        if self.quick_shot:
+            indice += 8
+        # ----------- PISCANDO/DANO ------------ #
+        if self.invencibilidade:
+            indice += 4
 
+        self.image = self.animacoes["run"][indice]
+        self.mask = pygame.mask.from_surface(self.image)
+
+        print(self.invencibilidade, indice)
+    
     def add_kill(self):
         self.kills += 1
 
@@ -140,6 +138,7 @@ class Jogador(pygame.sprite.Sprite):
         self.deltaTime = dt
         self.getDirection()
         self.movimentacao(camera)
+        self.image_update()
 
 # =============================================================================
 #Rastro do player que vai ser usado no Bullet Time

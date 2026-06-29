@@ -634,6 +634,7 @@ while main:
                     jogador.charge += 1
             elif carga.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
                 carga.kill()
+
         #Coletar o Imã
         imas_coletados = []
         for ima in grupoIma:
@@ -665,6 +666,7 @@ while main:
         shotgun_coletada = []
         for shotgun in grupoShotgun:
             if jogador.hitbox.colliderect(shotgun.rect):
+                jogador.player_update("kabum")
                 shotgun_coletada.append(shotgun)
                 shotgun.kill()
                 jogador.arma = 'shotgun'

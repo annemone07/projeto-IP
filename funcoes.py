@@ -8,6 +8,8 @@ pygame.init()
 pygame.mixer.init()
 pygame.mixer.set_num_channels(32)
 musica = (os.path.join(config.folderPath,"sons","musicas","Flying_me_softly.ogg"))
+
+
 pygame.mixer.music.load(musica)
 balaJogador = pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","laserThing.wav"))
 bala1Inimigo = pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot1.ogg"))
