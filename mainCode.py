@@ -8,8 +8,9 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge, Ima
 from time import perf_counter, sleep
 from loja import abrir_loja
-from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade
+from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes
 from config import folderPath, camera, bgWidth, bgHeight, telaSizePlaceholder, tela, fonte, fonte_grande, fps, fonte_media
+import config
 from funcoes import criarJogador, resetarVariaveis, sons
 
 #configs permanentes
@@ -101,6 +102,7 @@ creditos = Creditos(tela)
 fim_do_tutorial = menuFimTutorial(tela)
 escolher_modo = menuModos(tela)
 escolher_dificuldade = menuDificuldade(tela)
+menu_opcoes = menuOpcoes(tela)
 
 #temporizadores
 t_invencibilidade = 0
@@ -148,6 +150,7 @@ duracao_ima = 20
 boss_fight = 0
 pode_spawn_laser = 1
 while main:
+    print("estado",estadoDoJogo)
     #print("wave", wave_counter)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
@@ -171,7 +174,6 @@ while main:
             selecao = menu_principal.eventos(event)
             if selecao=="Jogar":
                 estadoDoJogo="escolher modo"
-                
             elif selecao == "Tutorial":
                 estadoDoJogo = "jogando"
                 modo = "tutorial"
@@ -180,6 +182,9 @@ while main:
                 contador_de_teclas_mov, contador_de_teclas_espaco, contador_itens, fim_tutorial = 0, 0, 0, 0
             elif selecao=="Creditos":
                 estadoDoJogo="creditos"
+                sons(estadoDoJogo)
+            elif selecao=="Opções":
+                estadoDoJogo="Opções"
                 sons(estadoDoJogo)
             elif selecao=="Sair":
                 pygame.quit()
@@ -221,7 +226,7 @@ while main:
             selecao=creditos.eventos(event)
             if selecao=="Voltar":
                 estadoDoJogo="menu principal"
-                sons(menu_principal)
+                sons(estadoDoJogo)
         elif estadoDoJogo == "fim do tutorial":
             selecao = fim_do_tutorial.eventos(event)
             if selecao == "Menu principal":
@@ -264,7 +269,22 @@ while main:
                     wave_counter = 5
                 elif selecao == "Impossível":
                     wave_counter = 6
-
+        elif estadoDoJogo=="Opções":
+            sons(estadoDoJogo)
+            selecao = menu_opcoes.eventos(event)
+            if selecao in ["100","80","60","40","20","0"]:
+                config.volume=float(selecao)/100.0
+            elif selecao == "Tela Cheia":
+                config.bgWidth, config.bgHeight = pygame.display.get_desktop_sizes()[0]
+                config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
+            elif selecao in ["1920x1080","960x540"]:
+                tamanho = selecao.split("x")
+                config.bgWidth=int(tamanho[0])
+                config.bgHeight=int(tamanho[1])
+                config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
+            elif selecao == "Voltar":
+                estadoDoJogo="menu principal"
+                sons(estadoDoJogo)
         elif estadoDoJogo == "jogando":
             #pausar
             if event.type == pygame.KEYDOWN:
@@ -393,7 +413,7 @@ while main:
                 menu_pause.opcaoAtual = 0
             #opções (eventualmente)
             elif selecao == "Opções":
-                estadoDoJogo = "jogando" #modificar para criar um menu de opções dps
+                estadoDoJogo = "Opções" #modificar para criar um menu de opções dps
                 sons(estadoDoJogo)
             #sair
             elif selecao == "Sair":
@@ -413,7 +433,8 @@ while main:
         escolher_modo.draw(tela)
     elif estadoDoJogo == "escolher dificuldade":
         escolher_dificuldade.draw(tela)
-        
+    elif estadoDoJogo == "Opções":
+        menu_opcoes.draw(tela)
     elif estadoDoJogo=="jogando":
         deltaTime = clock.tick(60)/1000
         if deltaTime>1.0:
