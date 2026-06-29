@@ -9,8 +9,9 @@ inimigos_data = {
             1: {"imagem" : "Rajada-W1.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
             2: {"imagem" : "Bigger-W1.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
             3 :{"imagem" : "Tracker-W1.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"},
-            4 :{"imagem" : "Laser-W1.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"},
-            "Boss-W1": {"imagem" : "boss.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+            4: {"imagem" : "Kamikaze-W1.png", "velocidade": (1500, 200), "vida": 50, "bala": "self"},
+            5 :{"imagem" : "Laser-W1.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"},
+            "Boss-W1": {"imagem" : "boss-W1.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -25,7 +26,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (256, 256))
         if self.i == "Boss-W1":
-            self.image = pygame.transform.scale(self.image, (pygame.display.Info().current_w - 100, 200))
+            self.image = pygame.transform.scale(self.image, (1.5*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.8))
         #print(self.imagens[i])
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -41,16 +42,23 @@ class Inimigo(pygame.sprite.Sprite):
         self.sentido_inicial = sentido_inicial
         self.tipo_bala = inimigos_data[i]["bala"]
         self.disparo = 1
+<<<<<<< HEAD
         self.ja_laser = 0
+=======
+        if self.i == 4:
+            self.disparo = 0
+>>>>>>> 701e47175ba0f235577ae8a4863081623db2311b
         #self.dDisparo = dDisparo #intervalo entre os disparos
         #self.t_disparo = 0
-        if self.i == 4:
+        if self.i == 5: #para deixar o laser alinhado
             self.rect = self.rect.inflate(0, -45)
+            self.ja_laser = 0
+        self.stop = 0 #para o kamikaze
         
 
             
     def dir(self):
-        
+        #print("TA ENTRANDO AQUI AINDA")
         ##print(self.posicao) #trocar isso aqui por um timer fixo (subir por x segundos, direita por y segundos, etc)
         #if self.velocidadex != 0 and self.velocidadey!=0:
         if self.posicao.x > self.limites_mov[1] and self.sentido_inicial == "R":
@@ -65,14 +73,55 @@ class Inimigo(pygame.sprite.Sprite):
         
         self.posicao.y -= self.velocidadey * self.dt
 
+    def follow(self, posSelf, posJog):
+        #print("NAO PODE MAIS ENTRAR")
+        dx = (posJog[0] - posSelf[0])
+        dy = (posJog[1] - posSelf[1])
+        if dx !=0: #para evitar divisao por zero    
+            ang = (math.atan(dy/dx))
+            angG = math.degrees(ang)
+        else:
+            ang = (math.pi)/2
+            angG = 0
+        cos = math.cos(ang)
+        sin = math.sin(ang)
+        #angG = - angG
+        if (dx <=0 and dy <= 0) or (dy >= 0 and dx<=0): #caso precise inverter alguma coordenada
+            cos = -cos
+            sin = -sin
+            #angG = -angG
+        if (dy <= 0):
+            angG += 180
+        
+        
+        self.tracking = pygame.Vector2(cos*self.velocidadex, sin*self.velocidadex)
+
+        """if dy<=0 and dx<= 0:
+            self.tracking = pygame.Vector2(-50, -50)"""
+        self.stop = 1
+        #rotacionando
+        self.image = pygame.transform.rotate(self.image, angG)
+        if not(dy<= 0 and dx<= 0):
+            self.rect = self.image.get_rect()
+        print(angG)
+
     def update(self, dt, camera):
         self.dt = dt
-        if self.i != "Boss-W1" or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 200):  
+        if (self.i in (0, 1, 2, 3 ,5) or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 200)) or (self.i ==4 and self.stop == 0):  
             if self.i != "Boss-W1":    
                 self.dir()  
             self.posicao.y -= camera.y
             self.rect.centerx = self.posicao.x - camera.x
             self.rect.centery = self.posicao.y
+        
+        if (self.i == 4 and self.stop == 1):
+            self.posicao.x += self.tracking[0] * dt
+            self.posicao.y += self.tracking[1] * dt
+
+            self.rect.centerx = self.posicao.x
+            self.rect.centery = self.posicao.y
+
+            print(f"ppsicao{self.rect.center}")
 
             #self.hitbox.center = self.rect.center
         #print("OLHA AQUI"), print(self.rect.centery)
@@ -113,7 +162,7 @@ class Bullet(pygame.sprite.Sprite):
         
             self.primeira_pos = (posicao[0], posicao[1] + (self.rect.height/2))
             self.dano = 10
-            self.ja_laser = 0
+            
         
         
         
@@ -173,7 +222,8 @@ class Bullet(pygame.sprite.Sprite):
             deltay = int(abs(self.rect.bottomleft[1] - self.rect.topleft[1]))
             if deltax < 300 and deltay < 300:    
                 self.image = pygame.transform.scale(self.image, (int(deltax*1.02), int(deltay*1.02)))
-                self.rect = self.rect.scale_by(1.02, 1.02)
+                self.rect = self.image.get_rect()
+                self.mask = pygame.mask.from_surface(self.image)
                 #print("rect bullet bigger", self.rect)
         
         #print(self.dire)
