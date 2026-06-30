@@ -58,7 +58,7 @@ pygame.time.set_timer(create_charge, 2200)
 
 #Evento de spawn - Shotgun:
 create_shotgun = pygame.USEREVENT + 6
-pygame.time.set_timer(create_shotgun, 9500)
+pygame.time.set_timer(create_shotgun, 1700)
 
 #eventos de disparo para cada tipo de bala
 deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 6000}
@@ -312,7 +312,7 @@ while main:
                     ouro =1
                     grupoMoeda.add(moeda_ouro)
             #cria moeda prata
-            if event.type == create_Moeda_Prata and random.randint(1,5)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
+            if event.type == create_Moeda_Prata and random.randint(1,12)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
@@ -329,13 +329,13 @@ while main:
                     bt = 1
                     grupoBulletTime.add(charge)
             #Criar a shotgun
-            if event.type == create_shotgun and random.randint(1,2)==1:
+            if event.type == create_shotgun and random.randint(1,9)==1:
                 if not jogador.arma == 'shotgun':
                     x = random.randint(200,bgWidth-200)
                     y = -200
-                    shotgun = Shotgun(spriteImage=os.path.join(folderPath,'images','items', 'bala_shotgun.png'),
+                    cartucho = Shotgun(spriteImage=os.path.join(folderPath,'images','items', 'bala_shotgun.png'),
                         posInicial=(x, y),)
-                    grupoShotgun.add(shotgun)
+                    grupoShotgun.add(cartucho)
             
             #Criar o ima
             if event.type == create_ima and random.randint(1,9)==1 and  (modo == "boss" or modo == "infinito"):
@@ -680,14 +680,14 @@ while main:
 
 
 #Pegar a shotgun: -------------------------------------------------------------------------------------------------------------------------------------
-        shotgun_coletada = []
-        for shotgun in grupoShotgun:
-            if jogador.hitbox.colliderect(shotgun.rect):
+        cartuchos_coletados = []
+        for cartuchos in grupoShotgun:
+            if jogador.hitbox.colliderect(cartuchos.rect):
                 jogador.cartuchos += 1
-                shotgun_coletada.append(shotgun)
-                shotgun.kill()
-            elif shotgun.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
-                shotgun.kill()
+                cartuchos_coletados.append(cartuchos)
+                cartuchos.kill()
+            elif cartuchos.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+                cartuchos.kill()
 #Pegar a shotgun: -------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -746,6 +746,8 @@ while main:
                         projetil.dire = direcao_base.rotate(angulo)
                         grupoBala.add(projetil)
                 ultimo_tiro = perf_counter()
+        if jogador.arma == "shotgun" and jogador.cartuchos == 0 and perf_counter()-ultimo_tiro >= 1:
+            jogador.player_update('kabum')
                 
         #checa os inimigos ativos para disparar
         for enemy in grupoInimigo:
@@ -947,6 +949,7 @@ while main:
             x = pos_x_inicial_carga + (i * (largura_imagem + espacamento_carga))
             y = 122 
             tela.blit(carga_icon, (x, y))
+        #Representação da Shotgun
         tela.blit(cartuchos_form, (18, 148))
         tela.blit(cartuchos_icon, (216, 140))
 
