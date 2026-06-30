@@ -11,7 +11,7 @@ inimigos_data = {
             3 :{"imagem" : "Tracker-W1.png",  "velocidade": (500, 200),   "vida" : 125, "bala" : "tracker"},
             4: {"imagem" : "Kamikaze-W1.png", "velocidade" : (1500, 200), "vida" : 50,  "bala" : "self"   },
             5 :{"imagem" : "Laser-W1.png",    "velocidade" : (400, 250),  "vida" : 100, "bala" : "laser"  },
-            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 60, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -50,8 +50,14 @@ class Inimigo(pygame.sprite.Sprite):
             self.rect = self.rect.inflate(0, -45)
             self.ja_laser = 0
         self.stop = 0 #para o kamikaze
-        
 
+        #Criação das mascára para se der dano
+        self.imagem_padrao = self.image.copy() 
+        self.imagem_dano = self.mask.to_surface(setcolor=(255, 80, 100, 255), unsetcolor=(0, 0, 0, 0)) #Mask pra se tomar dano
+        self.dano_timer = 0
+        
+    def levou_dano(self):
+        self.dano_timer = 0.1
             
     def dir(self):
         #print("TA ENTRANDO AQUI AINDA")
@@ -95,8 +101,14 @@ class Inimigo(pygame.sprite.Sprite):
         """if dy<=0 and dx<= 0:
             self.tracking = pygame.Vector2(-50, -50)"""
         self.stop = 1
+
+        if self.dano_timer > 0:
+            img_base = self.imagem_dano
+        else: 
+            img_base == self.imagem_padrao
+
         #rotacionando
-        self.image = pygame.transform.rotate(self.image, angG)
+        self.image = pygame.transform.rotate(img_base, angG)
         if not(dy<= 0 and dx<= 0):
             self.rect = self.image.get_rect()
         #print(angG)
@@ -116,6 +128,15 @@ class Inimigo(pygame.sprite.Sprite):
 
             self.rect.centerx = self.posicao.x
             self.rect.centery = self.posicao.y
+
+        if self.dano_timer > 0:
+            self.dano_timer -= dt
+            if self.stop == 0: 
+                self.image = self.imagem_dano
+        else:
+            # Volta ao normal quando o tempo acaba
+            if self.stop == 0:
+                self.image = self.imagem_padrao
 
             #print(f"ppsicao{self.rect.center}")
 

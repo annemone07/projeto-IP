@@ -939,6 +939,7 @@ while main:
             inimigo_morto=0
             colisao_inimigo = pygame.sprite.spritecollide(enemy, grupoBala, True, pygame.sprite.collide_mask)
             if colisao_inimigo:
+                enemy.levou_dano()
                 enemy.vida -= 20
                 #print(f"Inimigo: {enemy01.vida}")
             if enemy.vida <= 0:
