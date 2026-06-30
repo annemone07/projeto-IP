@@ -50,6 +50,8 @@ class Inimigo(pygame.sprite.Sprite):
             self.rect = self.rect.inflate(0, -45)
             self.ja_laser = 0
         self.stop = 0 #para o kamikaze
+        if self.i == "Boss-W1": #testar depois os valores
+            self.rect - self.rect.inflate(0, -50)
         
 
             

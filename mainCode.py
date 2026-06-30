@@ -418,11 +418,10 @@ while main:
             if event.type == criar_laser:
                 boss_laser = 1
             #inimigo kamikaze começar a seguir
-            if event.type == ativar_kamikaze:
-                for enemy in grupoInimigo:
-                    if enemy.tipo_bala == "self":
-                        enemy.disparo = 1
-                        #print("PERMITINDO ATIRAR")
+            for enemy in grupoInimigo:
+                if enemy.tipo_bala == "self" and enemy.rect.centery > 30:
+                    enemy.disparo = 1
+                    #print("PERMITINDO ATIRAR")
 
 #--------------------------------------------------------------------------------------------
 #Apertar Tab pra poder trocar de arma:
