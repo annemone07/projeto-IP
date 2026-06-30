@@ -103,12 +103,12 @@ class Inimigo(pygame.sprite.Sprite):
         self.stop = 1
 
         if self.dano_timer > 0:
-            img_base = self.imagem_dano
+            self.image = self.imagem_dano
         else: 
-            img_base == self.imagem_padrao
+            self.image == self.imagem_padrao
 
         #rotacionando
-        self.image = pygame.transform.rotate(img_base, angG)
+        self.image = pygame.transform.rotate(self.image, angG)
         if not(dy<= 0 and dx<= 0):
             self.rect = self.image.get_rect()
         #print(angG)
