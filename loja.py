@@ -1,15 +1,16 @@
 import pygame
 import sys
 import os
+import config
 from time import perf_counter
 # ==========================================
 # 1. CONFIGURAÇÕES INICIAIS E JANELA
 # ==========================================
 
-def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
+def abrir_loja(relogio, jogador, powerup_ativo, bullet_time_ativo):
     tempo_de_entrada = perf_counter()
 
-    LARGURA, ALTURA = tela.get_size()
+    LARGURA, ALTURA = config.bgWidth, config.bgHeight
     
     # Cores (RGB)
     BRANCO    = (255, 255, 255)
@@ -109,7 +110,7 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
     # ==========================================
     rodando = True
     while rodando:
-        tela.fill(LARANJA)
+        config.tela_virtual.fill(LARANJA)
 
         # Gerenciador das compras
         for evento in pygame.event.get():
@@ -189,17 +190,17 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
 
         # Título Principal
         txt_titulo = fonte_titulo.render("LOJA DE ITENS", True, PRETO)
-        tela.blit(txt_titulo, (LARGURA // 2 - txt_titulo.get_width() // 2, 40))
+        config.tela_virtual.blit(txt_titulo, (LARGURA // 2 - txt_titulo.get_width() // 2, 40))
  
         # Caixa de Feedback (Mensagens sobre a compra)
         txt_feed = fonte_status.render(mensagem_feedback, True, PRETO)
-        tela.blit(txt_feed, (LARGURA // 2 - txt_feed.get_width() // 2, 120))
+        config.tela_virtual.blit(txt_feed, (LARGURA // 2 - txt_feed.get_width() // 2, 120))
  
         # --- Painel de Status do Jogador (Canto Superior Direito) ---
         # Mostrar Moedas
-        tela.blit(img_moeda, (LARGURA - 170, 30))
+        config.tela_virtual.blit(img_moeda, (LARGURA - 170, 30))
         txt_moedas = fonte_texto.render(f"Moedas: {jogador.moedas}", True, PRETO)
-        tela.blit(txt_moedas, (LARGURA - 135, 32))
+        config.tela_virtual.blit(txt_moedas, (LARGURA - 135, 32))
  
         # Mostrar Status Atuais (Vida, Escudo, Armadura, PowerUP)
         txt_vida = fonte_status.render(f"Vida Atual: {jogador.vida}/100",       True, VERMELHO)
@@ -209,41 +210,43 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
         txt_carga = fonte_status.render(f"Charges: {jogador.charge}/5",       True, AMARELO)
         txt_carts = fonte_status.render(f"Cartuchos: {jogador.cartuchos}", True, VERMELHO)
  
-        tela.blit(txt_vida, (30, 30))
-        tela.blit(txt_esc,  (30, 55))
-        tela.blit(txt_arm,  (30, 80))
-        tela.blit(txt_dano, (30, 105))
-        tela.blit(txt_carga, (30, 125))
-        tela.blit(txt_carts, (30, 145))
+        config.tela_virtual.blit(txt_vida, (30, 30))
+        config.tela_virtual.blit(txt_esc,  (30, 55))
+        config.tela_virtual.blit(txt_arm,  (30, 80))
+        config.tela_virtual.blit(txt_dano, (30, 105))
+        config.tela_virtual.blit(txt_carga, (30, 125))
+        config.tela_virtual.blit(txt_carts, (30, 145))
  
         # Instrução para fechar
         txt_fechar = fonte_status.render("Pressione L ou ESC para fechar a loja", True, PRETO)
-        tela.blit(txt_fechar, (LARGURA // 2 - txt_fechar.get_width() // 2, ALTURA - 40))
+        config.tela_virtual.blit(txt_fechar, (LARGURA // 2 - txt_fechar.get_width() // 2, ALTURA - 40))
  
         # --- Desenho dos Cards dos Itens ---
         for id_item, dados in loja_itens.items():
             rect = dados["rect"]
  
             # Desenhar o fundo do card (Retângulo cinza com bordas arredondadas)
-            pygame.draw.rect(tela, CINZA, rect, border_radius=12)
+            pygame.draw.rect(config.tela_virtual, CINZA, rect, border_radius=12)
             # Linha de contorno do card
-            pygame.draw.rect(tela, BORDA_CD, rect, width=2, border_radius=12)
+            pygame.draw.rect(config.tela_virtual, BORDA_CD, rect, width=2, border_radius=12)
  
             # Desenhar a Imagem do Item centralizada no card
             img_x = rect.x + (rect.width - dados["img"].get_width()) // 2
-            tela.blit(dados["img"], (img_x, rect.y + 20))
+            config.tela_virtual.blit(dados["img"], (img_x, rect.y + 20))
  
             # Desenhar o Nome do Item
             txt_nome = fonte_texto.render(dados["nome"], True, PRETO)
             nome_x = rect.x + (rect.width - txt_nome.get_width()) // 2
-            tela.blit(txt_nome, (nome_x, rect.y + 125))
+            config.tela_virtual.blit(txt_nome, (nome_x, rect.y + 125))
  
             # Desenhar o Preço do Item
             txt_preco = fonte_preco.render(f"${dados['preco']}", True, VERDE)
             preco_x = rect.x + (rect.width - txt_preco.get_width()) // 2
-            tela.blit(txt_preco, (preco_x, rect.y + 155))
+            config.tela_virtual.blit(txt_preco, (preco_x, rect.y + 155))
  
         # Atualiza a tela e trava a taxa de quadros em 60 FPS
+        config.tela_escalada = pygame.transform.smoothscale(config.tela_virtual, (config.bgWidth,config.bgHeight)) ##################
+        config.tela.blit(config.tela_escalada,(0,0))
         pygame.display.flip()
         relogio.tick(60)
     tempo_saida = perf_counter()

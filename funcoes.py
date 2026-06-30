@@ -60,7 +60,8 @@ def sons(evento):
         pygame.mixer.music.pause()
     #else evento=="":
     #    pygame.mixer.music.fadeout(200)
-    
+    if evento in ("menu principal","tela de morte","creditos","fim do tutorial","escolher modo","escolher dificuldade","Opções"):
+        pygame.mixer.music.fadeout(200)
     if evento=="balaPlayer":
         balaJogador.set_volume(config.volume)
         pygame.mixer.Sound.play(balaJogador)
