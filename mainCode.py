@@ -7,7 +7,7 @@ import os
 import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge, Ima, Shotgun
 from time import perf_counter, sleep
-from loja import abrir_loja
+from loja import Loja
 from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes
 import config
 from funcoes import criarJogador, resetarVariaveis, sons
@@ -106,6 +106,7 @@ fim_do_tutorial = menuFimTutorial(config.tela_virtual)
 escolher_modo = menuModos(config.tela_virtual)
 escolher_dificuldade = menuDificuldade(config.tela_virtual)
 menu_opcoes = menuOpcoes(config.tela_virtual)
+loja = Loja()
 
 
 #temporizadores
@@ -486,7 +487,7 @@ while main:
             #limpando os elementos da tela
             resetarVariaveis(grupoGrupos, 1)
             
-            jogador.quick_shot, tempo_pausado = abrir_loja(clock, jogador, jogador.quick_shot, jogador.bullet_time)
+            jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
             inicio_de_jogo += tempo_pausado + 3
             ja_entrou = 1
             acabou_sair = 0
@@ -557,7 +558,7 @@ while main:
                 sleep(3.0)
                 #limpando os elementos da tela
                 resetarVariaveis(grupoGrupos, 1)
-                jogador.quick_shot, tempo_pausado = abrir_loja(clock, jogador, jogador.quick_shot, jogador.bullet_time)
+                jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
                 inicio_de_jogo += tempo_pausado + 3
                 ja_entrou = 1
                 pygame.event.clear()

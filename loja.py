@@ -4,252 +4,272 @@ import os
 import config
 from time import perf_counter
 # ==========================================
-# 1. CONFIGURAÇÕES INICIAIS E JANELA
+# LOJA EM FORMATO DE CLASSE
 # ==========================================
 
-def abrir_loja(relogio, jogador, powerup_ativo, bullet_time_ativo):
-    tempo_de_entrada = perf_counter()
 
-    LARGURA, ALTURA = config.bgInitWidth, config.bgInitHeight
-    
-    # Cores (RGB)
-    BRANCO    = (255, 255, 255)
-    PRETO     = (0, 0, 0)
-    VERDE     = (46, 204, 113)
-    VERMELHO  = (231, 76, 60)
-    AMARELO = (255, 215, 0)
-    LARANJA   = (255, 165, 0) 
-    AZUL      = (91, 124, 153)
-    ROSA      = (252,15,192)
-    CINZA     = (240, 240, 240)
-    BORDA_CD  = (189, 195, 199)
+class Loja:
+    def __init__(self):
+        # Cores (RGB)
+        self.BRANCO    = (255, 255, 255)
+        self.PRETO     = (0, 0, 0)
+        self.VERDE     = (46, 204, 113)
+        self.VERMELHO  = (231, 76, 60)
+        self.AMARELO   = (255, 215, 0)
+        self.LARANJA   = (255, 165, 0)
+        self.AZUL      = (91, 124, 153)
+        self.ROSA      = (252, 15, 192)
+        self.CINZA     = (240, 240, 240)
+        self.BORDA_CD  = (189, 195, 199)
 
-    # Fontes
-    fonte_texto  = pygame.font.SysFont("Arial", 20, bold=True)
-    fonte_preco  = pygame.font.SysFont("Arial", 22, bold=True)
-    fonte_titulo = pygame.font.SysFont("Arial", 45, bold=True)
-    fonte_status = pygame.font.SysFont("Arial", 20)
+        # Fontes
+        self.fonte_texto  = pygame.font.SysFont("Arial", 20, bold=True)
+        self.fonte_preco  = pygame.font.SysFont("Arial", 22, bold=True)
+        self.fonte_titulo = pygame.font.SysFont("Arial", 45, bold=True)
+        self.fonte_status = pygame.font.SysFont("Arial", 20)
+        self.fonte_feedback = pygame.font.SysFont("Arial", 28, bold=True)
 
-    # ==========================================
-    # 2. ATRIBUTOS DO JOGADOR 
-    # jogador.moedas   → moedas
-    # jogador.vida     → vida
-    # jogador.escudo   → pedaços de escudo (0-3)
-    # jogador.armadura → barra de armadura (0-100)
-    # powerup_ativo    → variável (True/False)
-    # ==========================================
+        # ==========================================
+        # CARREGAMENTO E AJUSTE DAS IMAGENS (uma única vez)
+        # ==========================================
+        DIRETORIO_LOJA = os.path.dirname(os.path.abspath(__file__))
 
-    # Mensagem de feedback na tela
-    mensagem_feedback = "Bem-vindo à loja! Clique em um item para comprar."
+        caminho_moeda   = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "coin 2.png")
+        caminho_cura    = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "med_kit.png")
+        caminho_escudo  = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "Escudo.png")
+        caminho_powerup = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "QS_up.png")
+        caminho_carga   = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "choque_do_trovao.png")
+        caminho_cartucho = os.path.join(DIRETORIO_LOJA, 'images', 'Items', 'bala_shotgun.png')
 
-    # ==========================================
-    # 3. CARREGAMENTO E AJUSTE DAS IMAGENS
-    # ==========================================
-    DIRETORIO_LOJA = os.path.dirname(os.path.abspath(__file__))
+        self.img_moeda   = pygame.image.load(caminho_moeda).convert_alpha()
+        self.img_cura    = pygame.image.load(caminho_cura).convert_alpha()
+        self.img_escudo  = pygame.image.load(caminho_escudo).convert_alpha()
+        self.img_powerup = pygame.image.load(caminho_powerup).convert_alpha()
+        self.img_carga   = pygame.image.load(caminho_carga).convert_alpha()
+        self.img_cartucho = pygame.image.load(caminho_cartucho).convert_alpha()
 
-    caminho_moeda  = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "coin 2.png")
-    caminho_cura   = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "med_kit.png")
-    caminho_escudo = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "Escudo.png")
-    caminho_powerup= os.path.join(DIRETORIO_LOJA, 'images', 'Items', "QS_up.png")
-    caminho_carga= os.path.join(DIRETORIO_LOJA, 'images', 'Items', "choque_do_trovao.png")
-    caminho_cartucho = os.path.join(DIRETORIO_LOJA, 'images', 'Items', 'bala_shotgun.png')
+        self.img_moeda    = pygame.transform.scale(self.img_moeda,  (25, 25))
+        self.img_cura     = pygame.transform.scale(self.img_cura,   (90, 90))
+        self.img_escudo   = pygame.transform.scale(self.img_escudo, (90, 90))
+        self.img_powerup  = pygame.transform.scale(self.img_powerup, (90, 90))
+        self.img_carga    = pygame.transform.scale(self.img_carga, (90, 90))
+        self.img_cartucho = pygame.transform.scale(self.img_cartucho, (90, 90))
 
-    img_moeda  = pygame.image.load(caminho_moeda).convert_alpha()
-    img_cura   = pygame.image.load(caminho_cura).convert_alpha()
-    img_escudo = pygame.image.load(caminho_escudo).convert_alpha()
-    img_powerup= pygame.image.load(caminho_powerup).convert_alpha()
-    img_carga= pygame.image.load(caminho_carga).convert_alpha()
-    img_cartucho = pygame.image.load(caminho_cartucho).convert_alpha()
+        # ==========================================
+        # ESTRUTURA DOS ITENS DA LOJA
+        # ==========================================
+        self._montar_itens()
 
-    img_moeda  = pygame.transform.scale(img_moeda,  (25, 25))
-    img_cura   = pygame.transform.scale(img_cura,   (90, 90))
-    img_escudo = pygame.transform.scale(img_escudo, (90, 90))
-    img_powerup= pygame.transform.scale(img_powerup,(90, 90))
-    img_carga  = pygame.transform.scale(img_carga,(90, 90))
-    img_cartucho  = pygame.transform.scale(img_cartucho,(90, 90))
+    def _montar_itens(self):
+        """Monta (ou remonta) o layout dos cards, baseado no tamanho atual da tela."""
+        LARGURA, ALTURA = config.bgInitWidth, config.bgInitHeight
+        CARD_W, CARD_H = 140, 200
+        CARD_Y = ALTURA // 2 - CARD_H // 2
+        ESPACO = 60
+        total = 5 * CARD_W + 4 * ESPACO
+        x0 = LARGURA // 2 - total // 2
 
-    # ==========================================
-    # 4. ESTRUTURA DOS ITENS DA LOJA 
-    # ==========================================
-    CARD_W, CARD_H = 140, 200
-    CARD_Y = ALTURA // 2 - CARD_H // 2          
-    ESPACO = 60                                  
-    total = 5 * CARD_W + 4 * ESPACO
-    x0 = LARGURA // 2 - total // 2              
- 
-    loja_itens = {
-        "cura": {
-            "nome": "Cura", "preco": 10,
-            "img": img_cura,
-            "rect": pygame.Rect(x0, CARD_Y, CARD_W, CARD_H)
-        },
-        "escudo": {
-            "nome": "Escudo", "preco": 5,
-            "img": img_escudo,
-            "rect": pygame.Rect(x0 + CARD_W + ESPACO, CARD_Y, CARD_W, CARD_H)
-        },
-        "powerup": {
-            "nome": "Quick Shot", "preco": 15,
-            "img": img_powerup,
-            "rect": pygame.Rect(x0 + 2 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
-        },
-        "charge": {
-            "nome": "Carga", "preco": 12,
-            "img": img_carga,
-            "rect": pygame.Rect(x0 + 3 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
-        },
-        "shotgun": {
-            "nome": "Carga", "preco": 2,
-            "img": img_cartucho,
-            "rect": pygame.Rect(x0 + 4 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
+        self.loja_itens = {
+            "cura": {
+                "nome": "Cura", "preco": 10,
+                "img": self.img_cura,
+                "rect": pygame.Rect(x0, CARD_Y, CARD_W, CARD_H)
+            },
+            "escudo": {
+                "nome": "Escudo", "preco": 5,
+                "img": self.img_escudo,
+                "rect": pygame.Rect(x0 + CARD_W + ESPACO, CARD_Y, CARD_W, CARD_H)
+            },
+            "powerup": {
+                "nome": "Quick Shot", "preco": 15,
+                "img": self.img_powerup,
+                "rect": pygame.Rect(x0 + 2 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
+            },
+            "charge": {
+                "nome": "Carga", "preco": 12,
+                "img": self.img_carga,
+                "rect": pygame.Rect(x0 + 3 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
+            },
+            "shotgun": {
+                "nome": "Carga", "preco": 2,
+                "img": self.img_cartucho,
+                "rect": pygame.Rect(x0 + 4 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
+            }
         }
-    }
 
-    # ==========================================
-    # 5. LOOP PRINCIPAL DA LOJA
-    # ==========================================
-    rodando = True
-    while rodando:
-        config.tela_virtual.fill(LARANJA)
+    def _processar_compra(self, id_item, dados, jogador, powerup_ativo, bullet_time_ativo):
+        """Retorna (powerup_ativo, bullet_time_ativo, mensagem_feedback) após tentar comprar."""
+        mensagem_feedback = None
 
-        # Gerenciador das compras
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        if jogador.moedas < dados["preco"]:
+            return powerup_ativo, bullet_time_ativo, "Moedas insuficientes para comprar este item!"
 
-            # Fechar a loja com L ou ESC e voltar ao jogo
-            if evento.type == pygame.KEYDOWN:
-                if evento.key in (pygame.K_l, pygame.K_ESCAPE):
-                    rodando = False
+        if id_item == "cura":
+            if jogador.vida >= 100:
+                mensagem_feedback = "Vida já está cheia!"
+            else:
+                jogador.moedas -= dados["preco"]
+                jogador.vida = min(100, jogador.vida + 10)  # Cura 10, limite de 100
+                mensagem_feedback = "Você comprou Cura! +10 de Vida."
 
-            # Detectar se o jogador clicou com o botão esquerdo do mouse
-            if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
-                pos_mouse = pygame.mouse.get_pos()
+        elif id_item == "escudo":
+            if jogador.armadura >= 100 and jogador.escudo == 3:
+                mensagem_feedback = "Não é possivel completar os escudos com a armadura cheia!"
+            else:
+                jogador.moedas -= dados["preco"]
+                jogador.escudo += 1
+                if jogador.escudo >= 4:
+                    jogador.armadura += 25
+                    jogador.escudo = 0
+                if jogador.armadura > 100:
+                    jogador.armadura = 100
+                mensagem_feedback = "Você comprou Escudo!"
 
-                # Verificar se comprou algum item
-                for id_item, dados in loja_itens.items():
-                    if dados["rect"].collidepoint(pos_mouse):
+        elif id_item == "powerup":
+            if powerup_ativo:
+                mensagem_feedback = "Quick Shot já está ativo!"
+            else:
+                jogador.moedas -= dados["preco"]
+                powerup_ativo = True
+                mensagem_feedback = "Quick Shot ativado!"
 
-                        # Checa se o jogador tem moedas suficientes
-                        if jogador.moedas >= dados["preco"]:
+        elif id_item == "charge":
+            if bullet_time_ativo:
+                mensagem_feedback = "Bullet Time já está ativo!"
+            elif jogador.charge == 5:
+                mensagem_feedback = "Você vai sobrecarregar!"
+            else:
+                jogador.moedas -= dados["preco"]
+                jogador.charge += 1
+                mensagem_feedback = "Carregado e preparado!"
 
-                            # Lógica específica para cada item comprado
-                            if id_item == "cura":
-                                if jogador.vida >= 100:
-                                    mensagem_feedback = "Vida já está cheia!"
-                                else:
-                                    jogador.moedas -= dados["preco"]
-                                    jogador.vida = min(100, jogador.vida + 10) # Cura 10, limite de 100
-                                    mensagem_feedback = "Você comprou Cura! +10 de Vida."
+        elif id_item == "shotgun":
+            if jogador.cartuchos == 50:
+                mensagem_feedback = "Você não tem espaço pra tanta munição assim!"
+            else:
+                jogador.moedas -= dados["preco"]
+                jogador.cartuchos += 2
+                mensagem_feedback = "Você comprou cartuchos de Shotgun!"
 
-                            elif id_item == "escudo":
-                                if jogador.armadura >= 100 and jogador.escudo == 3:
-                                    mensagem_feedback = "Não é possivel completar os escudos com a armadura cheia!"
-                                else:
-                                    jogador.moedas -= dados["preco"]
-                                    jogador.escudo += 1
-                                    if jogador.escudo >= 4:
-                                        jogador.armadura += 25
-                                        jogador.escudo = 0
-                                    if jogador.armadura > 100:
-                                        jogador.armadura = 100
-                                    mensagem_feedback = "Você comprou Escudo!"
+        return powerup_ativo, bullet_time_ativo, mensagem_feedback
 
-                            elif id_item == "powerup":
-                                if powerup_ativo:
-                                    mensagem_feedback = "Quick Shot já está ativo!"
-                                else:
-                                    jogador.moedas -= dados["preco"]
-                                    powerup_ativo = True
-                                    mensagem_feedback = "Quick Shot ativado!"
-
-                            elif id_item == "charge":
-                                if bullet_time_ativo:
-                                    mensagem_feedback = "Bullet Time já está ativo!"
-                                elif jogador.charge == 5:
-                                    mensagem_feedback = "Você vai sobrecarregar!"
-                                else:
-                                    jogador.moedas -= dados["preco"]
-                                    jogador.charge += 1
-                                    mensagem_feedback = "Carregado e preparado!"
-
-                            elif id_item == 'shotgun':
-                                if jogador.cartuchos == 50:
-                                    mensagem_feedback = "Você não tem espaço pra tanta munição assim!"
-                                else:
-                                    jogador.moedas -= dados["preco"]
-                                    jogador.cartuchos += 2
-
-                        else:
-                            mensagem_feedback = "Moedas insuficientes para comprar este item!"
-
-        # ==========================================
-        # 6. RENDERIZAÇÃO DA INTERFACE GRÁFICA (HUD)
-        # ==========================================
+    def _desenhar(self, jogador, powerup_ativo, mensagem_feedback):
+        LARGURA, ALTURA = config.bgInitWidth, config.bgInitHeight
 
         # Título Principal
-        txt_titulo = fonte_titulo.render("LOJA DE ITENS", True, PRETO)
+        txt_titulo = self.fonte_titulo.render("LOJA DE ITENS", True, self.PRETO)
         config.tela_virtual.blit(txt_titulo, (LARGURA // 2 - txt_titulo.get_width() // 2, 40))
- 
+
         # Caixa de Feedback (Mensagens sobre a compra)
-        txt_feed = fonte_status.render(mensagem_feedback, True, PRETO)
-        config.tela_virtual.blit(txt_feed, (LARGURA // 2 - txt_feed.get_width() // 2, 120))
- 
+        palavras_negativas = ("insuficientes", "já está", "Não é possivel", "sobrecarregar", "espaço")
+        if any(p in mensagem_feedback for p in palavras_negativas):
+            cor_feedback = self.VERMELHO
+        elif "Bem-vindo" in mensagem_feedback:
+            cor_feedback = self.PRETO
+        else:
+            cor_feedback = self.VERDE
+
+        txt_feed = self.fonte_feedback.render(mensagem_feedback, True, cor_feedback)
+        feed_x = LARGURA // 2 - txt_feed.get_width() // 2
+        feed_y = 105
+
+        caixa_feed = pygame.Rect(0, 0, txt_feed.get_width() + 40, txt_feed.get_height() + 20)
+        caixa_feed.center = (LARGURA // 2, feed_y + txt_feed.get_height() // 2)
+        pygame.draw.rect(config.tela_virtual, self.CINZA, caixa_feed, border_radius=12)
+        pygame.draw.rect(config.tela_virtual, cor_feedback, caixa_feed, width=2, border_radius=12)
+
+        config.tela_virtual.blit(txt_feed, (feed_x, feed_y))
+
         # --- Painel de Status do Jogador (Canto Superior Direito) ---
-        # Mostrar Moedas
-        config.tela_virtual.blit(img_moeda, (LARGURA - 170, 30))
-        txt_moedas = fonte_texto.render(f"Moedas: {jogador.moedas}", True, PRETO)
+        config.tela_virtual.blit(self.img_moeda, (LARGURA - 170, 30))
+        txt_moedas = self.fonte_texto.render(f"Moedas: {jogador.moedas}", True, self.PRETO)
         config.tela_virtual.blit(txt_moedas, (LARGURA - 135, 32))
- 
-        # Mostrar Status Atuais (Vida, Escudo, Armadura, PowerUP)
-        txt_vida = fonte_status.render(f"Vida Atual: {jogador.vida}/100",       True, VERMELHO)
-        txt_esc  = fonte_status.render(f"Escudo: {jogador.escudo}/4 pedaços",   True, AZUL)
-        txt_arm  = fonte_status.render(f"Armadura: {jogador.armadura}/100",     True, AZUL)
-        txt_dano = fonte_status.render(f"Quick Shot ativo: {powerup_ativo}",       True, ROSA)
-        txt_carga = fonte_status.render(f"Charges: {jogador.charge}/5",       True, AMARELO)
-        txt_carts = fonte_status.render(f"Cartuchos: {jogador.cartuchos}", True, VERMELHO)
- 
-        config.tela_virtual.blit(txt_vida, (30, 30))
-        config.tela_virtual.blit(txt_esc,  (30, 55))
-        config.tela_virtual.blit(txt_arm,  (30, 80))
-        config.tela_virtual.blit(txt_dano, (30, 105))
+
+        txt_vida  = self.fonte_status.render(f"Vida Atual: {jogador.vida}/100", True, self.VERMELHO)
+        txt_esc   = self.fonte_status.render(f"Escudo: {jogador.escudo}/4 pedaços", True, self.AZUL)
+        txt_arm   = self.fonte_status.render(f"Armadura: {jogador.armadura}/100", True, self.AZUL)
+        txt_dano  = self.fonte_status.render(f"Quick Shot ativo: {powerup_ativo}", True, self.ROSA)
+        txt_carga = self.fonte_status.render(f"Charges: {jogador.charge}/5", True, self.AMARELO)
+        txt_carts = self.fonte_status.render(f"Cartuchos: {jogador.cartuchos}", True, self.VERMELHO)
+
+        config.tela_virtual.blit(txt_vida,  (30, 30))
+        config.tela_virtual.blit(txt_esc,   (30, 55))
+        config.tela_virtual.blit(txt_arm,   (30, 80))
+        config.tela_virtual.blit(txt_dano,  (30, 105))
         config.tela_virtual.blit(txt_carga, (30, 125))
         config.tela_virtual.blit(txt_carts, (30, 145))
- 
+
         # Instrução para fechar
-        txt_fechar = fonte_status.render("Pressione L ou ESC para fechar a loja", True, PRETO)
+        txt_fechar = self.fonte_status.render("Pressione L ou ESC para fechar a loja", True, self.PRETO)
         config.tela_virtual.blit(txt_fechar, (LARGURA // 2 - txt_fechar.get_width() // 2, ALTURA - 40))
- 
+
         # --- Desenho dos Cards dos Itens ---
-        for id_item, dados in loja_itens.items():
+        for id_item, dados in self.loja_itens.items():
             rect = dados["rect"]
- 
-            # Desenhar o fundo do card (Retângulo cinza com bordas arredondadas)
-            pygame.draw.rect(config.tela_virtual, CINZA, rect, border_radius=12)
-            # Linha de contorno do card
-            pygame.draw.rect(config.tela_virtual, BORDA_CD, rect, width=2, border_radius=12)
- 
-            # Desenhar a Imagem do Item centralizada no card
+
+            pygame.draw.rect(config.tela_virtual, self.CINZA, rect, border_radius=12)
+            pygame.draw.rect(config.tela_virtual, self.BORDA_CD, rect, width=2, border_radius=12)
+
             img_x = rect.x + (rect.width - dados["img"].get_width()) // 2
             config.tela_virtual.blit(dados["img"], (img_x, rect.y + 20))
- 
-            # Desenhar o Nome do Item
-            txt_nome = fonte_texto.render(dados["nome"], True, PRETO)
+
+            txt_nome = self.fonte_texto.render(dados["nome"], True, self.PRETO)
             nome_x = rect.x + (rect.width - txt_nome.get_width()) // 2
             config.tela_virtual.blit(txt_nome, (nome_x, rect.y + 125))
- 
-            # Desenhar o Preço do Item
-            txt_preco = fonte_preco.render(f"${dados['preco']}", True, VERDE)
+
+            txt_preco = self.fonte_preco.render(f"${dados['preco']}", True, self.VERDE)
             preco_x = rect.x + (rect.width - txt_preco.get_width()) // 2
             config.tela_virtual.blit(txt_preco, (preco_x, rect.y + 155))
- 
-        # Atualiza a tela e trava a taxa de quadros em 60 FPS
-        config.tela_escalada = pygame.transform.smoothscale(config.tela_virtual, (config.bgWidth,config.bgHeight)) ##################
-        config.tela.blit(config.tela_escalada,(0,0))
-        pygame.display.flip()
-        relogio.tick(60)
-    tempo_saida = perf_counter()
-    tempo_pausado =  tempo_saida - tempo_de_entrada
 
-    return powerup_ativo, tempo_pausado
+    def _mouse_para_virtual(self, pos_mouse):
+        """Converte a posição do mouse (em coordenadas da janela real, que muda
+        quando a resolução é alterada)"""
+        escala_x = config.bgInitWidth / config.bgWidth
+        escala_y = config.bgInitHeight / config.bgHeight
+        return (pos_mouse[0] * escala_x, pos_mouse[1] * escala_y)
+
+    def abrir(self, relogio, jogador, powerup_ativo, bullet_time_ativo):
+        """Abre o loop da loja. Mantém a mesma assinatura/retorno da função original."""
+        tempo_de_entrada = perf_counter()
+
+        # Recalcula o layout dos cards (caso a resolução tenha mudado desde o __init__)
+        self._montar_itens()
+
+        mensagem_feedback = "Bem-vindo à loja! Clique em um item para comprar."
+
+        rodando = True
+        while rodando:
+            config.tela_virtual.fill(self.LARANJA)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key in (pygame.K_l, pygame.K_ESCAPE):
+                        rodando = False
+
+                if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
+                    pos_mouse = pygame.mouse.get_pos()
+                    pos_mouse = self._mouse_para_virtual(pos_mouse)
+
+                    for id_item, dados in self.loja_itens.items():
+                        if dados["rect"].collidepoint(pos_mouse):
+                            powerup_ativo, bullet_time_ativo, msg = self._processar_compra(
+                                id_item, dados, jogador, powerup_ativo, bullet_time_ativo
+                            )
+                            if msg is not None:
+                                mensagem_feedback = msg
+
+            self._desenhar(jogador, powerup_ativo, mensagem_feedback)
+
+            config.tela_escalada = pygame.transform.smoothscale(config.tela_virtual, (config.bgWidth, config.bgHeight))
+            config.tela.blit(config.tela_escalada, (0, 0))
+            pygame.display.flip()
+            relogio.tick(60)
+
+        tempo_saida = perf_counter()
+        tempo_pausado = tempo_saida - tempo_de_entrada
+
+        return powerup_ativo, tempo_pausado
