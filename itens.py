@@ -93,8 +93,6 @@ class Charge(itemGeral):
         self.image = pygame.transform.scale(self.image, (64, 64))
         self.rect = self.image.get_rect(center=posInicial)
 # =============================================================================
-
-# =============================================================================
 class Ima(pygame.sprite.Sprite):
     def __init__(self, spriteImage, posInicial):
         super().__init__()
@@ -119,4 +117,13 @@ class Ima(pygame.sprite.Sprite):
         self.posicao.y += 500 * dt
         self.rect.centerx = self.posicao.x
         self.rect.centery = self.posicao.y
+# =============================================================================
+
+# =============================================================================
+class Shotgun(itemGeral):
+    def __init__(self, spriteImage, posInicial):
+        super().__init__(spriteImage, posInicial)
+        self.image = pygame.image.load(spriteImage).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (64, 64))
+        self.rect = self.image.get_rect(center=posInicial)
 # =============================================================================

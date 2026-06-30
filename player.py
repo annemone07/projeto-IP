@@ -14,7 +14,7 @@ class Jogador(pygame.sprite.Sprite):
     def __init__(self, spriteImage, posInicial, dt, tamanhoMapa):
         
         super().__init__()
-        
+
         self.tamanhoMapa = tamanhoMapa
         self.deltaTime = dt
         self.images = []
@@ -42,6 +42,8 @@ class Jogador(pygame.sprite.Sprite):
         self.charge = 0
         self.bullet_time = False
         self.moedas = 0
+        self.arma = 'normal'#Tipo da arma do player
+        self.cartuchos = 0 #Balas da shotgun
         self.mask = pygame.mask.from_surface(self.image)
         
 
@@ -49,8 +51,8 @@ class Jogador(pygame.sprite.Sprite):
         larguraSprite=48
         alturaSprite=48
         animacoes = {"run":[]}
-        for linha in range(5):
-            for coluna in range(5):
+        for linha in range(4):
+            for coluna in range(8):
                 x = larguraSprite*coluna
                 y = alturaSprite*linha
                 sprite = sheet.subsurface(pygame.Rect(x,y, larguraSprite, alturaSprite))
@@ -89,45 +91,41 @@ class Jogador(pygame.sprite.Sprite):
         #Hitbox 2:
         self.hitbox.center = self.rect.center
     
-    def player_update(self, tipo):
-        self.image_update(tipo)
+    def player_update(self, tipo): #Atualizar quando o player sofrer algum evento
         if tipo == "D":
-            if self.invencibilidade:
-                self.invencibilidade = False
-            else:
-                self.invencibilidade = True
-        ##print(self.invencibilidade)
+            self.invencibilidade = not self.invencibilidade
         elif tipo == "PU":
-            if self.quick_shot:
-                self.quick_shot = False
-            else: 
-                self.quick_shot = True
+            self.quick_shot = not self.quick_shot
+        elif tipo == "kabum":
+            if self.arma == "normal":
+                self.arma = "shotgun"
+            else:
+                self.arma = "normal"
+        self.image_update()
 
-    def image_update(self, tipo): #animação 0-default, animação 4-dano, animação 6-dano+PU, animação 5-PU
+    def image_update(self):
         if self.vida <= 25:
-            sb = 3
+            indice = 3
         elif self.vida <= 50:
-            sb = 2
+            indice = 2
         elif self.vida <= 75:
-            sb = 1
+            indice = 1
         else:
-            sb = 0
-        if tipo == "D":#Default   
-            if self.invencibilidade:
-                self.image = self.animacoes["run"][sb]
-            else:
-                self.image = self.animacoes["run"][sb+4]
-                if self.quick_shot:
-                    self.image = self.animacoes["run"][sb+12]
-        elif tipo == "PU":#Power UP
-            if self.quick_shot:
-                self.image = self.animacoes["run"][0]
-                #print("VOLTA NORMAL KRL")
-            else:
-                self.image = self.animacoes["run"][sb+8]
-            #if self.invencibilidade: seria p mudar tb se pegar o pu enquanto no dano --acho paia
-                #self.image = self.animacoes["run"][4]
+            indice = 0
+        # Shotgun 
+        if self.arma == "shotgun":
+            indice += 16
+        # Quick_Shot
+        if self.quick_shot:
+            indice += 8
+        # dano
+        if self.invencibilidade:
+            indice += 4
 
+        self.image = self.animacoes["run"][indice]
+
+        print(self.invencibilidade, indice)
+    
     def add_kill(self):
         self.kills += 1
 
@@ -135,6 +133,7 @@ class Jogador(pygame.sprite.Sprite):
         self.deltaTime = dt
         self.getDirection()
         self.movimentacao(camera)
+        self.image_update()#Atualiza o sprite sempre, sem depender de acontecer algum evento
 
 # =============================================================================
 #Rastro do player que vai ser usado no Bullet Time
@@ -175,20 +174,24 @@ class Bala(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         
         
-    def direcao(self, posA, posB):
+    def direcao(self, posA, posB, inclinação=0):
         ##print(posA)
        # print()
        # print(posB)
         dx = (posA[0] - posB[0])
         dy = (posA[1] - posB[1])
-        ang = (math.atan(dy/dx))
-        cos = math.cos(ang)
-        sin = math.sin(ang)
-        if (dx <=0 and dy <= 0) or (dy >= 0 and dx<=0): #caso precise inverter alguma coordenada
-            cos = -cos
-            sin = -sin
-        
+
+        ang_base = (math.atan2(dy/dx))
+        ang_final = ang_base + math.radians(inclinação)
+        cos = math.cos(ang_final)
+        sin = math.sin(ang_final)
+
         self.dire = pygame.math.Vector2(math.ceil(cos*self.velocidade), math.ceil(sin*self.velocidade))
+
+        """ if (dx <=0 and dy <= 0) or (dy >= 0 and dx<=0): #caso precise inverter alguma coordenada
+            cos = -cos
+            sin = -sin"""
+        
         #if (dx, dy) != (0, 0):
           #  self.dire = self.dire.normalize()
        # print(), print(self.dire)
@@ -196,7 +199,7 @@ class Bala(pygame.sprite.Sprite):
     def mov(self, camera):
         #print(self.dire)
         self.posicao.x += (self.dire.x + camera.x) * self.dt
-        self.posicao.y += (self.dire.y + camera.y) *self.dt
+        self.posicao.y += (self.dire.y + camera.y) * self.dt
         #print(self.fix_dir)
         self.rect.centerx = self.posicao.x
         self.rect.centery = self.posicao.y
