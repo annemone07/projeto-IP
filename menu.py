@@ -247,7 +247,7 @@ class menuDificuldade():
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
-        self.opcoes = ["Fácil", "Médio", "Difícil", "Impossível"]
+        self.opcoes = ["Fácil", "Médio", "Difícil", "Impossível", "Voltar"]
         self.opcaoSelecionada = 0
         self.dadosGrupo = {"equipe": "Equipe 3", "membros": ("jfag", "rma10", "phcps", "flg", "rtal", "aspr")}
     

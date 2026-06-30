@@ -74,9 +74,6 @@ pygame.time.set_timer(mudar_direcao, 1000), pygame.time.set_timer(mudar_laser, 8
 disparo_boss, criar_laser = pygame.USEREVENT + 14, pygame.USEREVENT + 15
 pygame.time.set_timer(disparo_boss, 500), pygame.time.set_timer(criar_laser, 10000)
 boss_laser, limpar_laser_boss = 0, 0
-#kamikaze
-ativar_kamikaze = pygame.USEREVENT + 15
-pygame.time.set_timer(ativar_kamikaze, 7000)
 
 #ima
 create_ima = pygame.USEREVENT + 16
@@ -278,6 +275,8 @@ while main:
                     wave_counter = 5
                 elif selecao == "Impossível":
                     wave_counter = 6
+                elif selecao == "Voltar":
+                    estadoDoJogo = "escolher modo"
 
         elif estadoDoJogo=="Opções":
             sons(estadoDoJogo)
@@ -419,11 +418,11 @@ while main:
             if event.type == criar_laser:
                 boss_laser = 1
             #inimigo kamikaze começar a seguir
-            if event.type == ativar_kamikaze:
-                for enemy in grupoInimigo:
-                    if enemy.tipo_bala == "self":
-                        enemy.disparo = 1
-                        #print("PERMITINDO ATIRAR")
+            for enemy in grupoInimigo:
+                if enemy.tipo_bala == "self" and enemy.rect.centery > 150 and not enemy.ja_rastro:
+                    enemy.disparo = 1
+                    enemy.ja_rastro = 1
+                    #print("PERMITINDO ATIRAR")
 
 #--------------------------------------------------------------------------------------------
 #Apertar Tab pra poder trocar de arma:
@@ -857,7 +856,7 @@ while main:
                     bullet.direcao((jogador.rect.center), (enemy.rect.center), pow = 0)
 
                 elif enemy.tipo_bala == "self":
-                    enemy.follow((config.bgInitWidth/2, config.bgInitHeight/2), jogador.rect.center)
+                    enemy.follow(enemy.rect.center, jogador.rect.center)
                     #print("COMECOU A RASTREAR")
 
 
@@ -917,6 +916,7 @@ while main:
             for bad in grupoInimigo:
                 if bad.rect.colliderect(jogador.rect) and bad.i == 4:
                     bad.kill()
+                    dano = 50
         if (colisao_b or colisao_i) and not jogador.invencibilidade: #as variáveis ficam falsas até detectarem uma colisão, quando recebe um elemento, entra na condicional
             if jogador.armadura == 0:
                 jogador.vida -= dano
