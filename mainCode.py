@@ -22,7 +22,7 @@ deltaTime = clock.tick(60)/1000
 
 #variáveis do BG scrollante
 bg = pygame.image.load(os.path.join(folderPath,"images","backgrounds","bgIP.png")).convert()
-bg = pygame.transform.scale(bg, (bgWidth,bgHeight))
+bg = pygame.transform.scale(bg, (config.bgWidth,config.bgHeight))
 bgSize = bg.get_rect()
 """bg_pause = pygame.image.load(os.path.join(folderPath,"images","bgIPpause.png")).convert()
 bg_pause = pygame.transform.scale(bg_pause, (bgWidth,bgHeight))"""
@@ -134,6 +134,7 @@ grupoBullets = pygame.sprite.Group()
 grupoLaser = pygame.sprite.Group()
 grupoIma = pygame.sprite.Group()
 
+
 grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoIma)
 
 #variáveis do bullet time
@@ -151,6 +152,9 @@ tempo_ima_ativo = -999
 duracao_ima = 20
 boss_fight = 0
 while main:
+    print("bgWidth",config.bgWidth,config.bgInitWidth)
+    #print("wave", wave_counter)
+    #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
     #print(grupoInimigo)
     mudar, laser = 0, 0 #variaveis para as balas com condições especiais
@@ -312,7 +316,7 @@ while main:
                     ouro =1
                     grupoMoeda.add(moeda_ouro)
             #cria moeda prata
-            if event.type == create_Moeda_Prata and random.randint(1,12)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
+            if event.type == create_Moeda_Prata and random.randint(1,10)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                     x = random.randint(200,bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(folderPath,'images','items','Silver.Coin.png'),
@@ -649,7 +653,7 @@ while main:
                 carga.kill()
                 if jogador.charge < 5:
                     jogador.charge += 1
-            elif carga.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+            elif carga.rect.topright[1] > config.bgHeight + 6: #eliminar o item da memória caso saia da tela
                 carga.kill()
 
         #Coletar o Imã
@@ -658,7 +662,7 @@ while main:
             if jogador.hitbox.colliderect(ima.rect):
                 imas_coletados.append(ima)
                 ima.kill()
-            elif ima.rect.topright[1] > bgHeight + 6:
+            elif ima.rect.topright[1] > config.bgHeight + 6:
                 ima.kill()
         #print('ima identificado')
         if imas_coletados:
@@ -686,7 +690,7 @@ while main:
                 jogador.cartuchos += 1
                 cartuchos_coletados.append(cartuchos)
                 cartuchos.kill()
-            elif cartuchos.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
+            elif cartuchos.rect.topright[1] > config.bgHeight + 6: #eliminar o item da memória caso saia da tela
                 cartuchos.kill()
 #Pegar a shotgun: -------------------------------------------------------------------------------------------------------------------------------------
 
