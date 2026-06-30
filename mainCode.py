@@ -143,7 +143,7 @@ grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoSho
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
 contador_rastros = 0 #Evitar que crie algum rastro que não seja a partir dos últimos movimentos
-wave_counter = 0 #variavel para contar as waves
+wave_counter = 5 #variavel para contar as waves
 ja_entrou = 0 #p n entrar na loja infinitas vezes seguidas
 acabou_sair = 0 #para a boss fight
 filtro_bullet_time = pygame.Surface(config.telaSizePlaceholder, pygame.SRCALPHA)
@@ -494,7 +494,7 @@ while main:
             pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
         
         if wave_counter % 5 == 0 and wave_counter != 0 and not boss_fight and not acabou_sair and modo == "boss":
-            boss = Inimigo("Boss-W1", deltaTime, pos=(config.bgInitWidth/2, -100), limites_mov=(0, 0), sentido_inicial="null")
+            boss = Inimigo("Boss-W1", deltaTime, pos=(config.bgInitWidth/2, 180), limites_mov=(0, 0), sentido_inicial="null")
             grupoInimigo.add(boss)
             boss_fight = 1
 

@@ -11,7 +11,7 @@ inimigos_data = {
             3 :{"imagem" : "Tracker-W1.png",  "velocidade": (500, 200),   "vida" : 125, "bala" : "tracker"},
             4: {"imagem" : "Kamikaze-W1.png", "velocidade" : (1500, 200), "vida" : 50,  "bala" : "self"   },
             5 :{"imagem" : "Laser-W1.png",    "velocidade" : (400, 250),  "vida" : 100, "bala" : "laser"  },
-            "Boss-W1": {"imagem" : "boss-W1.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -26,7 +26,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (256, 256))
         if self.i == "Boss-W1":
-            self.image = pygame.transform.scale(self.image, (1.5*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.8))
+            self.image = pygame.transform.scale(self.image, (1*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.3))
         #print(self.imagens[i])
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -283,6 +283,7 @@ class Bullet(pygame.sprite.Sprite):
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, pos, id):
         super().__init__()
+        self.id = id
         self.explosoes={
             0: {"explosao" : "Kla'ed - Follow - Destruction.png",   "colunas_spr.st.": 9 }, 
             1: {"explosao" : "Kla'ed - rajada - Destruction.png",   "colunas_spr.st.": 10},
@@ -290,15 +291,16 @@ class Explosion(pygame.sprite.Sprite):
             3 :{"explosao" : "Kla'ed - Tracker - Destruction.png",  "colunas_spr.st.": 8 },
             4: {"explosao" : "Kla'ed - kamikaze - Destruction.png", "colunas_spr.st.": 10},
             5 :{"explosao" : "Kla'ed - Laser - Destruction.png",    "colunas_spr.st.": 9 },
+            "Boss-W1":{"explosao":"Kla'ed - Boss novo - Destruction.png", "colunas_spr.st.": 11}
         }
 
-        sheet = pygame.image.load(os.path.join(folderPath, "images", "enemy", self.explosoes[id]["explosao"])).convert_alpha()
-        colunas_spritesheet = sheet.get_width() // self.explosoes[id]["colunas_spr.st."]
+        sheet = pygame.image.load(os.path.join(folderPath, "images", "enemy", self.explosoes[self.id]["explosao"])).convert_alpha()
+        colunas_spritesheet = sheet.get_width() // self.explosoes[self.id]["colunas_spr.st."]
         linha_spritesheet = sheet.get_height()
 
         self.frames = []
         #Recortar os sprites
-        for i in range(self.explosoes[id]["colunas_spr.st."]):
+        for i in range(self.explosoes[self.id]["colunas_spr.st."]):
             frame = pygame.Surface((colunas_spritesheet, linha_spritesheet), pygame.SRCALPHA)
             frame.blit(
                 sheet,
@@ -306,7 +308,10 @@ class Explosion(pygame.sprite.Sprite):
                 (i * colunas_spritesheet, 0, colunas_spritesheet, linha_spritesheet)
             )
 
-            frame = pygame.transform.scale(frame, (256, 256))
+            if self.id == "Boss-W1":
+                frame = pygame.transform.scale(frame, (1.55*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.35))
+            else:
+                frame = pygame.transform.scale(frame, (256, 256))
             self.frames.append(frame)
 
         self.index = 0
