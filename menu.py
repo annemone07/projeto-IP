@@ -26,13 +26,13 @@ class MenuPrincipal():
             tela.blit(renderedText, (100,100+i*60))
         eq_rend = self.fonte.render(self.dadosGrupo["equipe"], True, (0, 0, 0))
         #membros_rend = self.fonte.render(self.dadosGrupo["membros"], True, (255, 255, 255))
-        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgHeight-300))
+        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgInitHeight-300))
         for n in range(len(self.dadosGrupo["membros"])):
             memb_rend = self.fonte.render(self.dadosGrupo["membros"][n], True, (0, 0, 0))
             if n % 2 == 0:
-                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgHeight - 220 + 35*n))
+                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgInitHeight - 220 + 35*n))
             else:
-                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgHeight - 220 + 35*(n-1)))
+                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgInitHeight - 220 + 35*(n-1)))
 
     
     def eventos(self, event):
@@ -93,7 +93,7 @@ class telaMorte(MenuPrincipal):
         super().__init__(tela)
         self.folderPath = config.folderPath
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","telaMorteIP.png")).convert()
-        self.bg = pygame.transform.scale(self.bg, self.tamanho)
+        self.bg = pygame.transform.scale(self.bg, (config.bgWidth,config.bgHeight))
         self.opcoes = ["Reiniciar", "Menu Principal", "Sair"]
     
     def draw(self, tela, n_kills):
@@ -210,13 +210,13 @@ class menuModos():
             tela.blit(renderedText, (100,100+i*60))
         eq_rend = self.fonte.render(self.dadosGrupo["equipe"], True, (0, 0, 0))
         #membros_rend = self.fonte.render(self.dadosGrupo["membros"], True, (255, 255, 255))
-        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgHeight-300))
+        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgInitHeight-300))
         for n in range(len(self.dadosGrupo["membros"])):
             memb_rend = self.fonte.render(self.dadosGrupo["membros"][n], True, (0, 0, 0))
             if n % 2 == 0:
-                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgHeight - 220 + 35*n))
+                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgInitHeight - 220 + 35*n))
             else:
-                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgHeight - 220 + 35*(n-1)))
+                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgInitHeight - 220 + 35*(n-1)))
 
     
     def eventos(self, event):
@@ -263,13 +263,13 @@ class menuDificuldade():
             tela.blit(renderedText, (100,100+i*60))
         eq_rend = self.fonte.render(self.dadosGrupo["equipe"], True, (0, 0, 0))
         #membros_rend = self.fonte.render(self.dadosGrupo["membros"], True, (255, 255, 255))
-        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgHeight-300))
+        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgInitHeight-300))
         for n in range(len(self.dadosGrupo["membros"])):
             memb_rend = self.fonte.render(self.dadosGrupo["membros"][n], True, (0, 0, 0))
             if n % 2 == 0:
-                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgHeight - 220 + 35*n))
+                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgInitHeight - 220 + 35*n))
             else:
-                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgHeight - 220 + 35*(n-1)))
+                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgInitHeight - 220 + 35*(n-1)))
 
     def eventos(self, event):
         #print(event)
@@ -315,7 +315,7 @@ class menuOpcoes():
                 cor = (255,255,255)
             renderedText = self.fonte.render(text, True, cor)
             if text=="Voltar":
-                tela.blit(renderedText, (config.bgInitWidth-renderedText.get_size()[0]-100, config.bgHeight-100))
+                tela.blit(renderedText, (config.bgInitWidth-renderedText.get_size()[0]-100, config.bgInitHeight-100))
             else:
                 tela.blit(renderedText, (config.bgInitWidth-renderedText.get_size()[0]-100, 100+(i)*60))
 
