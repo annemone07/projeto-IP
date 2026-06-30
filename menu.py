@@ -296,21 +296,24 @@ class menuOpcoes():
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgCreditos.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
-        self.opcoes = {"Volume":(0, 20, 40, 60, 80, 100), "Resolução":("Tela Cheia","1920x1080","960x540"),"Voltar": ()}
+        self.opcoes = {"Volume":(0, 20, 40, 60, 80, 100), "Resolução":("Tela Cheia >","< 1920x1080 >","< 960x540"),"Voltar": ()}
         self.opcaoSelecionada = 0
         self.valoresOpcoes = {0: "Volume", 1: "Resolução", 2: "Voltar"}
+        self.imgs = ("soundbar- mute.png", "soundbar-20%.png", "soundbar-40%.png", "soundbar-60%.png", "soundbar - 80%.png", "soundbar - 100%.png")
         self.subopcao = 5
         #self.num_barras = 5
         self.ultimos_valores = [5, 0]
         """""100","80","60","40","20","0"""""
+        self.vol = pygame.image.load(os.path.join(self.folderPath,"images","SoundSprite",self.imgs[self.ultimos_valores[0]])).convert_alpha()
+        self.vol = pygame.transform.scale(self.vol, (1000, 50))
         
         
         
 
     def draw(self, tela):
-        tela.blit(self.bg, (0,0))
+        config.tela_virtual.blit(self.bg, (0,0))
         cor=(255,255,255)
-        pygame.draw.rect(tela, (255, 255, 255), (config.bgInitWidth/2 - 150, 200, 390, 50))
+        #pygame.draw.rect(tela, (255, 255, 255), (config.bgInitWidth/2 - 150, 200, 390, 50), 3)
         #tela.blit(self.fonte.render("Volume", True, (255, 255, 255)), (config.bgWidth/2 - 300, 200))
         #tela.blit(self.fonte.render("Resolução", True, (255, 255, 255)), (100, 100))
         #print(f"olha aq {self.opcoes.keys()}")
@@ -321,19 +324,29 @@ class menuOpcoes():
                 cor = (255,255,255)
             renderedText = self.fonte.render(text, True, cor)
             
-            tela.blit(renderedText, (config.bgWidth/2 - 300, 200 + i*100))
+            config.tela_virtual.blit(renderedText, (config.bgWidth/2 - 300, 200 + i*100))
+        
         if self.valoresOpcoes[self.opcaoSelecionada] == "Volume":
             self.ultimos_valores[0] = self.ultimos_valores[self.opcaoSelecionada]
-            for k in range(self.ultimos_valores[self.opcaoSelecionada]):
-                pygame.draw.rect(tela, (0, 0, 255), (config.bgInitWidth/2 - 150 + 80*k, 200, 50, 50))
+        if self.valoresOpcoes[self.opcaoSelecionada] == "Resolução":
+            self.ultimos_valores[1] == self.ultimos_valores[1]
+        #pegando o sprite do volume
+        self.vol = pygame.image.load(os.path.join(self.folderPath,"images","SoundSprite",self.imgs[self.ultimos_valores[0]])).convert_alpha()
+        self.vol = pygame.transform.scale(self.vol, (360, 250))
+        #colocando os textos/imagens na tela
+        config.tela_virtual.blit(self.vol, (config.bgWidth/2 - 140,90))
+        config.tela_virtual.blit(self.fonte.render(self.opcoes["Resolução"][self.ultimos_valores[1]], True, (0, 0, 255)), (config.bgWidth/2 - 50, 300))
+        #lógica antiga da barra --> caso seja necessário retornar
+        """for k in range(self.ultimos_valores[self.opcaoSelecionada]):
+            pygame.draw.rect(tela, (0, 0, 255), (config.bgInitWidth/2 - 150 + 80*k, 200, 50, 50))"""
             
-        else:
-            for k in range(self.ultimos_valores[0]):
-                pygame.draw.rect(tela, (0, 0, 255), (config.bgInitWidth/2 - 150 + 80*k, 200, 50, 50))
+        """else:
+            config.tela_virtual.blit(self.vol, (config.bgInitWidth/2 - 140,90))"""
+        """for k in range(self.ultimos_valores[0]):
+            pygame.draw.rect(tela, (0, 0, 255), (config.bgInitWidth/2 - 150 + 80*k, 200, 50, 50))"""
 
-        #if self.valoresOpcoes[self.opcaoSelecionada] == "Resolução":
-        self.ultimos_valores[1] == self.ultimos_valores[1]
-        tela.blit(self.fonte.render(self.opcoes["Resolução"][self.ultimos_valores[1]], True, (0, 0, 255)), (config.bgWidth/2 - 50, 300))
+        
+        
         
         
 
@@ -368,9 +381,13 @@ class menuOpcoes():
                     self.ultimos_valores[self.opcaoSelecionada] = len(self.opcoes[self.valoresOpcoes[self.opcaoSelecionada]]) - 1
             
             elif event.key==pygame.K_RETURN and self.opcaoSelecionada != 2:
-                return self.opcoes["Resolução"][self.ultimos_valores[1]], self.ultimos_valores[0] * 20, 0
+                res_adaptada = self.opcoes["Resolução"][self.ultimos_valores[1]].removeprefix("< ").removesuffix(" >")
+                print(f"OLHA AQ{res_adaptada}")
+                return res_adaptada, self.ultimos_valores[0] * 20, 0
             elif event.key==pygame.K_RETURN and self.opcaoSelecionada ==2:
-                return self.opcoes["Resolução"][self.ultimos_valores[1]], self.ultimos_valores[0] * 20, 1
+                res_adaptada = self.opcoes["Resolução"][self.ultimos_valores[1]].removeprefix("< ").removesuffix(" >")
+                print(f"OLHA AQ{res_adaptada}")
+                return res_adaptada, self.ultimos_valores[0] * 20, 1
 
         
         return None, None, None

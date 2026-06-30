@@ -26,7 +26,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (256, 256))
         if self.i == "Boss-W1":
-            self.image = pygame.transform.scale(self.image, (1*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.3))
+            self.image = pygame.transform.scale(self.image, (1*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.33))
         #print(self.imagens[i])
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -51,7 +51,7 @@ class Inimigo(pygame.sprite.Sprite):
             self.ja_laser = 0
         self.stop = 0 #para o kamikaze
         if self.i == "Boss-W1": #testar depois os valores
-            self.rect = self.rect.inflate(0, -260)
+            self.rect = self.rect.inflate(0, -60)
         if self.i == 4:
             self.ja_rastro = 0
         
@@ -120,7 +120,7 @@ class Inimigo(pygame.sprite.Sprite):
 
     def update(self, dt, camera):
         self.dt = dt
-        if (self.i in (0, 1, 2, 3 ,5) or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 200)) or (self.i ==4 and self.stop == 0):  
+        if (self.i in (0, 1, 2, 3 ,5) or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 50)) or (self.i ==4 and self.stop == 0):  
             if self.i != "Boss-W1":    
                 self.dir()  
             self.posicao.y -= camera.y
