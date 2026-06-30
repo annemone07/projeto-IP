@@ -91,23 +91,19 @@ class Jogador(pygame.sprite.Sprite):
         #Hitbox 2:
         self.hitbox.center = self.rect.center
     
-    def player_update(self, tipo):
+    def player_update(self, tipo): #Atualizar quando o player sofrer algum evento
         if tipo == "D":
             self.invencibilidade = not self.invencibilidade
-
         elif tipo == "PU":
             self.quick_shot = not self.quick_shot
-
         elif tipo == "kabum":
             if self.arma == "normal":
                 self.arma = "shotgun"
             else:
                 self.arma = "normal"
-
         self.image_update()
 
     def image_update(self):
-        # ---------------- VIDA ---------------- #
         if self.vida <= 25:
             indice = 3
         elif self.vida <= 50:
@@ -116,13 +112,13 @@ class Jogador(pygame.sprite.Sprite):
             indice = 1
         else:
             indice = 0
-        # --------------- SHOTGUN -------------- #
+        # Shotgun 
         if self.arma == "shotgun":
             indice += 16
-        # ------------ QUICK SHOT -------------- #
+        # Quick_Shot
         if self.quick_shot:
             indice += 8
-        # ----------- PISCANDO/DANO ------------ #
+        # dano
         if self.invencibilidade:
             indice += 4
 
@@ -138,7 +134,7 @@ class Jogador(pygame.sprite.Sprite):
         self.deltaTime = dt
         self.getDirection()
         self.movimentacao(camera)
-        self.image_update()
+        self.image_update()#Atualiza o sprite sempre, sem depender de acontecer algum evento
 
 # =============================================================================
 #Rastro do player que vai ser usado no Bullet Time

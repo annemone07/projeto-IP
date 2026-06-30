@@ -392,7 +392,10 @@ while main:
                 for enemy in grupoInimigo:
                     if enemy.tipo_bala == "self":
                         enemy.disparo = 1
-                        #print("PERMITINDO ATIRAR")                
+                        #print("PERMITINDO ATIRAR")
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_TAB:
+                    jogador.player_update('kabum')
         elif estadoDoJogo=="pausado":
             selecao = menu_pause.eventos(event)
             #despausar
@@ -666,12 +669,12 @@ while main:
         shotgun_coletada = []
         for shotgun in grupoShotgun:
             if jogador.hitbox.colliderect(shotgun.rect):
-                jogador.player_update("kabum")
                 shotgun_coletada.append(shotgun)
                 shotgun.kill()
-                jogador.arma = 'shotgun'
             elif shotgun.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
                 shotgun.kill()
+
+            
 #Pegar a shotgun: -------------------------------------------------------------------------------------------------------------------------------------
 
 
