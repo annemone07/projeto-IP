@@ -10,7 +10,7 @@ from time import perf_counter
 def abrir_loja(relogio, jogador, powerup_ativo, bullet_time_ativo):
     tempo_de_entrada = perf_counter()
 
-    LARGURA, ALTURA = config.bgWidth, config.bgHeight
+    LARGURA, ALTURA = config.bgInitWidth, config.bgInitHeight
     
     # Cores (RGB)
     BRANCO    = (255, 255, 255)
