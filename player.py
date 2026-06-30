@@ -79,7 +79,7 @@ class Jogador(pygame.sprite.Sprite):
         nextPosY = (self.posicao.y + self.direction.y * self.velocidade * self.deltaTime)# - 6 colocar movimentação padrão do player
         #print("nextPosX", nextPosX)
         #print("nextPosY", nextPosY)        
-        if nextPosX >= 0 and nextPosX <= (self.tamanhoMapa[0]):
+        if nextPosX >= self.rect[2]/4 and nextPosX <= (self.tamanhoMapa[0])-self.rect[2]/4:
             self.posicao.x = nextPosX
             self.rect.centerx = self.posicao.x
         #print("tamanho", tamanhoMapa)
