@@ -156,7 +156,7 @@ boss_fight = 0
 pode_spawn_laser = 1
 
 while main:
-    print("bgWidth",config.bgWidth,config.bgInitWidth)
+    print("grupo",grupoBullets)
     #print("wave", wave_counter)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
@@ -170,7 +170,7 @@ while main:
             sys.exit()
             main=False
         if event.type == pygame.KEYDOWN:
-            if event.key == ord("q"):
+            if event.key == pygame.K_EQUALS:
                 pygame.quit()
                 sys.exit()
                 main=False        
@@ -191,6 +191,7 @@ while main:
                 estadoDoJogo="creditos"
                 sons(estadoDoJogo)
             elif selecao=="Opções":
+                estadoAnteriorParaVoltar = estadoDoJogo
                 estadoDoJogo="Opções"
                 sons(estadoDoJogo)
             elif selecao=="Sair":
@@ -262,7 +263,7 @@ while main:
 
         elif estadoDoJogo == "escolher dificuldade":
             selecao = escolher_dificuldade.eventos(event)
-            if selecao != None:
+            if selecao is not None:
                 modo = "infinito"
                 estadoDoJogo = "jogando"
                 sons(estadoDoJogo)
@@ -280,18 +281,18 @@ while main:
         elif estadoDoJogo=="Opções":
             sons(estadoDoJogo)
             selecao = menu_opcoes.eventos(event)
-            if selecao in ["100","80","60","40","20","0"]:
-                config.volume=float(selecao)/100.0
-            elif selecao == "Tela Cheia":
+            if selecao[1] is not None:
+                config.volume=float(selecao[1])/100.0
+            if selecao[0] == "Tela Cheia":
                 config.bgWidth, config.bgHeight = pygame.display.get_desktop_sizes()[0]
                 config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
-            elif selecao in ["1920x1080","960x540"]:
-                tamanho = selecao.split("x")
+            elif selecao[0] in ["1920x1080","960x540"]:
+                tamanho = selecao[0].split("x")
                 config.bgWidth=int(tamanho[0])
                 config.bgHeight=int(tamanho[1])
                 config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
-            elif selecao == "Voltar":
-                estadoDoJogo="menu principal"
+            elif selecao[0] == "Voltar":
+                estadoDoJogo=estadoAnteriorParaVoltar
                 sons(estadoDoJogo)
 
 
@@ -341,7 +342,7 @@ while main:
                     ouro =1
                     grupoMoeda.add(moeda_ouro)
             #cria moeda prata
-            if event.type == create_Moeda_Prata and random.randint(1,5)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
+            if event.type == create_Moeda_Prata and random.randint(1,2)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                     x = random.randint(200,config.bgWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(config.folderPath,'images','items','Silver.Coin.png'),
@@ -440,6 +441,7 @@ while main:
                 menu_pause.opcaoAtual = 0
             #opções (eventualmente)
             elif selecao == "Opções":
+                estadoAnteriorParaVoltar = estadoDoJogo
                 estadoDoJogo = "Opções" #modificar para criar um menu de opções dps
                 sons(estadoDoJogo)
             #sair
@@ -476,13 +478,16 @@ while main:
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = config.fonte_grande.render(mensagem, True, (0, 0, 0))
-            config.tela_virtual.blit(mensagem_form, ((250), (config.bgHeight/2) - 55))
+            config.tela_virtual.blit(mensagem_form, ((250), (config.bgInitHeight/2) - mensagem_form.get_size()[0]))
+            config.tela_escalada = pygame.transform.smoothscale(config.tela_virtual, (config.bgWidth,config.bgHeight)) ##################
+            config.tela.blit(config.tela_escalada,(0,0))
+            
             pygame.display.flip() #para colocar a mensagem de final na tela
             sleep(3.0)
             #limpando os elementos da tela
             resetarVariaveis(grupoGrupos, 1)
             
-            jogador.quick_shot, tempo_pausado = abrir_loja(config.tela_virtual, clock, jogador, jogador.quick_shot, jogador.bullet_time)
+            jogador.quick_shot, tempo_pausado = abrir_loja(clock, jogador, jogador.quick_shot, jogador.bullet_time)
             inicio_de_jogo += tempo_pausado + 3
             ja_entrou = 1
             acabou_sair = 0
@@ -497,7 +502,7 @@ while main:
             if boss.vida >0 and boss.disparo:
                 centro_bala = random.choice(pontos_possiveis)
                 tipo = random.choice(balas_possiveis)
-                print(f"OLHA AQ{centro_bala}")
+                #print(f"OLHA AQ{centro_bala}")
                 if tipo == "rajada":
                     sons("balaShotgunInimigo")
                     for pow in (0, 4, 7):    
@@ -547,13 +552,13 @@ while main:
                 mensagem_tempo = f"TEMPO TOTAL {tempo_de_jogo:0.1f}s"
                 mensagem_form_fim = config.fonte_grande.render(mensagem_fim, True, (0, 0, 0))
                 mensagem_form_tempo = config.fonte_media.render(mensagem_tempo, True, (0, 0, 0))
-                config.tela_virtual.blit(mensagem_form_fim, ((300), (config.bgHeight/2) - 55))
-                config.tela_virtual.blit(mensagem_form_tempo, ((300), (config.bgHeight/2) + 55))
+                config.tela_virtual.blit(mensagem_form_fim, ((300), (config.bgInitHeight/2) - 55))
+                config.tela_virtual.blit(mensagem_form_tempo, ((300), (config.bgInitHeight/2) + 55))
                 pygame.display.flip() #para colocar a mensagem de final na tela
                 sleep(3.0)
                 #limpando os elementos da tela
                 resetarVariaveis(grupoGrupos, 1)
-                jogador.quick_shot, tempo_pausado = abrir_loja(config.tela_virtual, clock, jogador, jogador.quick_shot, jogador.bullet_time)
+                jogador.quick_shot, tempo_pausado = abrir_loja(clock, jogador, jogador.quick_shot, jogador.bullet_time)
                 inicio_de_jogo += tempo_pausado + 3
                 ja_entrou = 1
                 pygame.event.clear()
@@ -568,10 +573,9 @@ while main:
             print(grupoLaser)
             if pode_spawn_laser:      
                 tipo_inimigo = random.randint(0, 5)
-                print("SPAWN COM LASER")
-
+                #print("SPAWN COM LASER")
             else:
-                print("SPAWN SEM LASER")
+                #print("SPAWN SEM LASER")
                 tipo_inimigo = random.randint(0, 4)
             if tipo_inimigo == 5:
                 pode_spawn_laser = 0
@@ -602,20 +606,17 @@ while main:
         kills_form = config.fonte.render(kills, False, (255, 255, 255))
 
         #HUD da carga:
-        cargas = f"cargas:"
+        cargas = "cargas:"
         cargas_form = config.fonte.render(cargas, False, (255, 215, 0))
         carga_icon = pygame.image.load(os.path.join(config.folderPath,'images','items', 'icon das cargas.png')).convert_alpha()
         carga_icon = pygame.transform.scale(carga_icon, (30, 30))
 
-#--------------------------------------------------------------------------------------------
         #Hud de Balas - Shotgun:
         cartuchos = f"Cartuchos:    {jogador.cartuchos} "
         cartuchos_form = config.fonte.render(cartuchos, False, (255, 215, 0))
         cartuchos_icon = pygame.image.load(os.path.join(config.folderPath,'images','items', 'bala_shotgun.png')).convert_alpha()
         cartuchos_icon = pygame.transform.scale(cartuchos_icon, (64, 64))
-#--------------------------------------------------------------------------------------------
 
-        
         #colisão player item
         pygame.sprite.spritecollide(jogador, grupoItem, True)    
         
@@ -625,7 +626,7 @@ while main:
             if jogador.hitbox.colliderect(moeda.rect):
                 moeda_coletados.append(moeda)
                 moeda.kill()
-            elif moeda.rect.topright[1] > config.bgHeight + 6: #eliminar o item da memória caso saia da tela
+            elif moeda.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 moeda.kill()
 
         for moeda in moeda_coletados:
@@ -637,7 +638,7 @@ while main:
             if jogador.hitbox.colliderect(pedacos.rect):
                 escudo_coletados.append(pedacos)
                 pedacos.kill()
-            elif pedacos.rect.topright[1] > config.bgHeight + 6: #eliminar o item da memória caso saia da tela
+            elif pedacos.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 pedacos.kill()
         for i in escudo_coletados:
             jogador.escudo += 1
@@ -652,12 +653,14 @@ while main:
             if jogador.hitbox.colliderect(cura.rect):
                 cura_coletados.append(cura)
                 cura.kill()
-            elif cura.rect.topright[1] > config.bgHeight + 6: #eliminar o item da memória caso saia da tela
+            elif cura.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 cura.kill()
 
         for i in cura_coletados:
             if jogador.vida < 100:
                 jogador.vida += 30
+                if jogador.vida>100:
+                    jogador.vida=100
     
         #Quick Shot coletado:
         quick_shots_coletados = []
@@ -665,7 +668,7 @@ while main:
             if jogador.hitbox.colliderect(powerup.rect):
                 quick_shots_coletados.append(powerup)
                 powerup.kill()
-            elif powerup.rect.topright[1] > config.bgHeight + 6: #eliminar o item da memória caso saia da tela
+            elif powerup.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 powerup.kill()
         if quick_shots_coletados:
             jogador.player_update("PU")
@@ -687,7 +690,7 @@ while main:
                 carga.kill()
                 if jogador.charge < 5:
                     jogador.charge += 1
-            elif carga.rect.topright[1] > config.bgHeight + 6: #eliminar o item da memória caso saia da tela
+            elif carga.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 carga.kill()
 
         #Coletar o Imã
@@ -696,7 +699,7 @@ while main:
             if jogador.hitbox.colliderect(ima.rect):
                 imas_coletados.append(ima)
                 ima.kill()
-            elif ima.rect.topright[1] > config.bgHeight + 6:
+            elif ima.rect.topright[1] > config.bgInitHeight + 6:
                 ima.kill()
         #print('ima identificado')
         if imas_coletados:
@@ -724,7 +727,7 @@ while main:
                 jogador.cartuchos += 1
                 cartuchos_coletados.append(cartuchos)
                 cartuchos.kill()
-            elif cartuchos.rect.topright[1] > config.bgHeight + 6: #eliminar o item da memória caso saia da tela
+            elif cartuchos.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 cartuchos.kill()
 #Pegar a shotgun: -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -835,6 +838,7 @@ while main:
                         tipo = "laser",
                         boss = 0,
                     )
+                    #bullet.ord = len(grupoLaser)
                     enemy.velocidadex = 0 #para quando atirar o laser
                     enemy.velocidadey = -6
                     grupoLaser.add(bullet)
@@ -895,10 +899,10 @@ while main:
                 if laser.rect.colliderect(jogador.rect):
                     dano = laser.dano
         for bala in grupoBullets:#checando se a bala já saiu da tela
-            if bala.rect.topright[1] > config.bgHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgWidth or bala.rect.topright[1] < 0:
+            if bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgWidth or bala.rect.topright[1] < 0:
                 bala.kill()
         for bala in grupoLaser:
-            if bala.rect.topright[1] > config.bgHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgWidth or bala.rect.topright[1] < 0:
+            if bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgWidth or bala.rect.topright[1] < 0:
                 bala.kill()
                 pode_spawn_laser = 1
 
@@ -928,21 +932,24 @@ while main:
             
         enemyPos = []
         #Colisão tiro dos players com o inimigo e sua morte:
+        """print("OLHA AQ")
+        print(list(grupoInimigo)[0].vida)"""
         for enemy in grupoInimigo:
+            inimigo_morto=0
             colisao_inimigo = pygame.sprite.spritecollide(enemy, grupoBala, True, pygame.sprite.collide_mask)
             if colisao_inimigo:
                 enemy.vida -= 20
                 #print(f"Inimigo: {enemy01.vida}")
             if enemy.vida <= 0:
-                #print("morreu")
-                enemy.kill()
                 jogador.add_kill()
                 ja_entrou = 0 #para entrar na loja no proximo 
-            if enemy.rect.topright[1] >= config.bgHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > config.bgWidth + 6: 
+                enemy.kill()
+            if enemy.rect.topright[1] >= config.bgInitHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > config.bgWidth + 6: 
                 enemy.kill()
 
+
             if enemy.i == 5 or boss_fight:
-                enemyPos.append(((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
+                enemyPos.append((enemy.rect.width/2 + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
 
         #update de tudo
         grupoInimigo.update(dt_jogo, config.camera)

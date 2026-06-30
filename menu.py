@@ -26,13 +26,13 @@ class MenuPrincipal():
             tela.blit(renderedText, (100,100+i*60))
         eq_rend = self.fonte.render(self.dadosGrupo["equipe"], True, (0, 0, 0))
         #membros_rend = self.fonte.render(self.dadosGrupo["membros"], True, (255, 255, 255))
-        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgHeight-300))
+        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgInitHeight-300))
         for n in range(len(self.dadosGrupo["membros"])):
             memb_rend = self.fonte.render(self.dadosGrupo["membros"][n], True, (0, 0, 0))
             if n % 2 == 0:
-                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgHeight - 220 + 35*n))
+                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgInitHeight - 220 + 35*n))
             else:
-                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgHeight - 220 + 35*(n-1)))
+                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgInitHeight - 220 + 35*(n-1)))
 
     
     def eventos(self, event):
@@ -93,7 +93,7 @@ class telaMorte(MenuPrincipal):
         super().__init__(tela)
         self.folderPath = config.folderPath
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","telaMorteIP.png")).convert()
-        self.bg = pygame.transform.scale(self.bg, self.tamanho)
+        self.bg = pygame.transform.scale(self.bg, (config.bgWidth,config.bgHeight))
         self.opcoes = ["Reiniciar", "Menu Principal", "Sair"]
     
     def draw(self, tela, n_kills):
@@ -210,13 +210,13 @@ class menuModos():
             tela.blit(renderedText, (100,100+i*60))
         eq_rend = self.fonte.render(self.dadosGrupo["equipe"], True, (0, 0, 0))
         #membros_rend = self.fonte.render(self.dadosGrupo["membros"], True, (255, 255, 255))
-        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgHeight-300))
+        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgInitHeight-300))
         for n in range(len(self.dadosGrupo["membros"])):
             memb_rend = self.fonte.render(self.dadosGrupo["membros"][n], True, (0, 0, 0))
             if n % 2 == 0:
-                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgHeight - 220 + 35*n))
+                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgInitHeight - 220 + 35*n))
             else:
-                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgHeight - 220 + 35*(n-1)))
+                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgInitHeight - 220 + 35*(n-1)))
 
     
     def eventos(self, event):
@@ -263,13 +263,13 @@ class menuDificuldade():
             tela.blit(renderedText, (100,100+i*60))
         eq_rend = self.fonte.render(self.dadosGrupo["equipe"], True, (0, 0, 0))
         #membros_rend = self.fonte.render(self.dadosGrupo["membros"], True, (255, 255, 255))
-        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgHeight-300))
+        tela.blit(eq_rend, (config.bgInitWidth-250, config.bgInitHeight-300))
         for n in range(len(self.dadosGrupo["membros"])):
             memb_rend = self.fonte.render(self.dadosGrupo["membros"][n], True, (0, 0, 0))
             if n % 2 == 0:
-                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgHeight - 220 + 35*n))
+                tela.blit(memb_rend, (config.bgInitWidth-300, config.bgInitHeight - 220 + 35*n))
             else:
-                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgHeight - 220 + 35*(n-1)))
+                tela.blit(memb_rend, (config.bgInitWidth-150, config.bgInitHeight - 220 + 35*(n-1)))
 
     def eventos(self, event):
         #print(event)
@@ -296,24 +296,33 @@ class menuOpcoes():
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgCreditos.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
-        self.opcoes = ["Volume","100","80","60","40","20","0","Resolução","Tela Cheia","1920x1080","960x540","Voltar"]
+        self.opcoes = ["Resolução","Tela Cheia","1920x1080","960x540","Voltar"]
         self.opcaoSelecionada = 0
-    
+        self.num_barras = 5
+        self.vol = 100
+        """""100","80","60","40","20","0"""""
+        
+
     def draw(self, tela):
         tela.blit(self.bg, (0,0))
         cor=(255,255,255)
+        pygame.draw.rect(tela, (255, 255, 255), (100, 200, 390, 80))
+        tela.blit(self.fonte.render("Volume", True, (255, 255, 255)), (100, 100))
         for i, text in enumerate(self.opcoes):
             if i == self.opcaoSelecionada:
                 cor = (254, 56, 103)
             else:
                 cor = (255,255,255)
             renderedText = self.fonte.render(text, True, cor)
-            if i<7:    
-                tela.blit(renderedText, (100,100+i*60))
-            elif text=="Voltar":
-                tela.blit(renderedText, (config.bgInitWidth-renderedText.get_size()[0]-100, config.bgHeight-100))
+            if text=="Voltar":
+                tela.blit(renderedText, (config.bgInitWidth-renderedText.get_size()[0]-100, config.bgInitHeight-100))
             else:
-                tela.blit(renderedText, (config.bgInitWidth-renderedText.get_size()[0]-100, 100+(i-7)*60))
+                tela.blit(renderedText, (config.bgInitWidth-renderedText.get_size()[0]-100, 100+(i)*60))
+
+        for k in range(self.num_barras):
+            pygame.draw.rect(tela, (0, 0, 255), (110 + 80*k, 200, 50, 80))
+
+
     
     def eventos(self, event):
         #print(event)
@@ -327,14 +336,17 @@ class menuOpcoes():
             elif event.key==pygame.K_w:
                 self.opcaoSelecionada = (self.opcaoSelecionada-1)%len(self.opcoes)
             elif event.key==pygame.K_a:
-                if self.opcaoSelecionada>=7:
-                    self.opcaoSelecionada = 0
+                self.num_barras -=1
+                if self.num_barras < 0:
+                    self.num_barras = 0
             elif event.key==pygame.K_s:
                 self.opcaoSelecionada = (self.opcaoSelecionada+1)%len(self.opcoes)
             elif event.key==pygame.K_d:
-                if self.opcaoSelecionada<7:
-                    self.opcaoSelecionada = 8
+                self.num_barras += 1
+                if self.num_barras > 5:
+                    self.num_barras = 5
             elif event.key==pygame.K_RETURN:
-                return self.opcoes[self.opcaoSelecionada]
+                self.vol = self.num_barras * 20
+                return self.opcoes[self.opcaoSelecionada], self.vol
         print(self.opcaoSelecionada)
-        return None
+        return None, None
