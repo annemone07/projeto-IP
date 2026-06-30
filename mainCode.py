@@ -1,7 +1,7 @@
 import pygame
 import math
 from player import Jogador, Rastro_Bullet_Time, Bala
-from enemy import Inimigo, Bullet
+from enemy import Inimigo, Bullet, Explosion
 import sys
 import os
 import random
@@ -135,9 +135,10 @@ grupoInimigo = pygame.sprite.Group()
 grupoBullets = pygame.sprite.Group()
 grupoLaser = pygame.sprite.Group()
 grupoIma = pygame.sprite.Group()
+grupoExplosion = pygame.sprite.Group()
 
 
-grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoIma)
+grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoIma, grupoExplosion)
 
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
@@ -572,11 +573,11 @@ while main:
             coordenadas = (random.randint(350, config.bgWidth - 350), -200)
             print(grupoLaser)
             if pode_spawn_laser:      
-                tipo_inimigo = random.randint(0, 5)
+                tipo_inimigo = random.randint(0,5)
                 #print("SPAWN COM LASER")
             else:
                 #print("SPAWN SEM LASER")
-                tipo_inimigo = random.randint(0, 4)
+                tipo_inimigo = random.randint(0,4)
             if tipo_inimigo == 5:
                 pode_spawn_laser = 0
             novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, config.bgWidth - 300), sentido_inicial=sentido)
@@ -941,6 +942,8 @@ while main:
                 enemy.vida -= 20
                 #print(f"Inimigo: {enemy01.vida}")
             if enemy.vida <= 0:
+                explosao = Explosion(pos=enemy.rect.center, id=enemy.i)
+                grupoExplosion.add(explosao)
                 jogador.add_kill()
                 ja_entrou = 0 #para entrar na loja no proximo 
                 enemy.kill()
@@ -965,10 +968,15 @@ while main:
         grupoLaser.update(dt_jogo, config.camera, jogador.posicao, mudar, laser, enemyPos)
         grupoIma.update(dt_jogo, config.camera)
 
+        grupoExplosion.update(dt_jogo)
+
         #desenha tudo na tela
         
         grupoBullets.draw(config.tela_virtual)
         grupoInimigo.draw(config.tela_virtual)
+
+        grupoExplosion.draw(config.tela_virtual)
+
         grupoQuickShot.draw(config.tela_virtual)
         grupoBulletTime.draw(config.tela_virtual)#Desenhar a carga na tela
         grupoShotgun.draw(config.tela_virtual)

@@ -5,12 +5,12 @@ import math #para deixar o código mais claro durante as operações matemática
 clock = pygame.time.Clock()
 folderPath = os.path.dirname(os.path.abspath(__file__))
 inimigos_data = {
-            0: {"imagem" : "Follow-W1.png", "velocidade" :(550, 250), "vida" : 100, "bala" : "follow"}, 
-            1: {"imagem" : "Rajada-W1.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
-            2: {"imagem" : "Bigger-W1.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
-            3 :{"imagem" : "Tracker-W1.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"},
-            4: {"imagem" : "Kamikaze-W1.png", "velocidade": (1500, 200), "vida": 50, "bala": "self"},
-            5 :{"imagem" : "Laser-W1.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"},
+            0: {"imagem" : "Follow-W1.png",   "velocidade" : (550, 250),  "vida" : 100, "bala" : "follow" }, 
+            1: {"imagem" : "Rajada-W1.png",   "velocidade" : (300, 250),  "vida" : 150, "bala" : "rajada" },
+            2: {"imagem" : "Bigger-W1.png",   "velocidade" : (800, 200),  "vida" : 75,  "bala" : "bigger" },
+            3 :{"imagem" : "Tracker-W1.png",  "velocidade": (500, 200),   "vida" : 125, "bala" : "tracker"},
+            4: {"imagem" : "Kamikaze-W1.png", "velocidade" : (1500, 200), "vida" : 50,  "bala" : "self"   },
+            5 :{"imagem" : "Laser-W1.png",    "velocidade" : (400, 250),  "vida" : 100, "bala" : "laser"  },
             "Boss-W1": {"imagem" : "boss-W1.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
@@ -280,36 +280,38 @@ class Bullet(pygame.sprite.Sprite):
                 self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
             
         
-        
-
 class Explosion(pygame.sprite.Sprite):
-    def __init__(self, pos):
+    def __init__(self, pos, id):
         super().__init__()
+        self.explosoes={
+            0: {"explosao" : "Kla'ed - Follow - Destruction.png",   "colunas_spr.st.": 9 }, 
+            1: {"explosao" : "Kla'ed - rajada - Destruction.png",   "colunas_spr.st.": 10},
+            2: {"explosao" : "Kla'ed - Bigger - Destruction.png",   "colunas_spr.st.": 10},
+            3 :{"explosao" : "Kla'ed - Tracker - Destruction.png",  "colunas_spr.st.": 8 },
+            4: {"explosao" : "Kla'ed - kamikaze - Destruction.png", "colunas_spr.st.": 10},
+            5 :{"explosao" : "Kla'ed - Laser - Destruction.png",    "colunas_spr.st.": 9 },
+        }
 
-        sheet = pygame.image.load(
-            os.path.join(folderPath, "images", "explosion_sheet.png")
-        ).convert_alpha()
-
-        frame_width = sheet.get_width() // 5
-        frame_height = sheet.get_height()
+        sheet = pygame.image.load(os.path.join(folderPath, "images", "enemy", self.explosoes[id]["explosao"])).convert_alpha()
+        colunas_spritesheet = sheet.get_width() // self.explosoes[id]["colunas_spr.st."]
+        linha_spritesheet = sheet.get_height()
 
         self.frames = []
-
-        for i in range(5):
-            frame = pygame.Surface((frame_width, frame_height), pygame.SRCALPHA)
+        #Recortar os sprites
+        for i in range(self.explosoes[id]["colunas_spr.st."]):
+            frame = pygame.Surface((colunas_spritesheet, linha_spritesheet), pygame.SRCALPHA)
             frame.blit(
                 sheet,
                 (0, 0),
-                (i * frame_width, 0, frame_width, frame_height)
+                (i * colunas_spritesheet, 0, colunas_spritesheet, linha_spritesheet)
             )
 
-            frame = pygame.transform.scale(frame, (128, 128))
+            frame = pygame.transform.scale(frame, (256, 256))
             self.frames.append(frame)
 
         self.index = 0
         self.image = self.frames[self.index]
         self.rect = self.image.get_rect(center=pos)
-
         self.timer = 0
         self.speed = 0.08  # velocidade da animação
 
