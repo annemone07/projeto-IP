@@ -56,7 +56,7 @@ class Jogador(pygame.sprite.Sprite):
                 x = larguraSprite*coluna
                 y = alturaSprite*linha
                 sprite = sheet.subsurface(pygame.Rect(x,y, larguraSprite, alturaSprite))
-                sprite = pygame.transform.scale(sprite, (240, 240))
+                sprite = pygame.transform.scale(sprite, (200, 200))
                 animacoes["run"].append(sprite)
                 #print(animacoes), #print()
 

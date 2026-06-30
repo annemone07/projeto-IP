@@ -141,7 +141,7 @@ grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoSho
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
 contador_rastros = 0 #Evitar que crie algum rastro que não seja a partir dos últimos movimentos
-wave_counter = 0 #variavel para contar as waves
+wave_counter = 5 #variavel para contar as waves
 ja_entrou = 0 #p n entrar na loja infinitas vezes seguidas
 acabou_sair = 0 #para a boss fight
 filtro_bullet_time = pygame.Surface(config.telaSizePlaceholder, pygame.SRCALPHA)
@@ -406,7 +406,7 @@ while main:
             #criar laser
             if event.type == create_bala4:
                 for enemy in grupoInimigo:
-                    if enemy.tipo_bala == "laser":
+                    if enemy.tipo_bala == "laser" and enemy.rect.centery > 100: #só inicia o laser após estar na tela
                         if not enemy.ja_laser:
                             enemy.disparo = 1
             #mudar estado do laser
@@ -793,7 +793,7 @@ while main:
                 
         #checa os inimigos ativos para disparar
         for enemy in grupoInimigo:
-            if (enemy.disparo) and  enemy.rect.bottomleft[1] >15:
+            if (enemy.disparo) and  enemy.rect.topleft[1] >5:
                 #print("ENTROU AQUI")
                 if enemy.tipo_bala == "follow": 
                     sons("balaInimigo") #balaPlayer, balaInimigo, balaShotgunInimigo, laser
