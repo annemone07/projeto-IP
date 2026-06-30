@@ -8,6 +8,8 @@ pygame.init()
 pygame.mixer.init()
 pygame.mixer.set_num_channels(32)
 musica = (os.path.join(config.folderPath,"sons","musicas","Flying_me_softly.ogg"))
+
+
 pygame.mixer.music.load(musica)
 balaJogador = pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","laserThing.wav"))
 bala1Inimigo = pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot1.ogg"))
@@ -19,7 +21,7 @@ musicaIsPaused = False
 
 def criarJogador(deltaTime):
     jogadorCriado = Jogador(
-        spriteImage=os.path.join(config.folderPath,'images', 'playerSprites', 'spritesheet_player_spaceship_up2.png'),
+        spriteImage=os.path.join(config.folderPath,'images', 'playerSprites', 'spritesheet(3).png'),
         posInicial=(config.bgWidth / 2, config.bgHeight-300),
         dt=deltaTime,
         tamanhoMapa=(config.bgWidth,config.bgHeight)
@@ -29,11 +31,12 @@ def criarJogador(deltaTime):
     return jogadorCriado
 
 def resetarVariaveis(grupoGrupos, intermediario):
-    grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser = grupoGrupos
+    grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser = grupoGrupos
     grupoItem.empty()
     grupoEscudo.empty()
     grupoQuickShot.empty()
     grupoBulletTime.empty()
+    grupoShotgun.empty()
     grupoCura.empty()
     grupoMoeda.empty()
     grupoRastro.empty()

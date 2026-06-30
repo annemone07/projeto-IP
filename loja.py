@@ -10,7 +10,7 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
     tempo_de_entrada = perf_counter()
 
     LARGURA, ALTURA = tela.get_size()
-
+    
     # Cores (RGB)
     BRANCO    = (255, 255, 255)
     PRETO     = (0, 0, 0)
@@ -51,18 +51,21 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
     caminho_escudo = os.path.join(DIRETORIO_LOJA, 'images', 'Items', "Escudo.png")
     caminho_powerup= os.path.join(DIRETORIO_LOJA, 'images', 'Items', "QS_up.png")
     caminho_carga= os.path.join(DIRETORIO_LOJA, 'images', 'Items', "choque_do_trovao.png")
+    caminho_cartucho = os.path.join(DIRETORIO_LOJA, 'images', 'Items', 'bala_shotgun.png')
 
     img_moeda  = pygame.image.load(caminho_moeda).convert_alpha()
     img_cura   = pygame.image.load(caminho_cura).convert_alpha()
     img_escudo = pygame.image.load(caminho_escudo).convert_alpha()
     img_powerup= pygame.image.load(caminho_powerup).convert_alpha()
     img_carga= pygame.image.load(caminho_carga).convert_alpha()
+    img_cartucho = pygame.image.load(caminho_cartucho).convert_alpha()
 
     img_moeda  = pygame.transform.scale(img_moeda,  (25, 25))
     img_cura   = pygame.transform.scale(img_cura,   (90, 90))
     img_escudo = pygame.transform.scale(img_escudo, (90, 90))
     img_powerup= pygame.transform.scale(img_powerup,(90, 90))
     img_carga  = pygame.transform.scale(img_carga,(90, 90))
+    img_cartucho  = pygame.transform.scale(img_cartucho,(90, 90))
 
     # ==========================================
     # 4. ESTRUTURA DOS ITENS DA LOJA 
@@ -70,7 +73,7 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
     CARD_W, CARD_H = 140, 200
     CARD_Y = ALTURA // 2 - CARD_H // 2          
     ESPACO = 60                                  
-    total = 4 * CARD_W + 3 * ESPACO
+    total = 5 * CARD_W + 4 * ESPACO
     x0 = LARGURA // 2 - total // 2              
  
     loja_itens = {
@@ -93,6 +96,11 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
             "nome": "Carga", "preco": 12,
             "img": img_carga,
             "rect": pygame.Rect(x0 + 3 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
+        },
+        "shotgun": {
+            "nome": "Carga", "preco": 2,
+            "img": img_cartucho,
+            "rect": pygame.Rect(x0 + 4 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
         }
     }
 
@@ -164,6 +172,14 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
                                     jogador.moedas -= dados["preco"]
                                     jogador.charge += 1
                                     mensagem_feedback = "Carregado e preparado!"
+
+                            elif id_item == 'shotgun':
+                                if jogador.cartuchos == 50:
+                                    mensagem_feedback = "Você não tem espaço pra tanta munição assim!"
+                                else:
+                                    jogador.moedas -= dados["preco"]
+                                    jogador.cartuchos += 2
+
                         else:
                             mensagem_feedback = "Moedas insuficientes para comprar este item!"
 
@@ -191,12 +207,14 @@ def abrir_loja(tela, relogio, jogador, powerup_ativo, bullet_time_ativo):
         txt_arm  = fonte_status.render(f"Armadura: {jogador.armadura}/100",     True, AZUL)
         txt_dano = fonte_status.render(f"Quick Shot ativo: {powerup_ativo}",       True, ROSA)
         txt_carga = fonte_status.render(f"Charges: {jogador.charge}/5",       True, AMARELO)
+        txt_carts = fonte_status.render(f"Cartuchos: {jogador.cartuchos}", True, VERMELHO)
  
         tela.blit(txt_vida, (30, 30))
         tela.blit(txt_esc,  (30, 55))
         tela.blit(txt_arm,  (30, 80))
         tela.blit(txt_dano, (30, 105))
         tela.blit(txt_carga, (30, 125))
+        tela.blit(txt_carts, (30, 145))
  
         # Instrução para fechar
         txt_fechar = fonte_status.render("Pressione L ou ESC para fechar a loja", True, PRETO)
