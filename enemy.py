@@ -285,13 +285,25 @@ class Explosion(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
 
-        self.frames = []
-        folder = os.path.join(folderPath, "images", "explosion")
+        sheet = pygame.image.load(
+            os.path.join(folderPath, "images", "explosion_sheet.png")
+        ).convert_alpha()
 
-        for i in range(1, 6):
-            img = pygame.image.load(os.path.join(folder, f"exp{i}.png")).convert_alpha()
-            img = pygame.transform.scale(img, (128, 128))
-            self.frames.append(img)
+        frame_width = sheet.get_width() // 5
+        frame_height = sheet.get_height()
+
+        self.frames = []
+
+        for i in range(5):
+            frame = pygame.Surface((frame_width, frame_height), pygame.SRCALPHA)
+            frame.blit(
+                sheet,
+                (0, 0),
+                (i * frame_width, 0, frame_width, frame_height)
+            )
+
+            frame = pygame.transform.scale(frame, (128, 128))
+            self.frames.append(frame)
 
         self.index = 0
         self.image = self.frames[self.index]
@@ -311,7 +323,8 @@ class Explosion(pygame.sprite.Sprite):
                 self.kill()  # termina explosão
 
             else:
+                center = self.rect.center
                 self.image = self.frames[self.index]
-                self.rect = self.image.get_rect(center=self.rect.center)
+                self.rect = self.image.get_rect(center=center)
         
 
