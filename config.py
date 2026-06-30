@@ -8,13 +8,18 @@ folderPath = os.path.dirname(os.path.abspath(__file__))
 camera = pygame.math.Vector2(0, -6)
 bgHeight = pygame.display.Info().current_h
 bgWidth = pygame.display.Info().current_w
+bgInitWidth = pygame.display.get_desktop_sizes()[0][0]
 #tamanhoTela:tuple = pygame.display.get_desktop_sizes()[0]
 telaSizePlaceholder = (bgWidth,bgHeight)
-tela = pygame.display.set_mode(telaSizePlaceholder)
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+tela = pygame.display.set_mode(telaSizePlaceholder, pygame.RESIZABLE, display=0)
+tela_virtual = pygame.Surface(telaSizePlaceholder)
+tela_escalada = pygame.transform.smoothscale(tela_virtual, (bgWidth,bgHeight))
 fonte = pygame.font.SysFont("arial", 40, True, False)
 fonte_grande = pygame.font.SysFont("arial", 100, True, False)
 fonte_media = pygame.font.SysFont("arial", 65, True, False)
 fps=60
+volume = 1.0
 
 #configs de sons e musicas
 musicaIsPaused = False
