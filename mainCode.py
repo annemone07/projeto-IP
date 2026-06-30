@@ -285,12 +285,12 @@ while main:
             if selecao[0] == "Tela Cheia":
                 config.bgWidth, config.bgHeight = pygame.display.get_desktop_sizes()[0]
                 config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
-            elif selecao[0] in ["1920x1080","960x540"]:
+            if selecao[0] in ["1920x1080","960x540"]:
                 tamanho = selecao[0].split("x")
                 config.bgWidth=int(tamanho[0])
                 config.bgHeight=int(tamanho[1])
                 config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
-            elif selecao[0] == "Voltar":
+            if selecao[2] == 1:
                 estadoDoJogo=estadoAnteriorParaVoltar
                 sons(estadoDoJogo)
 
