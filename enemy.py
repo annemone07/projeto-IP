@@ -83,7 +83,7 @@ class Inimigo(pygame.sprite.Sprite):
             ang = (math.atan(dy/dx))
             angG = math.degrees(ang)
         else:
-            ang = 3(math.pi)/2
+            ang = 3*(math.pi)/2
             angG = 0
         cos = math.cos(ang)
         sin = math.sin(ang)
