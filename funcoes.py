@@ -22,9 +22,9 @@ musicaIsPaused = False
 def criarJogador(deltaTime):
     jogadorCriado = Jogador(
         spriteImage=os.path.join(config.folderPath,'images', 'playerSprites', 'spritesheet(3).png'),
-        posInicial=(config.bgWidth / 2, config.bgHeight-300),
+        posInicial=(config.bgInitWidth / 2, config.bgInitHeight-300),
         dt=deltaTime,
-        tamanhoMapa=(config.bgWidth,config.bgHeight)
+        tamanhoMapa=(config.bgInitWidth,config.bgInitHeight)
         #grupos=self.all_sprites,
         #game=self
     )

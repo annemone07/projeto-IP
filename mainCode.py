@@ -34,11 +34,11 @@ tiles = math.ceil(config.bgHeight/bg.get_height())+2
 
 #Evento de spawn - Moeda Ouro
 create_Moeda_Ouro = pygame.USEREVENT + 1
-pygame.time.set_timer(create_Moeda_Ouro, 6000)
+pygame.time.set_timer(create_Moeda_Ouro, 700)
 
 #Evento de spawn - Moeda Prata
 create_Moeda_Prata = pygame.USEREVENT + 11
-pygame.time.set_timer(create_Moeda_Prata, 5000)
+pygame.time.set_timer(create_Moeda_Prata, 700)
 
 #Evento de spawn - Cura
 create_Cura = pygame.USEREVENT + 2
@@ -63,7 +63,7 @@ pygame.time.set_timer(create_shotgun, 1700)
 #eventos de disparo para cada tipo de bala
 deltaDisparos = {"follow": 1000, "rajada": 3000, "bigger": 5000, "tracker": 5000, "laser" : 6000}
 balas_possiveis = ("follow", "rajada", "bigger", "tracker")
-pontos_possiveis = ((config.bgWidth/2, 200), ((config.bgWidth/2) + 150, 200), ((config.bgWidth/2) - 150, 200), ((config.bgWidth/2) + 500, 200), ((config.bgWidth/2) -500, 200))
+pontos_possiveis = ((config.bgInitWidth/2, 200), ((config.bgInitWidth/2) + 150, 200), ((config.bgInitWidth/2) - 150, 200), ((config.bgInitWidth/2) + 500, 200), ((config.bgInitWidth/2) -500, 200))
 create_bala0, create_bala1, create_bala2, create_bala3, create_bala4 = pygame.USEREVENT + 7,  pygame.USEREVENT + 8, pygame.USEREVENT + 7, pygame.USEREVENT + 10, pygame.USEREVENT + 11
 pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_timer(create_bala1, deltaDisparos["rajada"]), pygame.time.set_timer(create_bala2, deltaDisparos["bigger"]), pygame.time.set_timer(create_bala3, deltaDisparos["tracker"]), pygame.time.set_timer(create_bala4, deltaDisparos["laser"])
 
@@ -153,8 +153,7 @@ boss_fight = 0
 pode_spawn_laser = 1
 
 while main:
-    print("grupo",grupoBullets)
-    #print("wave", wave_counter)
+    print("inimigos", grupoMoeda)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
     #print(grupoInimigo)
@@ -182,7 +181,7 @@ while main:
                 estadoDoJogo = "jogando"
                 modo = "tutorial"
                 grupoJogador.add(jogador)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(750, -200), limites_mov=(300, config.bgWidth - 300), sentido_inicial="L")
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -200), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
                 contador_de_teclas_mov, contador_de_teclas_espaco, contador_itens, fim_tutorial = 0, 0, 0, 0
             elif selecao=="Creditos":
                 estadoDoJogo="creditos"
@@ -202,7 +201,7 @@ while main:
             if selecao=="Reiniciar":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgWidth/2, -200), limites_mov=(300, config.bgWidth - 300), sentido_inicial="L")
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -200), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
                 wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
@@ -216,7 +215,7 @@ while main:
             elif selecao=="Menu Principal":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgWidth/2, -200), limites_mov=(300, config.bgWidth - 300), sentido_inicial="L")
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -200), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
                 wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
@@ -305,7 +304,7 @@ while main:
             #Criar o escudo:
             if event.type == create_escudo and random.randint(1,7)==1 and (modo == "boss" or modo == "infinito") : #chance de spawnar
                 if jogador.armadura < 100:
-                        x = random.randint(200,config.bgWidth-200)
+                        x = random.randint(200,config.bgInitWidth-200)
                         y = -200
                         escudoSpawnado = ParteEscudo(
                             spriteImage=os.path.join(config.folderPath,'images', 'Items', 'Escudo.png'),
@@ -314,7 +313,7 @@ while main:
                         grupoEscudo.add(escudoSpawnado)
             #Criar o powerUP:
             if event.type == create_quickshot and random.randint(1,7)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
-                    x = random.randint(200,config.bgWidth-200)
+                    x = random.randint(200,config.bgInitWidth-200)
                     y = -200
                     powerupSpawnado = Quick_Shot(
                         spriteImage=os.path.join(config.folderPath,'images', 'Items', 'QS_up.png'),
@@ -324,7 +323,7 @@ while main:
                     grupoQuickShot.add(powerupSpawnado)
             #cria cura
             if event.type == create_Cura and random.randint(1,10)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
-                    x = random.randint(200,config.bgWidth-200)
+                    x = random.randint(200,config.bgInitWidth-200)
                     y = -200
                     cura = Cura(
                         spriteImage=os.path.join(config.folderPath, 'images','items', 'med_kit.png'),
@@ -334,15 +333,15 @@ while main:
                     grupoCura.add(cura)
             #cria moeda ouro 
             if event.type == create_Moeda_Ouro and random.randint(1,9)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
-                    x = random.randint(200,config.bgWidth-200)
+                    x = random.randint(200,config.bgInitWidth-200)
                     y = -200
                     moeda_ouro = Moedas(spriteImage=os.path.join(config.folderPath,'images','items', 'coin 2.png'),
                         posInicial=(x, y), valor = 3)
                     ouro =1
                     grupoMoeda.add(moeda_ouro)
             #cria moeda prata
-            if event.type == create_Moeda_Prata and random.randint(1,2)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
-                    x = random.randint(200,config.bgWidth-200)
+            if event.type == create_Moeda_Prata and (modo == "boss" or modo == "infinito"): #chance de spawnar
+                    x = random.randint(200,config.bgInitWidth-200)
                     y = -200
                     moeda_prata = Moedas(spriteImage=os.path.join(config.folderPath,'images','items','Silver.Coin.png'),
                         posInicial=(x, y),valor = 1)
@@ -351,7 +350,7 @@ while main:
             #Criar a carga
             if event.type == create_charge and random.randint(1,7)==1 and  (modo == "boss" or modo == "infinito"): #chance de spawnar
                 if jogador.charge < 5 and not jogador.bullet_time:
-                    x = random.randint(200,config.bgWidth-200)
+                    x = random.randint(200,config.bgInitWidth-200)
                     y = -200
                     charge = Charge(spriteImage=os.path.join(config.folderPath,'images','items', 'choque_do_trovao.png'),
                         posInicial=(x, y),)
@@ -360,7 +359,7 @@ while main:
             #Criar a shotgun
             if event.type == create_shotgun and random.randint(1,9)==1:
                 if not jogador.arma == 'shotgun':
-                    x = random.randint(200,config.bgWidth-200)
+                    x = random.randint(200,config.bgInitWidth-200)
                     y = -200
                     cartucho = Shotgun(spriteImage=os.path.join(config.folderPath,'images','items', 'bala_shotgun.png'),
                         posInicial=(x, y),)
@@ -370,7 +369,7 @@ while main:
             if event.type == create_ima and random.randint(1,9)==1 and  (modo == "boss" or modo == "infinito"):
                 #print('criando ima')
                 #print('tentou ser criado')
-                x = random.randint(200,config.bgWidth-200)
+                x = random.randint(200,config.bgInitWidth-200)
                 y = -200
                 ima = Ima(spriteImage=os.path.join(config.folderPath,'images','items', 'icon ima.png'),
                     posInicial=(x, y),)
@@ -493,7 +492,7 @@ while main:
             pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
         
         if wave_counter % 5 == 0 and wave_counter != 0 and not boss_fight and not acabou_sair and modo == "boss":
-            boss = Inimigo("Boss-W1", deltaTime, pos=(config.bgWidth/2, -100), limites_mov=(0, 0), sentido_inicial="null")
+            boss = Inimigo("Boss-W1", deltaTime, pos=(config.bgInitWidth/2, -100), limites_mov=(0, 0), sentido_inicial="null")
             grupoInimigo.add(boss)
             boss_fight = 1
 
@@ -568,7 +567,7 @@ while main:
         #spawn novos inimigos
         if (len(grupoInimigo) < minimo_inimigos[wave_counter] and not boss_fight and (modo == "boss" or modo == "infinito")):
             sentido = random.choice(["R", "L"])
-            coordenadas = (random.randint(350, config.bgWidth - 350), -200)
+            coordenadas = (random.randint(350, config.bgInitWidth - 350), -200)
             print(grupoLaser)
             if pode_spawn_laser:      
                 tipo_inimigo = random.randint(0, 5)
@@ -578,7 +577,7 @@ while main:
                 tipo_inimigo = random.randint(0, 4)
             if tipo_inimigo == 5:
                 pode_spawn_laser = 0
-            novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, config.bgWidth - 300), sentido_inicial=sentido)
+            novoInim = Inimigo(tipo_inimigo, deltaTime, pos=coordenadas, limites_mov=(300, config.bgInitWidth - 300), sentido_inicial=sentido)
             grupoInimigo.add(novoInim)
 
         #HUD da vida
@@ -670,7 +669,8 @@ while main:
             elif powerup.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 powerup.kill()
         if quick_shots_coletados:
-            jogador.player_update("PU")
+            if not jogador.quick_shot:
+                jogador.player_update("PU")
             quick_shot_t_inicio = perf_counter()
             intervalo_tiro = cooldown_especial
 
@@ -898,10 +898,10 @@ while main:
                 if laser.rect.colliderect(jogador.rect):
                     dano = laser.dano
         for bala in grupoBullets:#checando se a bala já saiu da tela
-            if bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgWidth or bala.rect.topright[1] < 0:
+            if bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgInitWidth or bala.rect.topright[1] < 0:
                 bala.kill()
         for bala in grupoLaser:
-            if bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgWidth or bala.rect.topright[1] < 0:
+            if bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgInitWidth or bala.rect.topright[1] < 0:
                 bala.kill()
                 pode_spawn_laser = 1
 
@@ -944,7 +944,7 @@ while main:
                 jogador.add_kill()
                 ja_entrou = 0 #para entrar na loja no proximo 
                 enemy.kill()
-            if enemy.rect.topright[1] >= config.bgInitHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > config.bgWidth + 6: 
+            if enemy.rect.topright[1] >= config.bgInitHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > config.bgInitWidth + 6: 
                 enemy.kill()
 
 
@@ -1044,7 +1044,7 @@ while main:
                     posInicial=(x, y))
                 
                 x += 70
-                if x > config.bgWidth - 200: #obrigando o med kit a spawnar perto do escudo so p pegar na mesma hitbox e n dar problema p seguir a lógica
+                if x > config.bgInitWidth - 200: #obrigando o med kit a spawnar perto do escudo so p pegar na mesma hitbox e n dar problema p seguir a lógica
                     x -= 20
                 y = -200
                 cura = Cura(
@@ -1058,7 +1058,7 @@ while main:
             if len(grupoEscudo) >= 0 and len(grupoCura) >= 0 and intervalo_tiro ==cooldown_normal and jogador.escudo > 0 and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0:
                 sug = "quick shot faz atirar mais rápido"
                 
-                x = random.randint(200,config.bgWidth-200)
+                x = random.randint(200,config.bgInitWidth-200)
                 y = -200
                 powerupSpawnado = Quick_Shot(
                     spriteImage=os.path.join(config.folderPath,'images', 'Items', 'QS_up.png'),
@@ -1071,7 +1071,7 @@ while main:
                 sug = "aperte shift para o bullet time"
                 
 
-                x = random.randint(200,config.bgWidth-200)
+                x = random.randint(200,config.bgInitWidth-200)
                 y = -200
                 charge = Charge(spriteImage=os.path.join(config.folderPath,'images','items', 'choque_do_trovao.png'),
                     posInicial=(x, y),)
