@@ -51,7 +51,9 @@ class Inimigo(pygame.sprite.Sprite):
             self.ja_laser = 0
         self.stop = 0 #para o kamikaze
         if self.i == "Boss-W1": #testar depois os valores
-            self.rect - self.rect.inflate(0, -50)
+            self.rect = self.rect.inflate(0, -260)
+        if self.i == 4:
+            self.ja_rastro = 0
         
 
             
@@ -99,7 +101,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.stop = 1
         #rotacionando
         self.image = pygame.transform.rotate(self.image, angG)
-        if not(dy<= 0 and dx<= 0):
+        if not(dy<= 0 and dx<= 0): #por algum motivo, pegar o retângulo quando rotaciona p essa posição específica causa uma colisão instantânea
             self.rect = self.image.get_rect()
         #print(angG)
 
