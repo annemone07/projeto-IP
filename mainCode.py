@@ -333,7 +333,7 @@ while main:
                 if not jogador.arma == 'shotgun':
                     x = random.randint(200,bgWidth-200)
                     y = -200
-                    shotgun = Shotgun(spriteImage=os.path.join(folderPath,'images','items', 'shotgun.png'),
+                    shotgun = Shotgun(spriteImage=os.path.join(folderPath,'images','items', 'bala_shotgun.png'),
                         posInicial=(x, y),)
                     grupoShotgun.add(shotgun)
             
@@ -393,11 +393,16 @@ while main:
                     if enemy.tipo_bala == "self":
                         enemy.disparo = 1
                         #print("PERMITINDO ATIRAR")
+
+#--------------------------------------------------------------------------------------------
+#Apertar Tab pra poder trocar de arma:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_TAB:
-                    jogador.player_update('kabum')
+                        jogador.player_update('kabum')
+#--------------------------------------------a      ------------------------------------------------
         elif estadoDoJogo=="pausado":
             selecao = menu_pause.eventos(event)
+
             #despausar
             if selecao == "Retomar":
                 estadoDoJogo = "jogando"
@@ -563,6 +568,15 @@ while main:
         cargas_form = fonte.render(cargas, False, (255, 215, 0))
         carga_icon = pygame.image.load(os.path.join(folderPath,'images','items', 'icon das cargas.png')).convert_alpha()
         carga_icon = pygame.transform.scale(carga_icon, (30, 30))
+
+#--------------------------------------------------------------------------------------------
+        #Hud de Balas - Shotgun:
+        cartuchos = f"Cartuchos:    {jogador.cartuchos} "
+        cartuchos_form = fonte.render(cartuchos, False, (255, 215, 0))
+        cartuchos_icon = pygame.image.load(os.path.join(folderPath,'images','items', 'bala_shotgun.png')).convert_alpha()
+        cartuchos_icon = pygame.transform.scale(cartuchos_icon, (64, 64))
+#--------------------------------------------------------------------------------------------
+
         
         #colisão player item
         pygame.sprite.spritecollide(jogador, grupoItem, True)    
@@ -669,12 +683,11 @@ while main:
         shotgun_coletada = []
         for shotgun in grupoShotgun:
             if jogador.hitbox.colliderect(shotgun.rect):
+                jogador.cartuchos += 1
                 shotgun_coletada.append(shotgun)
                 shotgun.kill()
             elif shotgun.rect.topright[1] > bgHeight + 6: #eliminar o item da memória caso saia da tela
                 shotgun.kill()
-
-            
 #Pegar a shotgun: -------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -717,19 +730,21 @@ while main:
         if tecla[pygame.K_SPACE]:
             if perf_counter() - ultimo_tiro >= intervalo_tiro:
                 sons("balaPlayer")
-                if jogador.arma == 'shotgun':
-                    angulos_shotgun = [-10, 0, 10]
-                else:
-                    angulos_shotgun = [0]
-                for angulo in angulos_shotgun:
-                    if not jogador.quick_shot:
-                        projetil = Bala(os.path.join(folderPath,"images","playerSprites","bala-player.png"),jogador.rect.center,dt=deltaTime)
-                    #quick_shot
-                    if jogador.quick_shot:
-                        projetil = Bala(os.path.join(folderPath, "images", "Items", "quick_shot.png"),jogador.rect.center,dt=deltaTime)
-                    direcao_base = pygame.math.Vector2(0, -projetil.velocidade)
-                    projetil.dire = direcao_base.rotate(angulo)
-                    grupoBala.add(projetil)
+                if jogador.arma == "normal" or (jogador.arma == "shotgun" and jogador.cartuchos > 0):
+                    if jogador.arma == 'shotgun':
+                        angulos_shotgun = [-10, 0, 10]
+                        jogador.cartuchos -= 1
+                    else:
+                        angulos_shotgun = [0]
+                    for angulo in angulos_shotgun:
+                        if not jogador.quick_shot:
+                            projetil = Bala(os.path.join(folderPath,"images","playerSprites","bala-player.png"),jogador.rect.center,dt=deltaTime)
+                        #quick_shot
+                        if jogador.quick_shot:
+                            projetil = Bala(os.path.join(folderPath, "images", "Items", "quick_shot.png"),jogador.rect.center,dt=deltaTime)
+                        direcao_base = pygame.math.Vector2(0, -projetil.velocidade)
+                        projetil.dire = direcao_base.rotate(angulo)
+                        grupoBala.add(projetil)
                 ultimo_tiro = perf_counter()
                 
         #checa os inimigos ativos para disparar
@@ -932,6 +947,8 @@ while main:
             x = pos_x_inicial_carga + (i * (largura_imagem + espacamento_carga))
             y = 122 
             tela.blit(carga_icon, (x, y))
+        tela.blit(cartuchos_form, (18, 148))
+        tela.blit(cartuchos_icon, (216, 140))
 
         if modo == "tutorial":
             if contador_de_teclas_mov in range(0, 10):
