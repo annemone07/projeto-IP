@@ -143,7 +143,7 @@ grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoSho
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
 contador_rastros = 0 #Evitar que crie algum rastro que não seja a partir dos últimos movimentos
-wave_counter = 5 #variavel para contar as waves
+wave_counter = 0 #variavel para contar as waves
 ja_entrou = 0 #p n entrar na loja infinitas vezes seguidas
 acabou_sair = 0 #para a boss fight
 filtro_bullet_time = pygame.Surface(config.telaSizePlaceholder, pygame.SRCALPHA)
@@ -474,7 +474,7 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
 
-        if jogador.kills % 15 == 0 and jogador.kills !=0 and not ja_entrou and not boss_fight and modo == "boss":
+        if jogador.kills % 15 == 0 and jogador.kills !=0 and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss":
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = config.fonte_grande.render(mensagem, True, (0, 0, 0))
@@ -543,7 +543,7 @@ while main:
 
                 boss.disparo = 0
 
-            elif boss.vida <= 0:
+            elif boss.vida <= 0 and len(grupoExplosion) == 0:
                 tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
                 boss_fight = 0
                 boss.kill()

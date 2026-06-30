@@ -11,7 +11,7 @@ inimigos_data = {
             3 :{"imagem" : "Tracker-W1.png",  "velocidade": (500, 200),   "vida" : 125, "bala" : "tracker"},
             4: {"imagem" : "Kamikaze-W1.png", "velocidade" : (1500, 200), "vida" : 50,  "bala" : "self"   },
             5 :{"imagem" : "Laser-W1.png",    "velocidade" : (400, 250),  "vida" : 100, "bala" : "laser"  },
-            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 60, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -309,7 +309,7 @@ class Explosion(pygame.sprite.Sprite):
             )
 
             if self.id == "Boss-W1":
-                frame = pygame.transform.scale(frame, (1.55*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.35))
+                frame = pygame.transform.scale(frame, (1.57*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.32))
             else:
                 frame = pygame.transform.scale(frame, (256, 256))
             self.frames.append(frame)
