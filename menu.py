@@ -299,6 +299,7 @@ class menuOpcoes():
         self.opcoes = ["Resolução","Tela Cheia","1920x1080","960x540","Voltar"]
         self.opcaoSelecionada = 0
         self.num_barras = 5
+        self.vol = 100
         """""100","80","60","40","20","0"""""
         
 
@@ -345,6 +346,7 @@ class menuOpcoes():
                 if self.num_barras > 5:
                     self.num_barras = 5
             elif event.key==pygame.K_RETURN:
-                return self.opcoes[self.opcaoSelecionada], self.num_barras
+                self.vol = self.num_barras * 20
+                return self.opcoes[self.opcaoSelecionada], self.vol
         print(self.opcaoSelecionada)
         return None, None
