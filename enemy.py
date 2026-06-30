@@ -5,13 +5,13 @@ import math #para deixar o código mais claro durante as operações matemática
 clock = pygame.time.Clock()
 folderPath = os.path.dirname(os.path.abspath(__file__))
 inimigos_data = {
-            0: {"imagem" : "Follow-W1.png", "velocidade" :(550, 250), "vida" : 100, "bala" : "follow"}, 
-            1: {"imagem" : "Rajada-W1.png", "velocidade" : (300, 250), "vida": 150, "bala": "rajada"},
-            2: {"imagem" : "Bigger-W1.png", "velocidade": (800, 200), "vida": 75, "bala": "bigger"},
-            3 :{"imagem" : "Tracker-W1.png", "velocidade": (500, 200), "vida": 125, "bala": "tracker"},
-            4: {"imagem" : "Kamikaze-W1.png", "velocidade": (1500, 200), "vida": 50, "bala": "self"},
-            5 :{"imagem" : "Laser-W1.png", "velocidade": (400, 250), "vida": 100, "bala": "laser"},
-            "Boss-W1": {"imagem" : "boss-W1.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+            0: {"imagem" : "Follow-W1.png",   "velocidade" : (550, 250),  "vida" : 100, "bala" : "follow" }, 
+            1: {"imagem" : "Rajada-W1.png",   "velocidade" : (300, 250),  "vida" : 150, "bala" : "rajada" },
+            2: {"imagem" : "Bigger-W1.png",   "velocidade" : (800, 200),  "vida" : 75,  "bala" : "bigger" },
+            3 :{"imagem" : "Tracker-W1.png",  "velocidade": (500, 200),   "vida" : 125, "bala" : "tracker"},
+            4: {"imagem" : "Kamikaze-W1.png", "velocidade" : (1500, 200), "vida" : 50,  "bala" : "self"   },
+            5 :{"imagem" : "Laser-W1.png",    "velocidade" : (400, 250),  "vida" : 100, "bala" : "laser"  },
+            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -26,7 +26,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (256, 256))
         if self.i == "Boss-W1":
-            self.image = pygame.transform.scale(self.image, (1.5*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.8))
+            self.image = pygame.transform.scale(self.image, (1*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.3))
         #print(self.imagens[i])
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -50,8 +50,14 @@ class Inimigo(pygame.sprite.Sprite):
             self.rect = self.rect.inflate(0, -45)
             self.ja_laser = 0
         self.stop = 0 #para o kamikaze
-        
 
+        #Criação das mascára para se der dano
+        self.imagem_padrao = self.image.copy() 
+        self.imagem_dano = self.mask.to_surface(setcolor=(255, 80, 100, 255), unsetcolor=(0, 0, 0, 0)) #Mask pra se tomar dano
+        self.dano_timer = 0
+        
+    def levou_dano(self):
+        self.dano_timer = 0.1
             
     def dir(self):
         #print("TA ENTRANDO AQUI AINDA")
@@ -95,8 +101,14 @@ class Inimigo(pygame.sprite.Sprite):
         """if dy<=0 and dx<= 0:
             self.tracking = pygame.Vector2(-50, -50)"""
         self.stop = 1
+
+        if self.dano_timer > 0:
+            img_base = self.imagem_dano
+        else: 
+            img_base == self.imagem_padrao
+
         #rotacionando
-        self.image = pygame.transform.rotate(self.image, angG)
+        self.image = pygame.transform.rotate(img_base, angG)
         if not(dy<= 0 and dx<= 0):
             self.rect = self.image.get_rect()
         #print(angG)
@@ -116,6 +128,15 @@ class Inimigo(pygame.sprite.Sprite):
 
             self.rect.centerx = self.posicao.x
             self.rect.centery = self.posicao.y
+
+        if self.dano_timer > 0:
+            self.dano_timer -= dt
+            if self.stop == 0: 
+                self.image = self.imagem_dano
+        else:
+            # Volta ao normal quando o tempo acaba
+            if self.stop == 0:
+                self.image = self.imagem_padrao
 
             #print(f"ppsicao{self.rect.center}")
 
@@ -280,9 +301,59 @@ class Bullet(pygame.sprite.Sprite):
                 self.posicao = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
             
         
-        
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, pos, id):
+        super().__init__()
+        self.id = id
+        self.explosoes={
+            0: {"explosao" : "Kla'ed - Follow - Destruction.png",   "colunas_spr.st.": 9 }, 
+            1: {"explosao" : "Kla'ed - rajada - Destruction.png",   "colunas_spr.st.": 10},
+            2: {"explosao" : "Kla'ed - Bigger - Destruction.png",   "colunas_spr.st.": 10},
+            3 :{"explosao" : "Kla'ed - Tracker - Destruction.png",  "colunas_spr.st.": 8 },
+            4: {"explosao" : "Kla'ed - kamikaze - Destruction.png", "colunas_spr.st.": 10},
+            5 :{"explosao" : "Kla'ed - Laser - Destruction.png",    "colunas_spr.st.": 9 },
+            "Boss-W1":{"explosao":"Kla'ed - Boss novo - Destruction.png", "colunas_spr.st.": 11}
+        }
 
+        sheet = pygame.image.load(os.path.join(folderPath, "images", "enemy", self.explosoes[self.id]["explosao"])).convert_alpha()
+        colunas_spritesheet = sheet.get_width() // self.explosoes[self.id]["colunas_spr.st."]
+        linha_spritesheet = sheet.get_height()
 
-        
+        self.frames = []
+        #Recortar os sprites
+        for i in range(self.explosoes[self.id]["colunas_spr.st."]):
+            frame = pygame.Surface((colunas_spritesheet, linha_spritesheet), pygame.SRCALPHA)
+            frame.blit(
+                sheet,
+                (0, 0),
+                (i * colunas_spritesheet, 0, colunas_spritesheet, linha_spritesheet)
+            )
+
+            if self.id == "Boss-W1":
+                frame = pygame.transform.scale(frame, (1.57*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.32))
+            else:
+                frame = pygame.transform.scale(frame, (256, 256))
+            self.frames.append(frame)
+
+        self.index = 0
+        self.image = self.frames[self.index]
+        self.rect = self.image.get_rect(center=pos)
+        self.timer = 0
+        self.speed = 0.08  # velocidade da animação
+
+    def update(self, dt):
+        self.timer += dt
+
+        if self.timer >= self.speed:
+            self.timer = 0
+            self.index += 1
+
+            if self.index >= len(self.frames):
+                self.kill()  # termina explosão
+
+            else:
+                center = self.rect.center
+                self.image = self.frames[self.index]
+                self.rect = self.image.get_rect(center=center)
         
 
