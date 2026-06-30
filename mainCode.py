@@ -191,6 +191,7 @@ while main:
                 estadoDoJogo="creditos"
                 sons(estadoDoJogo)
             elif selecao=="Opções":
+                estadoAnteriorParaVoltar = estadoDoJogo
                 estadoDoJogo="Opções"
                 sons(estadoDoJogo)
             elif selecao=="Sair":
@@ -280,18 +281,18 @@ while main:
         elif estadoDoJogo=="Opções":
             sons(estadoDoJogo)
             selecao = menu_opcoes.eventos(event)
-            if selecao in ["100","80","60","40","20","0"]:
-                config.volume=float(selecao)/100.0
-            elif selecao == "Tela Cheia":
+            if selecao[1] != None:
+                config.volume=float(selecao[1])/100.0
+            if selecao[0] == "Tela Cheia":
                 config.bgWidth, config.bgHeight = pygame.display.get_desktop_sizes()[0]
                 config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
-            elif selecao in ["1920x1080","960x540"]:
-                tamanho = selecao.split("x")
+            elif selecao[0] in ["1920x1080","960x540"]:
+                tamanho = selecao[0].split("x")
                 config.bgWidth=int(tamanho[0])
                 config.bgHeight=int(tamanho[1])
                 config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
-            elif selecao == "Voltar":
-                estadoDoJogo="menu principal"
+            elif selecao[0] == "Voltar":
+                estadoDoJogo=estadoAnteriorParaVoltar
                 sons(estadoDoJogo)
 
 
@@ -440,6 +441,7 @@ while main:
                 menu_pause.opcaoAtual = 0
             #opções (eventualmente)
             elif selecao == "Opções":
+                estadoAnteriorParaVoltar = estadoDoJogo
                 estadoDoJogo = "Opções" #modificar para criar um menu de opções dps
                 sons(estadoDoJogo)
             #sair
@@ -497,7 +499,7 @@ while main:
             if boss.vida >0 and boss.disparo:
                 centro_bala = random.choice(pontos_possiveis)
                 tipo = random.choice(balas_possiveis)
-                print(f"OLHA AQ{centro_bala}")
+                #print(f"OLHA AQ{centro_bala}")
                 if tipo == "rajada":
                     sons("balaShotgunInimigo")
                     for pow in (0, 4, 7):    
@@ -568,10 +570,9 @@ while main:
             print(grupoLaser)
             if pode_spawn_laser:      
                 tipo_inimigo = random.randint(0, 5)
-                print("SPAWN COM LASER")
-
+                #print("SPAWN COM LASER")
             else:
-                print("SPAWN SEM LASER")
+                #print("SPAWN SEM LASER")
                 tipo_inimigo = random.randint(0, 4)
             if tipo_inimigo == 5:
                 pode_spawn_laser = 0
@@ -835,6 +836,7 @@ while main:
                         tipo = "laser",
                         boss = 0,
                     )
+                    #bullet.ord = len(grupoLaser)
                     enemy.velocidadex = 0 #para quando atirar o laser
                     enemy.velocidadey = -6
                     grupoLaser.add(bullet)
@@ -928,21 +930,24 @@ while main:
             
         enemyPos = []
         #Colisão tiro dos players com o inimigo e sua morte:
+        """print("OLHA AQ")
+        print(list(grupoInimigo)[0].vida)"""
         for enemy in grupoInimigo:
+            inimigo_morto=0
             colisao_inimigo = pygame.sprite.spritecollide(enemy, grupoBala, True, pygame.sprite.collide_mask)
             if colisao_inimigo:
                 enemy.vida -= 20
                 #print(f"Inimigo: {enemy01.vida}")
             if enemy.vida <= 0:
-                #print("morreu")
-                enemy.kill()
                 jogador.add_kill()
                 ja_entrou = 0 #para entrar na loja no proximo 
+                enemy.kill()
             if enemy.rect.topright[1] >= config.bgHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > config.bgWidth + 6: 
                 enemy.kill()
 
+
             if enemy.i == 5 or boss_fight:
-                enemyPos.append(((enemy.rect.width/2) + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
+                enemyPos.append((enemy.rect.width/2 + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
 
         #update de tudo
         grupoInimigo.update(dt_jogo, config.camera)
