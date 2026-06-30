@@ -123,7 +123,6 @@ class Jogador(pygame.sprite.Sprite):
             indice += 4
 
         self.image = self.animacoes["run"][indice]
-        self.mask = pygame.mask.from_surface(self.image)
 
         print(self.invencibilidade, indice)
     
