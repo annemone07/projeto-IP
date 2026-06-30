@@ -281,7 +281,37 @@ class Bullet(pygame.sprite.Sprite):
         
         
 
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, pos):
+        super().__init__()
 
-        
+        self.frames = []
+        folder = os.path.join(folderPath, "images", "explosion")
+
+        for i in range(1, 6):
+            img = pygame.image.load(os.path.join(folder, f"exp{i}.png")).convert_alpha()
+            img = pygame.transform.scale(img, (128, 128))
+            self.frames.append(img)
+
+        self.index = 0
+        self.image = self.frames[self.index]
+        self.rect = self.image.get_rect(center=pos)
+
+        self.timer = 0
+        self.speed = 0.08  # velocidade da animação
+
+    def update(self, dt):
+        self.timer += dt
+
+        if self.timer >= self.speed:
+            self.timer = 0
+            self.index += 1
+
+            if self.index >= len(self.frames):
+                self.kill()  # termina explosão
+
+            else:
+                self.image = self.frames[self.index]
+                self.rect = self.image.get_rect(center=self.rect.center)
         
 
