@@ -170,7 +170,7 @@ while main:
             sys.exit()
             main=False
         if event.type == pygame.KEYDOWN:
-            if event.key == ord("q"):
+            if event.key == pygame.K_EQUALS:
                 pygame.quit()
                 sys.exit()
                 main=False        
