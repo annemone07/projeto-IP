@@ -8,7 +8,7 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge, Ima, Shotgun
 from time import perf_counter, sleep
 from loja import Loja
-from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes
+from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes, menuFimBoss
 import config
 from funcoes import criarJogador, resetarVariaveis, sons
 
@@ -69,11 +69,11 @@ pygame.time.set_timer(create_bala0, deltaDisparos["follow"]), pygame.time.set_ti
 
 #variáveis do disparo do inimigo 
 mudar_direcao, mudar_laser = pygame.USEREVENT + 12,  pygame.USEREVENT + 13
-pygame.time.set_timer(mudar_direcao, 1000), pygame.time.set_timer(mudar_laser, 800)
+pygame.time.set_timer(mudar_direcao, 1000), pygame.time.set_timer(mudar_laser, 1000)
 #timers do boss
 disparo_boss, criar_laser = pygame.USEREVENT + 14, pygame.USEREVENT + 15
 pygame.time.set_timer(disparo_boss, 500), pygame.time.set_timer(criar_laser, 10000)
-boss_laser, limpar_laser_boss = 0, 0
+boss_laser = 0
 
 #ima
 create_ima = pygame.USEREVENT + 16
@@ -104,6 +104,7 @@ escolher_modo = menuModos(config.tela_virtual)
 escolher_dificuldade = menuDificuldade(config.tela_virtual)
 menu_opcoes = menuOpcoes(config.tela_virtual)
 loja = Loja()
+menu_boss = menuFimBoss(config.tela_virtual)
 
 
 #temporizadores
@@ -153,13 +154,14 @@ tempo_ima_ativo = -999
 duracao_ima = 20
 boss_fight = 0
 pode_spawn_laser = 1
-
+mudar, laser = 0, 0 #variaveis para as balas com condições especiais
 while main:
-    print("inimigos", grupoMoeda)
+    jogador.vida = 200
+    #print("inimigos", grupoMoeda)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
     #print(grupoInimigo)
-    mudar, laser = 0, 0 #variaveis para as balas com condições especiais
+    
     #todos os eventos
     for event in pygame.event.get():
         #condição de parada
@@ -281,6 +283,7 @@ while main:
         elif estadoDoJogo=="Opções":
             sons(estadoDoJogo)
             selecao = menu_opcoes.eventos(event)
+            print(selecao)
             if selecao[1] is not None:
                 config.volume=float(selecao[1])/100.0
             if selecao[0] == "Tela Cheia":
@@ -291,9 +294,32 @@ while main:
                 config.bgWidth=int(tamanho[0])
                 config.bgHeight=int(tamanho[1])
                 config.tela = pygame.display.set_mode((config.bgWidth,config.bgHeight), pygame.RESIZABLE, display=0)
+            """if selecao[3] in (-250, -200, -150, -100, -50, 0, 50, 100, 150, 200, 250):
+                brilho = selecao[3]
+                if brilho < 0:
+                    config.tela_virtual.fill((0, 0, 0))
+                    config.tela_virtual.set_alpha(abs(brilho))
+                    config.tela_virtual.blit(config.tela, (0, 0))
+                elif brilho > 0:
+                    config.tela_virtual.fill((brilho, brilho, brilho))
+                    config.tela.blit(config.tela_virtual, (0, 0), special_flags=pygame.BLEND_RGB_ADD)"""
             if selecao[2] == 1:
                 estadoDoJogo=estadoAnteriorParaVoltar
                 sons(estadoDoJogo)
+
+        elif estadoDoJogo == "menu boss":
+            selecao = menu_boss.eventos(event)
+            if selecao == "Reiniciar":
+                estadoDoJogo = "jogando"
+            elif selecao == "Opções":
+                estadoDoJogo = "Opções"
+            elif selecao == "Menu Principal":
+                estadoDoJogo = "menu principal"
+            elif selecao == "Sair":
+                pygame.quit()
+                sys.exit()
+                main=False
+                estadoDoJogo="fechado"
 
 
         elif estadoDoJogo == "jogando":
@@ -379,6 +405,8 @@ while main:
 
         
             # Abrir loja usando a tecla "L" DESATIVADO!!!
+            if event.type == pygame.K_l and modo == "infinito":
+                jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
             
             #criar bala padrão
             if event.type == create_bala0:
@@ -410,12 +438,13 @@ while main:
                         if not enemy.ja_laser:
                             enemy.disparo = 1
             #mudar estado do laser
-            if event.type == mudar_laser:
+            if event.type == mudar_laser and len(grupoLaser) == 1:
                 laser = 1
+                print("EVENTO")
             #bala do boss
             if (event.type == disparo_boss) and boss_fight:
                 boss.disparo = 1
-            if event.type == criar_laser:
+            if event.type == criar_laser and boss_fight:
                 boss_laser = 1
             #inimigo kamikaze começar a seguir
             for enemy in grupoInimigo:
@@ -464,6 +493,9 @@ while main:
         escolher_dificuldade.draw(config.tela_virtual)
     elif estadoDoJogo == "Opções":
         menu_opcoes.draw(config.tela_virtual)
+    elif estadoDoJogo == "menu boss":
+        menu_boss.draw_texto(config.tela_virtual, config.telaSizePlaceholder, tempo_jogo_fim)
+
 
         
     elif estadoDoJogo=="jogando":
@@ -530,21 +562,22 @@ while main:
                     sons("laser")
                     tipo = "laser"
                     boss_laser = 0
-                    bullet = Bullet(
+                    piu = Bullet(
                         os.path.join(config.folderPath, "images", "enemy", "bullet.png"),
                         (centro_bala),
                         dt=deltaTime,
                         tipo = tipo,
                         boss = 1
                     )
-                    grupoLaser.add(bullet)
-                    bullet.direcao((jogador.rect.center), centro_bala, pow)
+                    grupoLaser.add(piu)
+                    piu.direcao((jogador.rect.center), centro_bala, pow)
 
 
                 boss.disparo = 0
 
             elif boss.vida <= 0 and len(grupoExplosion) == 0:
                 tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
+                tempo_jogo_fim = tempo_de_jogo
                 boss_fight = 0
                 boss.kill()
                 acabou_sair = 1
@@ -552,15 +585,16 @@ while main:
                 mensagem_tempo = f"TEMPO TOTAL {tempo_de_jogo:0.1f}s"
                 mensagem_form_fim = config.fonte_grande.render(mensagem_fim, True, (0, 0, 0))
                 mensagem_form_tempo = config.fonte_media.render(mensagem_tempo, True, (0, 0, 0))
-                config.tela_virtual.blit(mensagem_form_fim, ((300), (config.bgInitHeight/2) - 55))
-                config.tela_virtual.blit(mensagem_form_tempo, ((300), (config.bgInitHeight/2) + 55))
-                pygame.display.flip() #para colocar a mensagem de final na tela
-                sleep(3.0)
+                #config.tela_virtual.blit(mensagem_form_fim, ((300), (config.bgInitHeight/2) - 55))
+                #config.tela_virtual.blit(mensagem_form_tempo, ((300), (config.bgInitHeight/2) + 55))
+                #pygame.display.flip() #para colocar a mensagem de final na tela
+                sleep(0.5)
+                estadoDoJogo = "menu boss"
                 #limpando os elementos da tela
                 resetarVariaveis(grupoGrupos, 1)
-                jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
+                """"jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
                 inicio_de_jogo += tempo_pausado + 3
-                ja_entrou = 1
+                ja_entrou = 1"""
                 pygame.event.clear()
 
         #calculo temporizador atual
@@ -570,7 +604,7 @@ while main:
         if (len(grupoInimigo) < minimo_inimigos[wave_counter] and not boss_fight and (modo == "boss" or modo == "infinito")):
             sentido = random.choice(["R", "L"])
             coordenadas = (random.randint(350, config.bgInitWidth - 350), -200)
-            print(grupoLaser)
+            #print(grupoLaser)
             if pode_spawn_laser:      
                 tipo_inimigo = random.randint(0,5)
                 #print("SPAWN COM LASER")
@@ -894,18 +928,21 @@ while main:
         if pygame.sprite.spritecollide(jogador, grupoBullets, True, pygame.sprite.collide_mask):
             colisao_b = True
             dano = 20
+        #print("ANTES"), print(len(grupoLaser))
         if pygame.sprite.spritecollide(jogador, grupoLaser, False, pygame.sprite.collide_mask):
             colisao_b = True
-            for laser in grupoLaser:
-                if laser.rect.colliderect(jogador.rect):
-                    dano = laser.dano
-        for bala in grupoBullets:#checando se a bala já saiu da tela
-            if bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgInitWidth or bala.rect.topright[1] < 0:
+            for go in grupoLaser:
+                if go.rect.colliderect(jogador.rect):
+                    dano = go.dano
+        print(len(grupoLaser))
+        """for bala in grupoBullets:#checando se a bala já saiu da tela
+            if (bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgInitWidth or bala.rect.topright[1] < 0) and bala.tipo != "laser":
+                print("OLHAR AQUI")
+                print(len(grupoLaser))
                 bala.kill()
-        for bala in grupoLaser:
-            if bala.rect.topright[1] > config.bgInitHeight or bala.rect.topleft[0] < 0 or bala.rect.topleft[0] > config.bgInitWidth or bala.rect.topright[1] < 0:
-                bala.kill()
-                pode_spawn_laser = 1
+                print(len(grupoLaser)"""
+                
+                
 
                 
         #Colisão do inimigo com a hitbox do player
@@ -954,6 +991,7 @@ while main:
 
 
             if enemy.i == 5 or boss_fight:
+                #print("DANDO O APPEND")
                 enemyPos.append((enemy.rect.width/2 + enemy.rect.bottomleft[0],enemy.rect.bottomright[1]))
 
         #update de tudo
@@ -969,6 +1007,10 @@ while main:
         grupoCura.update(dt_jogo, config.camera)
         grupoLaser.update(dt_jogo, config.camera, jogador.posicao, mudar, laser, enemyPos)
         grupoIma.update(dt_jogo, config.camera)
+        if laser:
+            laser = 0
+        if mudar:
+            mudar = 0
 
         grupoExplosion.update(dt_jogo)
 
@@ -1012,6 +1054,13 @@ while main:
         #Representação da Shotgun
         config.tela_virtual.blit(cartuchos_form, (18, 148))
         config.tela_virtual.blit(cartuchos_icon, (216, 140))
+        if boss_fight:
+            #print(f"VALOR Q UE QUERO{config.bgWidth/2 - 300}")
+            pygame.draw.rect(config.tela_virtual, (0, 0, 0), (468, 55, 600, 40), 3)
+            barra_vida = int(boss.vida*6/10) #regra de 3 com o retangulo tendo 600 de tamanho e vida do boss 1000
+            pygame.draw.rect(config.tela_virtual, (255, 0, 0), (468, 55, barra_vida, 40))
+            
+
 
         if modo == "tutorial":
             if contador_de_teclas_mov in range(0, 10):
@@ -1109,7 +1158,7 @@ while main:
                 contador_de_teclas_mov += 1
             elif tecla[pygame.K_d]:
                 contador_de_teclas_mov += 1
-            elif tecla[pygame.K_SPACE]:
+            elif tecla[pygame.K_SPACE] and contador_de_teclas_mov > 10:
                 contador_de_teclas_espaco += 1
             
             
@@ -1133,6 +1182,7 @@ while main:
         grupoMoeda.draw(config.tela_virtual)
         grupoCura.draw(config.tela_virtual)
         grupoJogador.draw(config.tela_virtual)
+        grupoLaser.draw(config.tela_virtual)
         
         config.tela_virtual.blit(filtro_pause, (0, 0))
         

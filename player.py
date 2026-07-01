@@ -124,7 +124,7 @@ class Jogador(pygame.sprite.Sprite):
 
         self.image = self.animacoes["run"][indice]
 
-        print(self.invencibilidade, indice)
+        #print(self.invencibilidade, indice)
     
     def add_kill(self):
         self.kills += 1
