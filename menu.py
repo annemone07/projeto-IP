@@ -57,7 +57,7 @@ class MenuPrincipal():
 class menuPause():
     def __init__(self, tela:pygame.surface):
         self.fonte = pygame.font.SysFont("Arial", 50, True, False)
-        self.opcoes = ("Retomar", "Opções", "Sair")
+        self.opcoes = ("Retomar", "Opções", "Menu Principal", "Sair")
         self.tamanho = tela.get_size()
         self.opcaoAtual = 0
 

@@ -186,7 +186,7 @@ while main:
                 modo = "tutorial"
                 grupoJogador.add(jogador)
                 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -200), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
-                contador_de_teclas_mov, contador_de_teclas_espaco, contador_itens, fim_tutorial = 0, 0, 0, 0
+                contador_de_teclas_mov, contador_de_teclas_espaco, contador_itens, fim_tutorial, passa_tutorial = 0, 0, 0, 0, 0
             elif selecao=="Creditos":
                 estadoDoJogo="creditos"
                 sons(estadoDoJogo)
@@ -205,7 +205,6 @@ while main:
             if selecao=="Reiniciar":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -200), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
                 wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
@@ -238,7 +237,12 @@ while main:
         elif estadoDoJogo == "fim do tutorial":
             selecao = fim_do_tutorial.eventos(event)
             if selecao == "Menu principal":
-                estadoDoJogo = "menu principal"
+                resetarVariaveis(grupoGrupos, 0)
+                jogador = criarJogador(deltaTime)
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
+                tempo_no_menu=0.0
+                estadoDoJogo="menu principal"
             elif selecao == "Sair":
                 pygame.quit()
                 sys.exit()
@@ -310,7 +314,18 @@ while main:
         elif estadoDoJogo == "menu boss":
             selecao = menu_boss.eventos(event)
             if selecao == "Reiniciar":
-                estadoDoJogo = "jogando"
+                resetarVariaveis(grupoGrupos, 0)
+                jogador = criarJogador(deltaTime)
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
+                tempo_no_menu=0.0
+                grupoJogador.add(jogador)
+                grupoInimigo.add(enemy01)
+                estadoDoJogo="jogando"
+                sons(estadoDoJogo)
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
+                tempo_no_menu=0.0
             elif selecao == "Opções":
                 estadoDoJogo = "Opções"
             elif selecao == "Menu Principal":
@@ -385,7 +400,7 @@ while main:
                     bt = 1
                     grupoBulletTime.add(charge)
             #Criar a shotgun
-            if event.type == create_shotgun and random.randint(1,9)==1:
+            if event.type == create_shotgun and random.randint(1,9)==1 and (modo == "boss" or modo == "infinito"):
                 if not jogador.arma == 'shotgun':
                     x = random.randint(200,config.bgInitWidth-200)
                     y = -200
@@ -473,6 +488,13 @@ while main:
                 estadoAnteriorParaVoltar = estadoDoJogo
                 estadoDoJogo = "Opções" #modificar para criar um menu de opções dps
                 sons(estadoDoJogo)
+            elif selecao == "Menu Principal":
+                resetarVariaveis(grupoGrupos, 0)
+                jogador = criarJogador(deltaTime)
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
+                tempo_no_menu=0.0
+                estadoDoJogo="menu principal"
             #sair
             elif selecao == "Sair":
                 pygame.quit()
@@ -591,7 +613,7 @@ while main:
                 sleep(0.5)
                 estadoDoJogo = "menu boss"
                 #limpando os elementos da tela
-                resetarVariaveis(grupoGrupos, 1)
+                resetarVariaveis(grupoGrupos, 0)
                 """"jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
                 inicio_de_jogo += tempo_pausado + 3
                 ja_entrou = 1"""
@@ -631,6 +653,8 @@ while main:
 
         #HUD do tempo 
         tempo_de_jogo = perf_counter() - inicio_de_jogo - tempo_no_menu
+        if modo == "tutorial":
+            tempo_de_jogo = 0
         timer = config.fonte.render(f"{tempo_de_jogo:.1f}s", False, (255, 255, 255))
         rect_timer = timer.get_rect()
         rect_timer.center = (680, 50)
@@ -1064,10 +1088,10 @@ while main:
 
         if modo == "tutorial":
             if contador_de_teclas_mov in range(0, 10):
-                sug = "use W-A-S-D para se movimentar"
-            if contador_de_teclas_mov >= 10 and perf_counter() - inicio_de_jogo > 3 and contador_de_teclas_espaco == 0:
+                sug = "  use W-A-S-D para se movimentar"
+            if contador_de_teclas_mov >= 10 and perf_counter() - inicio_de_jogo - tempo_no_menu > 3 and contador_de_teclas_espaco == 0:
                 sug = "aperte espaço para atirar"
-            if (contador_de_teclas_mov + contador_de_teclas_espaco) >= 10 and contador_de_teclas_espaco !=0 and len(grupoMoeda) == 0 and jogador.moedas <= 8 and perf_counter() - inicio_de_jogo > 6:
+            if (contador_de_teclas_mov + contador_de_teclas_espaco) >= 10 and contador_de_teclas_espaco !=0 and len(grupoMoeda) == 0 and jogador.moedas <= 8 and perf_counter() - inicio_de_jogo - tempo_no_menu > 6:
                 sug = "moedas compram itens na loja"
                 x = random.randint(200,config.bgInitWidth-200)
                 y = -200
@@ -1090,7 +1114,7 @@ while main:
                         posInicial=(x, y),)
                     grupoIma.add(ima)  
                     
-                    sug = "use o imã para puxar moedas"
+                    sug = "use o imã para atrair moedas"
 
                 
             
@@ -1114,8 +1138,8 @@ while main:
                 grupoCura.add(cura)
                 grupoEscudo.add(escudoSpawnado)
 
-            if len(grupoEscudo) >= 0 and len(grupoCura) >= 0 and intervalo_tiro ==cooldown_normal and jogador.escudo > 0 and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0:
-                sug = "quick shot faz atirar mais rápido"
+            if len(grupoEscudo) >= 0 and len(grupoCura) >= 0 and intervalo_tiro ==cooldown_normal and jogador.escudo > 0 and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0 and not passa_tutorial:
+                sug = "quick shot aumenta os disparos"
                 
                 x = random.randint(200,config.bgInitWidth-200)
                 y = -200
@@ -1126,27 +1150,50 @@ while main:
 
                 grupoQuickShot.add(powerupSpawnado)
 
-            if len(quick_shots_coletados) > 0 and not jogador.bullet_time and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0:
+            if len(quick_shots_coletados) > 0 and not jogador.bullet_time and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0 and not passa_tutorial:
                 sug = "aperte shift para o bullet time"
-                
-
                 x = random.randint(200,config.bgInitWidth-200)
                 y = -200
                 charge = Charge(spriteImage=os.path.join(config.folderPath,'images','items', 'choque_do_trovao.png'),
                     posInicial=(x, y),)
                 grupoBulletTime.add(charge)
 
-            if tecla[pygame.K_LSHIFT]:
-                fim_tutorial =1
+            if tecla[pygame.K_LSHIFT] and len(grupoBulletTime) >= 0 and len(grupoInimigo) == 0 and sug == "aperte shift para o bullet time":
+                passa_tutorial =1
+                print("PASSAR TUTORIAL")
             
 
-            if fim_tutorial:
+            if passa_tutorial and len(grupoShotgun) ==0 and len(grupoInimigo) == 0 and len(grupoQuickShot) >= 0 and not fim_tutorial:
+                sug = "   pegue o cartucho \n   aperte tab para trocar de arma"
+                x = random.randint(200,config.bgInitWidth-200)
+                y = -50
+                cartucho = Shotgun(spriteImage=os.path.join(config.folderPath,'images','items', 'bala_shotgun.png'),
+                    posInicial=(x, y),)
+                grupoShotgun.add(cartucho)
+
+                x = x + 20
+                y = -50
+                cartucho = Shotgun(spriteImage=os.path.join(config.folderPath,'images','items', 'bala_shotgun.png'),
+                    posInicial=(x, y),)
+                grupoShotgun.add(cartucho)
+
+                x = x - 40
+                y = -50
+                cartucho = Shotgun(spriteImage=os.path.join(config.folderPath,'images','items', 'bala_shotgun.png'),
+                    posInicial=(x, y),)
+                grupoShotgun.add(cartucho)
+                
+                 
+            if tecla[pygame.K_TAB] and passa_tutorial and len(grupoShotgun) > 0:
+                #passa_tutorial = 0
                 sug = "mate o inimigo"
                 grupoInimigo.add(enemy01)
+                fim_tutorial = 1
+                
 
-            if enemy01.vida <= 0:
-                sleep(0.5)
+            if enemy01.vida <= 0 and len(grupoExplosion) == 0:
                 estadoDoJogo = "fim do tutorial"
+                #fim_do_tutorial = 1
 
 
                 
@@ -1158,13 +1205,13 @@ while main:
                 contador_de_teclas_mov += 1
             elif tecla[pygame.K_d]:
                 contador_de_teclas_mov += 1
-            elif tecla[pygame.K_SPACE] and contador_de_teclas_mov > 10:
+            elif tecla[pygame.K_SPACE] and contador_de_teclas_mov > 5:
                 contador_de_teclas_espaco += 1
             
             
 
             sug_form = config.fonte_media.render(sug, True, (0, 0, 0))
-            config.tela_virtual.blit(sug_form, (config.bgInitWidth/2-320, 200))
+            config.tela_virtual.blit(sug_form, ((config.bgInitWidth/2)-(sug_form.width/2), 80))
 
     if estadoDoJogo == "pausado":
         #menu_pause.draw_tela(tela, bg)
