@@ -16,6 +16,7 @@ bala1Inimigo = pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEf
 bala2Inimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot2.ogg"))
 balaShotgunInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot3.ogg"))
 balaLaserInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","laserbeam.wav"))
+explosaoInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","explosion.wav"))
 
 musicaIsPaused = False
 
@@ -81,3 +82,7 @@ def sons(evento):
     if evento=="laser":
         balaLaserInimigo.set_volume(config.volume)
         pygame.mixer.Sound.play(balaLaserInimigo)
+
+    if evento=="ExplosaoInimigo":
+        balaLaserInimigo.set_volume(config.volume)
+        pygame.mixer.Sound.play(explosaoInimigo)

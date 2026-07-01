@@ -1059,6 +1059,7 @@ while main:
             if enemy.vida <= 0:
                 explosao = Explosion(pos=enemy.rect.center, id=enemy.i)
                 grupoExplosion.add(explosao)
+                sons("ExplosaoInimigo")
                 jogador.add_kill()
                 if jogador.kills in(15, 30, 45, 60, 75):
                     acabou = 1
