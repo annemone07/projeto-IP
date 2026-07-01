@@ -79,7 +79,7 @@ Pedro Henrique Carício Pereira de Sousa (phcps): criação da loja de itens
 
 Rafael Tomaz Araujo Leite (rtal):
 
-Rodrigo Machado Araujo (rma10):
+Rodrigo Machado Araujo (rma10): Sistema para diferentes telas, sistema de som, fundo rolante, centralização das configurações
 
 Ariel Soares Pereira Rodrigues (aspr):
 
