@@ -38,7 +38,7 @@ class MenuPrincipal():
     def eventos(self, event):
         #print(event)
             #print(evento)
-        print(event)
+        #print(event)
         if event.type == pygame.QUIT:
             return "sair"
         elif event.type == pygame.KEYDOWN:
@@ -50,7 +50,7 @@ class MenuPrincipal():
                 self.opcaoSelecionada = (self.opcaoSelecionada+1)%len(self.opcoes)
             elif event.key==pygame.K_RETURN:
                 return self.opcoes[self.opcaoSelecionada]
-        print(self.opcaoSelecionada)
+        #print(self.opcaoSelecionada)
         return None
     
 
@@ -138,13 +138,13 @@ class Creditos():
     def eventos(self, event):
         #print(event)
             #print(evento)
-        print(event)
+        #print(event)
         if event.type == pygame.QUIT:
             return "sair"
         elif event.type == pygame.KEYDOWN:
             if event.key==pygame.K_RETURN:
                 return self.opcoes[self.opcaoSelecionada]
-        print(self.opcaoSelecionada)
+        #print(self.opcaoSelecionada)
         return None
     
 
@@ -222,7 +222,7 @@ class menuModos():
     def eventos(self, event):
         #print(event)
             #print(evento)
-        print(event)
+        #print(event)
         if event.type == pygame.QUIT:
             return "sair"
         elif event.type == pygame.KEYDOWN:
@@ -234,7 +234,7 @@ class menuModos():
                 self.opcaoSelecionada = (self.opcaoSelecionada+1)%len(self.opcoes)
             elif event.key==pygame.K_RETURN:
                 return self.opcoes[self.opcaoSelecionada]
-        print(self.opcaoSelecionada)
+        #print(self.opcaoSelecionada)
         return None
     
 
@@ -274,7 +274,7 @@ class menuDificuldade():
     def eventos(self, event):
         #print(event)
             #print(evento)
-        print(event)
+        #print(event)
         if event.type == pygame.QUIT:
             return "sair"
         elif event.type == pygame.KEYDOWN:
@@ -286,7 +286,7 @@ class menuDificuldade():
                 self.opcaoSelecionada = (self.opcaoSelecionada+1)%len(self.opcoes)
             elif event.key==pygame.K_RETURN:
                 return self.opcoes[self.opcaoSelecionada]
-        print(self.opcaoSelecionada)
+        #print(self.opcaoSelecionada)
         return None
     
 class menuOpcoes():
@@ -296,14 +296,14 @@ class menuOpcoes():
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgCreditos.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
-        self.opcoes = {"Volume":(0, 20, 40, 60, 80, 100), "Resolução":("Tela Cheia >","< 1920x1080 >","< 960x540"),"Voltar": ()}
+        self.opcoes = {"Volume":(0, 20, 40, 60, 80, 100), 
+                       "Resolução":("Tela Cheia >","< 1920x1080 >","< 960x540"),  
+                       "Voltar": ()}
         self.opcaoSelecionada = 0
-        self.valoresOpcoes = {0: "Volume", 1: "Resolução", 2: "Voltar"}
+        self.valoresOpcoes = {0: "Volume", 1: "Resolução",2: "Voltar"}
         self.imgs = ("soundbar- mute.png", "soundbar-20%.png", "soundbar-40%.png", "soundbar-60%.png", "soundbar - 80%.png", "soundbar - 100%.png")
         self.subopcao = 5
-        #self.num_barras = 5
-        self.ultimos_valores = [5, 0]
-        """""100","80","60","40","20","0"""""
+        self.ultimos_valores = [5, 0, 5]
         self.vol = pygame.image.load(os.path.join(self.folderPath,"images","SoundSprite",self.imgs[self.ultimos_valores[0]])).convert_alpha()
         self.vol = pygame.transform.scale(self.vol, (1000, 50))
         
@@ -326,16 +326,20 @@ class menuOpcoes():
             
             config.tela_virtual.blit(renderedText, (config.bgWidth/2 - 300, 200 + i*100))
         
-        if self.valoresOpcoes[self.opcaoSelecionada] == "Volume":
-            self.ultimos_valores[0] = self.ultimos_valores[self.opcaoSelecionada]
-        if self.valoresOpcoes[self.opcaoSelecionada] == "Resolução":
-            self.ultimos_valores[1] == self.ultimos_valores[1]
+        
         #pegando o sprite do volume
         self.vol = pygame.image.load(os.path.join(self.folderPath,"images","SoundSprite",self.imgs[self.ultimos_valores[0]])).convert_alpha()
         self.vol = pygame.transform.scale(self.vol, (360, 250))
+        
         #colocando os textos/imagens na tela
         config.tela_virtual.blit(self.vol, (config.bgWidth/2 - 140,90))
         config.tela_virtual.blit(self.fonte.render(self.opcoes["Resolução"][self.ultimos_valores[1]], True, (0, 0, 255)), (config.bgWidth/2 - 50, 300))
+        """"pygame.draw.rect(config.tela_virtual, (230, 230, 230), (600, 400, 360, 60), 3)
+        tx_volume = 36*self.ultimos_valores[2]
+        pygame.draw.rect(config.tela_virtual, (0, 0, 230), (605, 405, tx_volume - 10, 50))"""
+        
+        
+        
         #lógica antiga da barra --> caso seja necessário retornar
         """for k in range(self.ultimos_valores[self.opcaoSelecionada]):
             pygame.draw.rect(tela, (0, 0, 255), (config.bgInitWidth/2 - 150 + 80*k, 200, 50, 50))"""
@@ -344,10 +348,8 @@ class menuOpcoes():
             config.tela_virtual.blit(self.vol, (config.bgInitWidth/2 - 140,90))"""
         """for k in range(self.ultimos_valores[0]):
             pygame.draw.rect(tela, (0, 0, 255), (config.bgInitWidth/2 - 150 + 80*k, 200, 50, 50))"""
+        
 
-        
-        
-        
         
 
 
@@ -355,11 +357,11 @@ class menuOpcoes():
     def eventos(self, event):
         #print(event)
             #print(evento)
-        print(event)
+        #print(event)
         if event.type == pygame.QUIT:
             return "sair"
         elif event.type == pygame.KEYDOWN:
-            print(f"VALOR DO OPÇÃO {self.opcaoSelecionada}")
+            #print(f"VALOR DO OPÇÃO {self.opcaoSelecionada}")
             if event.key==pygame.K_q:
                 return "sair"
             elif event.key==pygame.K_w:
@@ -382,12 +384,59 @@ class menuOpcoes():
             
             elif event.key==pygame.K_RETURN and self.opcaoSelecionada != 2:
                 res_adaptada = self.opcoes["Resolução"][self.ultimos_valores[1]].removeprefix("< ").removesuffix(" >")
-                print(f"OLHA AQ{res_adaptada}")
-                return res_adaptada, self.ultimos_valores[0] * 20, 0
+                #print(f"OLHA AQ{res_adaptada}")
+                return res_adaptada, self.ultimos_valores[0] * 20, 0#, self.opcoes["Brilho"][self.ultimos_valores[2]]
             elif event.key==pygame.K_RETURN and self.opcaoSelecionada ==2:
                 res_adaptada = self.opcoes["Resolução"][self.ultimos_valores[1]].removeprefix("< ").removesuffix(" >")
-                print(f"OLHA AQ{res_adaptada}")
-                return res_adaptada, self.ultimos_valores[0] * 20, 1
+                #print(f"OLHA AQ{res_adaptada}")
+                return res_adaptada, self.ultimos_valores[0] * 20, 1#, self.opcoes["Brilho"][self.ultimos_valores[2]]
 
         
-        return None, None, None
+        return None, None, None, None
+    
+
+
+class menuFimBoss():
+    def __init__(self, tela:pygame.surface):
+        self.folderPath = config.folderPath
+        self.fonte = pygame.font.SysFont("Arial", 50, True, False)
+        self.opcoes = ("Reiniciar", "Opções", "Menu Principal","Sair")
+        self.tamanho = tela.get_size()
+        self.opcaoAtual = 0
+        self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
+        self.bg = pygame.transform.scale(self.bg, self.tamanho)
+
+    def draw_tela(self, tela, bg):
+        tela.blit(bg, (0, 0))
+
+    def draw_texto(self, tela, tam_tela, tempo_de_jogo):
+        config.tela_virtual.blit(self.bg, (0,0))
+        mensagem_fim = "LUTA CONCLUIDA"
+        mensagem_tempo = f"TEMPO TOTAL {tempo_de_jogo:0.1f}s"
+        mensagem_form_fim = config.fonte_grande.render(mensagem_fim, True, (0, 0, 0))
+        mensagem_form_tempo = config.fonte_media.render(mensagem_tempo, True, (0, 0, 0))
+        config.tela_virtual.blit(mensagem_form_fim, (300, 30))
+        config.tela_virtual.blit(mensagem_form_tempo, (300, 130))
+        pygame.display.flip() #para colocar a mensagem de final na tela
+        texto_pause = self.fonte.render("JOGO PAUSADO", True, (255, 255, 255))
+        
+        for i in range(len(self.opcoes)):
+            if i == self.opcaoAtual:
+                cor = (254, 56, 103)
+            else:
+                cor = (255, 255, 255)
+            texto_for = self.fonte.render(self.opcoes[i], True, cor)
+            tela.blit(texto_for, ((tam_tela[0]/2 - 100) , 300 + i*80))
+
+
+    def eventos(self, event):
+        if event.type == pygame.QUIT:
+            return "sair"
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s:
+                self.opcaoAtual = (self.opcaoAtual + 1) % 3
+            elif event.key == pygame.K_w:
+                self.opcaoAtual = (self.opcaoAtual - 1)%3
+            elif event.key == pygame.K_RETURN:
+                return self.opcoes[self.opcaoAtual]
+        return None

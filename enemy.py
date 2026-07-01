@@ -11,7 +11,7 @@ inimigos_data = {
             3 :{"imagem" : "Tracker-W1.png",  "velocidade": (500, 200),   "vida" : 125, "bala" : "tracker"},
             4: {"imagem" : "Kamikaze-W1.png", "velocidade" : (1500, 200), "vida" : 50,  "bala" : "self"   },
             5 :{"imagem" : "Laser-W1.png",    "velocidade" : (400, 250),  "vida" : 100, "bala" : "laser"  },
-            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 10, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
 class Inimigo(pygame.sprite.Sprite):
@@ -26,7 +26,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", inimigos_data[i]["imagem"])).convert_alpha()
         self.image = pygame.transform.scale(self.image, (256, 256))
         if self.i == "Boss-W1":
-            self.image = pygame.transform.scale(self.image, (1*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.33))
+            self.image = pygame.transform.scale(self.image, (0.7*pygame.display.Info().current_w, (pygame.display.Info().current_w)*0.2))
         #print(self.imagens[i])
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -120,7 +120,7 @@ class Inimigo(pygame.sprite.Sprite):
 
     def update(self, dt, camera):
         self.dt = dt
-        if (self.i in (0, 1, 2, 3 ,5) or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 50)) or (self.i ==4 and self.stop == 0):  
+        if (self.i in (0, 1, 2, 3 ,5) or (self.i == "Boss-W1" and self.rect.bottomleft[1]< 350)) or (self.i ==4 and self.stop == 0):  
             if self.i != "Boss-W1":    
                 self.dir()  
             self.posicao.y -= camera.y
@@ -177,7 +177,7 @@ class Bullet(pygame.sprite.Sprite):
             #print(f"POSICAO FINAL{self.rect.center}")
         else:
             self.image = pygame.image.load(os.path.join(folderPath, "images", "enemy", "estadosLaser", self.imagem)).convert_alpha()
-            self.image = pygame.transform.scale(self.image, (30, 1000))
+            self.image = pygame.transform.scale(self.image, (20, 1000))
             self.rect = self.image.get_rect()
             self.rect.centerx = posicao[0]
             self.rect.centery = posicao[1] + (self.rect.height/2)
@@ -204,7 +204,7 @@ class Bullet(pygame.sprite.Sprite):
             if dx !=0: #para evitar divisao por zero    
                 ang = (math.atan(dy/dx))
             else:
-                ang = (math.pi)/2
+                ang = 3*(math.pi)/2
             cos = math.cos(ang)
             sin = math.sin(ang)
             if (dx <=0 and dy <= 0) or (dy >= 0 and dx<=0): #caso precise inverter alguma coordenada
@@ -242,7 +242,7 @@ class Bullet(pygame.sprite.Sprite):
         if self.tipo == "bigger":
             deltax = int(self.rect.bottomright[0] - self.rect.bottomleft[0])
             deltay = int(abs(self.rect.bottomleft[1] - self.rect.topleft[1]))
-            if deltax < 300 and deltay < 300:    
+            if deltax < 250 and deltay < 250:    
                 self.image = pygame.transform.scale(self.image, (int(deltax*1.02), int(deltay*1.02)))
                 self.rect = self.image.get_rect()
                 self.mask = pygame.mask.from_surface(self.image)
@@ -267,38 +267,42 @@ class Bullet(pygame.sprite.Sprite):
             
 
     def update(self, dt, camera, playerPos, mudar, laser, enemyPos):
-        self.mov(camera)
+        if self.tipo != "laser":
+            self.mov(camera)
         self.dt = dt
-        if abs(playerPos.x-self.posicao.x) >= 3000 or abs(playerPos.y-self.posicao.y) >= 3000:
+        if (abs(playerPos.x-self.posicao.x) >= 3000 or abs(playerPos.y-self.posicao.y) >= 3000) and self.tipo != "laser":
             self.kill()
             #print("Dead")
-        if self.tipo == "tracker" and mudar and self.contador_mover < 3:
+        if self.tipo == "tracker" and mudar and self.contador_mover <= 3:
             self.direcao(playerPos, self.posicao, pow="null")
             self.contador_mover += 1
 
         if self.tipo == "laser":
-            continuar = 0
-            if laser: 
-                if not self.boss:
-                    continuar = 1
-                    estados_laser = (10, 20, 30, 50, 60)
-                    if self.estado_laser != 4:
-                        self.estado_laser += 1
-                if self.boss:
-                    estados_laser = (20, 40, 80, 100, 200)
-                    if self.estado_laser !=4:
-                        self.estado_laser += 1
-                        continuar = 1
-
-                if not continuar:
-                    self.kill()
-                else:
-                    self.image = pygame.transform.scale(self.image, (estados_laser[self.estado_laser], 1000))
-                    self.rect = self.image.get_rect()
-                    self.dano = self.dados_balas["laser"]["danos"][self.estado_laser]
-                      
-            if len(enemyPos) == 0:
+            continuar = 1
+            estados_laser = (20, 40, 80, 100, 200) #para o boss
+            if laser and self.boss: 
+                self.estado_laser += 1
+                if self.estado_laser  == 5:
+                    continuar = 0
+                print(f"estado continuar{continuar}"), print(self.estado_laser)
+            
+            if not self.boss:
+                #continuar = 1
+                estados_laser = (20, 25, 30, 50, 60)
+                if self.estado_laser != 4:
+                    self.estado_laser += 1
+                
+                   
+            if not continuar:
                 self.kill()
+            else: 
+                self.image = pygame.transform.scale(self.image, (estados_laser[self.estado_laser], 1000))
+                self.rect = self.image.get_rect()
+                self.dano = self.dados_balas["laser"]["danos"][self.estado_laser]
+                      
+            if len(enemyPos) == 0: #tira o laser da memória quando o inimigo dele morrer
+                self.kill()
+                print("MATOU AQ DENTRO")
             #else: #atualiza o laser p ficar sempre embaixo do inimigo, só tenta atualizar se tiver passado pelo menos 1 inimigo com laser  
             else:
                 self.rect.centerx = enemyPos[0][0] 
