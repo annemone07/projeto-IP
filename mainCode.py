@@ -733,6 +733,7 @@ while main:
         for moeda in grupoMoeda:
             if jogador.hitbox.colliderect(moeda.rect):
                 moeda_coletados.append(moeda)
+                sons("pegouMoeda")
                 moeda.kill()
             elif moeda.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 moeda.kill()
@@ -1037,6 +1038,7 @@ while main:
                     jogador.armadura = 0
                 else:
                     jogador.armadura -= dano
+            sons("powJogador")
             jogador.player_update("D")
             if jogador.vida<=0:
                 tempo_morte=perf_counter()
@@ -1054,6 +1056,7 @@ while main:
             colisao_inimigo = pygame.sprite.spritecollide(enemy, grupoBala, True, pygame.sprite.collide_mask)
             if colisao_inimigo:
                 enemy.levou_dano()
+                sons("powInimigo")
                 enemy.vida -= 20
                 #print(f"Inimigo: {enemy01.vida}")
             if enemy.vida <= 0:

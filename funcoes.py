@@ -17,6 +17,9 @@ bala2Inimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEff
 balaShotgunInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot3.ogg"))
 balaLaserInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","laserbeam.wav"))
 explosaoInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","explosion.wav"))
+hitJogador= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","Hit 1.wav"))
+hitInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","Hit 2.wav"))
+moedinha= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","coin1.wav"))
 
 musicaIsPaused = False
 
@@ -82,7 +85,15 @@ def sons(evento):
     if evento=="laser":
         balaLaserInimigo.set_volume(config.volume)
         pygame.mixer.Sound.play(balaLaserInimigo)
-
     if evento=="ExplosaoInimigo":
-        balaLaserInimigo.set_volume(config.volume)
+        explosaoInimigo.set_volume(config.volume)
         pygame.mixer.Sound.play(explosaoInimigo)
+    if evento== "powInimigo":
+        hitInimigo.set_volume(config.volume)
+        pygame.mixer.Sound.play(hitInimigo)
+    if evento== "powJogador":
+        hitJogador.set_volume(config.volume)
+        pygame.mixer.Sound.play(hitJogador)
+    if evento== "pegouMoeda":
+        moedinha.set_volume(config.volume)
+        pygame.mixer.Sound.play(moedinha)
