@@ -170,7 +170,7 @@ class menuFimTutorial():
 
     def draw(self, tela, tam_tela, bg):
         tela.blit(bg, (0, 0))
-        texto_pause = self.fonte.render("FIM DO TUTORIAL", True, (255, 255, 255))
+        texto_pause = self.fonte.render("PARABÉNS!\nFIM DO TUTORIAL", True, (255, 255, 255))
         tela.blit(texto_pause, (tam_tela[0]/2 - 180, 100))
         for i in range(len(self.opcoes)):
             delta = 0

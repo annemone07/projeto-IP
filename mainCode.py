@@ -387,7 +387,7 @@ while main:
                 if event.key == pygame.K_ESCAPE:
                     estadoDoJogo = "pausado"
                     sons(estadoDoJogo)
-                    tempo_atual = perf_counter() - tempo_inicio
+                    tempo_atual = perf_counter()
                 if event.key == pygame.K_l and modo == "infinito":
                     jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
                     inicio_de_jogo += tempo_pausado
@@ -833,7 +833,8 @@ while main:
         cartuchos_coletados = []
         for cartuchos in grupoShotgun:
             if jogador.hitbox.colliderect(cartuchos.rect):
-                jogador.cartuchos += 1
+                if jogador.cartuchos < 50:
+                    jogador.cartuchos += 1
                 cartuchos_coletados.append(cartuchos)
                 cartuchos.kill()
             elif cartuchos.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
@@ -1141,11 +1142,11 @@ while main:
 
         if modo == "tutorial":
             if contador_de_teclas_mov in range(0, 10):
-                sug = "  use W-A-S-D para se movimentar"
+                sug = "  Use W-A-S-D para se movimentar"
             if contador_de_teclas_mov >= 10 and perf_counter() - inicio_de_jogo - tempo_no_menu > 3 and contador_de_teclas_espaco == 0:
-                sug = "aperte espaço para atirar"
+                sug = "Aperte espaço para atirar"
             if (contador_de_teclas_mov + contador_de_teclas_espaco) >= 10 and contador_de_teclas_espaco !=0 and len(grupoMoeda) == 0 and jogador.moedas <= 8 and perf_counter() - inicio_de_jogo - tempo_no_menu > 6:
-                sug = "moedas compram itens na loja"
+                sug = "Moedas compram itens na loja"
                 x = random.randint(200,config.bgInitWidth-200)
                 y = -200
                 moeda_ouro = Moedas(spriteImage=os.path.join(config.folderPath,'images','items', 'coin 2.png'),
@@ -1167,12 +1168,12 @@ while main:
                         posInicial=(x, y),)
                     grupoIma.add(ima)  
                     
-                    sug = "use o imã para atrair moedas"
+                    sug = "Use o imã para atrair moedas"
 
                 
             
             if jogador.moedas > 8 and len(grupoEscudo) == 0 and len(grupoCura) == 0 and jogador.escudo == 0:
-                sug = "cura e escudo recuperam sua vida"
+                sug = "   Cura recupera sua vida e\n    4 escudos dão proteção extra"
                 x = random.randint(200,config.bgInitWidth-200)
                 y = -200
                 escudoSpawnado = ParteEscudo(
@@ -1192,7 +1193,7 @@ while main:
                 grupoEscudo.add(escudoSpawnado)
 
             if len(grupoEscudo) >= 0 and len(grupoCura) >= 0 and intervalo_tiro ==cooldown_normal and jogador.escudo > 0 and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0 and not passa_tutorial:
-                sug = "quick shot aumenta os disparos"
+                sug = "  Quick shot aumenta\n  a velocidade de disparo"
                 
                 x = random.randint(200,config.bgInitWidth-200)
                 y = -200
@@ -1204,20 +1205,20 @@ while main:
                 grupoQuickShot.add(powerupSpawnado)
 
             if len(quick_shots_coletados) > 0 and not jogador.bullet_time and len(grupoQuickShot) == 0 and len(grupoInimigo) == 0 and not passa_tutorial:
-                sug = "aperte shift para o bullet time"
+                sug = "  Pegue a carga e aperte shift\n   para usar o bullet time"
                 x = random.randint(200,config.bgInitWidth-200)
                 y = -200
                 charge = Charge(spriteImage=os.path.join(config.folderPath,'images','items', 'choque_do_trovao.png'),
                     posInicial=(x, y),)
                 grupoBulletTime.add(charge)
 
-            if tecla[pygame.K_LSHIFT] and len(grupoBulletTime) >= 0 and len(grupoInimigo) == 0 and sug == "aperte shift para o bullet time":
+            if tecla[pygame.K_LSHIFT] and len(grupoBulletTime) >= 0 and len(grupoInimigo) == 0 and sug == "  Pegue a carga e aperte shift\n   para usar o bullet time":
                 passa_tutorial =1
                 print("PASSAR TUTORIAL")
             
 
             if passa_tutorial and len(grupoShotgun) ==0 and len(grupoInimigo) == 0 and len(grupoQuickShot) >= 0 and not fim_tutorial:
-                sug = "   pegue o cartucho \n   aperte tab para trocar de arma"
+                sug = "   Pegue o cartucho e aperte tab\n   para trocar para shotgun"
                 x = random.randint(200,config.bgInitWidth-200)
                 y = -50
                 cartucho = Shotgun(spriteImage=os.path.join(config.folderPath,'images','items', 'bala_shotgun.png'),
@@ -1239,7 +1240,7 @@ while main:
                  
             if tecla[pygame.K_TAB] and passa_tutorial and len(grupoShotgun) > 0:
                 #passa_tutorial = 0
-                sug = "mate o inimigo"
+                sug = "Mate o inimigo!"
                 grupoInimigo.add(enemy01)
                 fim_tutorial = 1
                 
@@ -1264,7 +1265,7 @@ while main:
             
 
             sug_form = config.fonte_media.render(sug, True, (0, 0, 0))
-            config.tela_virtual.blit(sug_form, ((config.bgInitWidth/2)-(sug_form.width/2) + 50, 80))
+            config.tela_virtual.blit(sug_form, ((config.bgInitWidth/2)-(sug_form.width/2) + 45, 100))
 
     if estadoDoJogo == "pausado":
         #menu_pause.draw_tela(tela, bg)

@@ -91,7 +91,7 @@ class Loja:
                 "rect": pygame.Rect(x0 + 3 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
             },
             "shotgun": {
-                "nome": "Carga", "preco": 2,
+                "nome": "Cartuchos", "preco": 2,
                 "img": self.img_cartucho,
                 "rect": pygame.Rect(x0 + 4 * (CARD_W + ESPACO), CARD_Y, CARD_W, CARD_H)
             }
@@ -137,15 +137,15 @@ class Loja:
             if bullet_time_ativo:
                 mensagem_feedback = "Bullet Time já está ativo!"
             elif jogador.charge == 5:
-                mensagem_feedback = "Você vai sobrecarregar!"
+                mensagem_feedback = "Você já tem o máximo de cargas para o Bullet Time!"
             else:
                 jogador.moedas -= dados["preco"]
                 jogador.charge += 1
-                mensagem_feedback = "Carregado e preparado!"
+                mensagem_feedback = "Você comprou uma carga para o Bullet Time"
 
         elif id_item == "shotgun":
             if jogador.cartuchos == 50:
-                mensagem_feedback = "Você não tem espaço pra tanta munição assim!"
+                mensagem_feedback = "Você já tem o limite de cartuchos de Shotgun!"
             else:
                 jogador.moedas -= dados["preco"]
                 jogador.cartuchos += 2
@@ -161,7 +161,7 @@ class Loja:
         config.tela_virtual.blit(txt_titulo, (LARGURA // 2 - txt_titulo.get_width() // 2, 40))
 
         # Caixa de Feedback (Mensagens sobre a compra)
-        palavras_negativas = ("insuficientes", "já está", "Não é possivel", "sobrecarregar", "espaço")
+        palavras_negativas = ("insuficientes", "já está", "Não é possivel", "máximo", "limite")
         if any(p in mensagem_feedback for p in palavras_negativas):
             cor_feedback = self.VERMELHO
         elif "Bem-vindo" in mensagem_feedback:
@@ -200,7 +200,7 @@ class Loja:
         config.tela_virtual.blit(txt_carts, (30, 145))
 
         # Instrução para fechar
-        txt_fechar = self.fonte_status.render("Pressione L ou ESC para fechar a loja", True, self.PRETO)
+        txt_fechar = self.fonte_status.render("Pressione ESC para fechar a loja", True, self.PRETO)
         config.tela_virtual.blit(txt_fechar, (LARGURA // 2 - txt_fechar.get_width() // 2, ALTURA - 40))
 
         # --- Desenho dos Cards dos Itens ---
