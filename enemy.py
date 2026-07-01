@@ -11,7 +11,7 @@ inimigos_data = {
             3 :{"imagem" : "Tracker-W1.png",  "velocidade": (500, 200),   "vida" : 125, "bala" : "tracker"},
             4: {"imagem" : "Kamikaze-W1.png", "velocidade" : (1500, 200), "vida" : 50,  "bala" : "self"   },
             5 :{"imagem" : "Laser-W1.png",    "velocidade" : (400, 250),  "vida" : 100, "bala" : "laser"  },
-            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 10, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
+            "Boss-W1": {"imagem" : "boss joão 2.png", "velocidade": (0, 0), "vida": 1000, "bala": ("follow", "rajada", "bigger", "tracker", "laser")}
                }
 
 class Inimigo(pygame.sprite.Sprite):

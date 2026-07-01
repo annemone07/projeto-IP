@@ -10,7 +10,7 @@ class MenuPrincipal():
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
-        self.opcoes = ["Jogar", "Tutorial", "Opções", "Sair", "Creditos"]
+        self.opcoes = ["Jogar", "Tutorial", "Opções","Ranking", "Sair", "Creditos"]
         self.opcaoSelecionada = 0
         self.dadosGrupo = {"equipe": "Equipe 3", "membros": ("jfag", "rma10", "phcps", "flg", "rtal", "aspr")}
     
@@ -96,7 +96,9 @@ class telaMorte(MenuPrincipal):
         self.bg = pygame.transform.scale(self.bg, (config.bgWidth,config.bgHeight))
         self.opcoes = ["Reiniciar", "Menu Principal", "Sair"]
     
-    def draw(self, tela, n_kills):
+    def draw(self, tela, n_kills, mod):
+        if mod == "infinito":
+            self.opcoes = ["Reiniciar", "Menu Principal","Adicionar Ranking", "Sair"]
         tela.blit(self.bg, (0,0))
         cor=(255,255,255)
         for i, text in enumerate(self.opcoes):
@@ -400,7 +402,7 @@ class menuFimBoss():
     def __init__(self, tela:pygame.surface):
         self.folderPath = config.folderPath
         self.fonte = pygame.font.SysFont("Arial", 50, True, False)
-        self.opcoes = ("Reiniciar", "Opções", "Menu Principal","Sair")
+        self.opcoes = ("Reiniciar", "Opções", "Adicionar Ranking" ,"Menu Principal","Sair")
         self.tamanho = tela.get_size()
         self.opcaoAtual = 0
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
@@ -434,9 +436,134 @@ class menuFimBoss():
             return "sair"
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_s:
-                self.opcaoAtual = (self.opcaoAtual + 1) % 3
+                self.opcaoAtual = (self.opcaoAtual + 1) % 5
             elif event.key == pygame.K_w:
-                self.opcaoAtual = (self.opcaoAtual - 1)%3
+                self.opcaoAtual = (self.opcaoAtual - 1)%5
             elif event.key == pygame.K_RETURN:
                 return self.opcoes[self.opcaoAtual]
+        return None
+    
+
+
+
+
+class menuAddRanking():
+    def __init__(self, tela:pygame.surface):
+        self.folderPath = config.folderPath
+        self.fonte = pygame.font.SysFont("Arial", 70, True, False)
+        #self.opcoes = ("Reiniciar", "Opções", "Menu Principal","Sair")
+        self.tamanho = tela.get_size()
+        self.opcaoAtual = 0
+        self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
+        self.bg = pygame.transform.scale(self.bg, self.tamanho)
+        self.nome = ""
+
+
+    def draw_texto(self, tela, tam_tela, tempo_de_jogo):
+        print("ENTROU AQ")
+        config.tela_virtual.blit(self.bg, (0,0))
+        mensagem_fim = "DIGITE SEU NOME"
+        mensagem_tempo = f"TEMPO TOTAL: {tempo_de_jogo:0.1f}s"
+        mensagem_form_fim = config.fonte_grande.render(mensagem_fim, True, (0, 0, 0))
+        mensagem_form_tempo = config.fonte_media.render(mensagem_tempo, True, (0, 0, 0))
+        config.tela_virtual.blit(mensagem_form_fim, (300, 30))
+        config.tela_virtual.blit(mensagem_form_tempo, (300, 130))
+        #pygame.display.flip() #para colocar a mensagem de final na tela
+        #pygame.draw.rect(config.tela_virtual, (0, 0, 0), (300 + 30*i, 250, 20, 5))
+        
+        for i in range(6):
+            if i == self.opcaoAtual:
+                cor = (254, 56, 103)
+            else:
+                cor = (255, 255, 255)
+            pygame.draw.rect(config.tela_virtual, cor, (550 + 70*i, 500, 60,15))
+
+        for letra in range(len(self.nome)):
+            x_form = config.fonte_media.render(self.nome[letra], True, (0, 0, 0))
+            config.tela_virtual.blit(x_form,(550 + 70*letra, 420))
+
+
+
+    def eventos(self, event):
+        if event.type == pygame.QUIT:
+            return "sair"
+        elif event.type == pygame.TEXTINPUT:
+            self.nome += (event.text).upper()
+            self.opcaoAtual += 1
+            if self.opcaoAtual == 6:
+                self.opcaoAtual = 5
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.nome = self.nome[:-1]
+                self.opcaoAtual -= 1
+                if self.opcaoAtual < 0:
+                    self.opcaoAtual = 0
+            if event.key == pygame.K_RETURN:
+                self.opcaoAtual = 0
+                user = self.nome
+                self.nome = ""
+                return user
+
+            
+        return None
+    
+
+
+
+
+class exibirRanking():
+    def __init__(self, tela:pygame.surface):
+        self.folderPath = config.folderPath
+        self.fonte = pygame.font.SysFont("Arial", 30, True, False)
+        #self.opcoes = ("Reiniciar", "Opções", "Menu Principal","Sair")
+        self.tamanho = tela.get_size()
+        self.opcaoAtual = 0
+        self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
+        self.bg = pygame.transform.scale(self.bg, self.tamanho)
+        self.dificuldades = ("Fácil", "Médio", "Difícil", "Impossível")
+
+
+    def draw_texto(self, tela, tam_tela, rankings):
+        config.tela_virtual.blit(self.bg, (0,0))
+        ranking_boss = "BOSS"
+        ranking_infinito = "INFINITO"
+        #mensagem_tempo = f"TEMPO TOTAL {tempo_de_jogo:0.1f}s"
+        mensagem_form_1 = config.fonte_media.render(ranking_boss, True, (0, 0, 0))
+        mensagem_form_2 = config.fonte_media.render(ranking_infinito, True, (0, 0, 0))
+        dif = self.fonte.render(self.dificuldades[self.opcaoAtual], True, (0, 0, 0))
+
+        config.tela_virtual.blit(mensagem_form_1, (150, 30))
+        config.tela_virtual.blit(mensagem_form_2, (config.bgInitWidth - 500, 27))
+        config.tela_virtual.blit(dif, (config.bgInitWidth - 400, 120))
+        
+        
+        
+        for i in range(len(rankings[0])):
+            dado_atual = self.fonte.render(f"{rankings[0][i]["user"]}:  {rankings[0][i]["tempo"]:.1f}s" , True, (0, 0, 0))
+            config.tela_virtual.blit(dado_atual,(150, 150 + 40 * i) )
+        """"print(self.dificuldades[self.opcaoAtual]), print(rankings[1])
+        print(rankings[1][self.dificuldades[self.opcaoAtual]])"""""
+        print(rankings[1][self.dificuldades[self.opcaoAtual]])
+        for j in range(len(rankings[1][self.dificuldades[self.opcaoAtual]])):
+            dado_atual = self.fonte.render(f"{rankings[1][self.dificuldades[self.opcaoAtual]][j]["user"]}:  {rankings[1][self.dificuldades[self.opcaoAtual]][j]["tempo"]:.1f}s" , True, (0, 0, 0))
+            config.tela_virtual.blit(dado_atual,(config.bgInitWidth - 500, 200 + 40 * j) )
+
+
+
+    def eventos(self, event):
+        if event.type == pygame.QUIT:
+            return "sair"
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                self.opcaoAtual -= 1
+                if self.opcaoAtual < 0:
+                    self.opcaoAtual = 3
+            if event.key == pygame.K_d:
+                self.opcaoAtual += 1
+                if self.opcaoAtual > 3:
+                    self.opcaoAtual = 0
+            if event.key == pygame.K_ESCAPE:
+                return "Voltar"
+
+            
         return None
