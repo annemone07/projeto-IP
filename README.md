@@ -75,7 +75,7 @@ Ariel Soares Pereira Rodrigues (aspr):
 
 **Listas**: aplicadas na lógica de armazenamento dos dados de posição, coleta e tipo dos objetos do jogo.
 
-**Funções**: empregadas para definir os comportamentos dos objetos dentro das classes.
+**Funções e Métodos**: empregados para definir os comportamentos dos objetos dentro das classes.
 
 **Laços de Repetição [for, while]**: utilizados para estabelecer o loop principal de funcionamento do jogo, bem como para definir a mecânica de colisão dos objetos.
 
@@ -86,21 +86,33 @@ Ariel Soares Pereira Rodrigues (aspr):
 ## 🧩 Desafios, Erros e Aprendizados
 
 ### Qual foi o maior erro cometido durante o projeto? Como vocês lidaram com ele?
+O maior erro cometido ao longo do projeto foi a carência de definição de um guia claro de arquitetura do código, o que dificultava a integração entre os módulos gerados pelos diferentes estilos de programação dos integrantes do grupo. Essa divergência de maneiras de programação, agravada pela falta de comentários nos trechos do código, potencializou o retrabalho, de modo a retardar o andamento do desenvolvimento do jogo. Diante desse cenário, uma refatoração padronizada e a documentação interna dos scripts foram as ações tomadas pelo grupo para solucionar esse problema.
 
 ### Qual foi o maior desafio enfrentado durante o projeto? Como vocês lidaram com ele?
+O maior desafio com o qual lidamos durante o trabalho foi o aprendizado de Pygame e GitHub simultaneamente à execução do projeto, uma vez que a maior parte dos integrantes do grupo não tinha contato prévio com essas tecnologias. Dessa forma, o aprendizado paralelo ao uso dessas ferramentas gerou erros, tais como conflitos nas fusões das versões do código e retrabalho para a adição das novas mecânicas ao jogo. Levando em conta essa situação, a equipe mostrou-se engajada para buscar conhecimentos acerca dessas ferramentas, por meio de diversas fontes, como os materiais disponibilizados na plataforma Redu e no Discord, bem como através de pesquisas independentes.
 
 ### Quais as lições aprendidas durante o projeto?
+O projeto foi essencial para reconhecer a importância do alinhamento técnico e da documentação para a colaboração da equipe, o que otimizou a adição de novas funcionalidades e minimizou conflitos de integração, reduzindo o retrabalho. Além disso, os empecilhos iniciais associados ao uso do GitHub possibilitaram à equipe uma importante curva de aprendizado, a qual gerou um amadurecimento coletivo acerca da manutenção de um fluxo de trabalho eficiente e integrado.
+
 
 ## 🎮 Tutorial Instalação Jogo
 
 ### 1. Clone o repositório
 
 Escreva o seguinte comando no terminal do Git:
-
+```bash
 git clone https://github.com/jaikarla/jogo-ip.git
-
+```
 ### 2. Instale as dependências
 
+```bash
 pip install pygame-ce
+```
 
-### 3. Execute o arquivo mainCode.py
+### 3. Execute o arquivo
+
+```bash
+python mainCode.py
+```
+
+---
