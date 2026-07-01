@@ -75,7 +75,7 @@ Felipe Lopez Guerra (flg): criação coletáveis, relatório final e slides
 
 João Felipe Audet Guerra (jfag): mecânicas dos inimigos, modos de jogo, menus e ranking interno
 
-Pedro Henrique Carício Pereira de Sousa (phcps):
+Pedro Henrique Carício Pereira de Sousa (phcps): criação da loja de itens 
 
 Rafael Tomaz Araujo Leite (rtal):
 
