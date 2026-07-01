@@ -18,7 +18,8 @@ tela_virtual = pygame.Surface(telaSizePlaceholder)
 tela_escalada = pygame.transform.smoothscale(tela_virtual, (bgWidth,bgHeight))
 fonte = pygame.font.SysFont("arial", 40, True, False)
 fonte_grande = pygame.font.SysFont("arial", 100, True, False)
-fonte_media = pygame.font.SysFont("arial", 65, True, False)
+fonte_media = pygame.font.SysFont("consolas", 65, True, False)
+fonte_titulo = pygame.font.SysFont("comic sans", 180)
 fps=60
 volume = 1.0
 

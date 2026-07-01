@@ -8,7 +8,7 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge, Ima, Shotgun
 from time import perf_counter, sleep
 from loja import Loja
-from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes, menuFimBoss
+from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes, menuFimBoss, menuAddRanking, exibirRanking
 import config
 from funcoes import criarJogador, resetarVariaveis, sons
 
@@ -16,7 +16,8 @@ from funcoes import criarJogador, resetarVariaveis, sons
 pygame.init() 
 pygame.mixer.init()
 pygame.mixer.set_num_channels(32)
-pygame.display.set_caption("nome do jogo") #alterar para o nome do jogo dps
+pygame.display.set_icon(pygame.image.load(os.path.join(config.folderPath,"images","logo.png"))) #logo para ficar no arquivo enquanto executa
+pygame.display.set_caption("AeroHell") #alterar para o nome do jogo dps
 clock = pygame.time.Clock()
 deltaTime = clock.tick(60)/1000
 
@@ -105,6 +106,8 @@ escolher_dificuldade = menuDificuldade(config.tela_virtual)
 menu_opcoes = menuOpcoes(config.tela_virtual)
 loja = Loja()
 menu_boss = menuFimBoss(config.tela_virtual)
+menu_input = menuAddRanking(config.tela_virtual)
+menu_ranking = exibirRanking(config.tela_virtual)
 
 
 #temporizadores
@@ -156,6 +159,11 @@ duracao_ima = 20
 boss_fight = 0
 pode_spawn_laser = 1
 mudar, laser = 0, 0 #variaveis para as balas com condições especiais
+"""with open("ranking.txt", "w") as ranking:
+    ranking.write("RANKING\n")"""
+ranking_boss = []
+ranking_infinito = {"Fácil": [], "Médio": [], "Difícil": [], "Impossível": []}
+acabou = 0
 while main:
     #print("inimigos", grupoMoeda)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
@@ -213,8 +221,9 @@ while main:
                 sys.exit()
                 main=False
                 estadoDoJogo="fechado"
-
-        elif estadoDoJogo=="tela de morte": #Menu principal ---Selecionar---> (algum modo de jogo) ---> Tela de morte
+            elif selecao == "Ranking":
+                estadoDoJogo = "ranking"
+        elif estadoDoJogo=="tela de morte":
             sons(estadoDoJogo)
             selecao = tela_de_morte.eventos(event)
 
@@ -222,7 +231,10 @@ while main:
                 resetarVariaveis(grupoGrupos, 0)#Apagar todo mundo
                 jogador = criarJogador(deltaTime)#Cria um jogador novo, esse que tem que ter suas variáveis internas zeradas
                 grupoJogador.add(jogador)
-                inicio_de_jogo=perf_counter()#Iniciar o tempo de jogo
+                estadoDoJogo="jogando"
+                sons(estadoDoJogo)
+                wave_counter=0
+                inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
                 estadoDoJogo="jogando"#Indicar que reiniciou o jogo
                 sons(estadoDoJogo)
@@ -232,8 +244,10 @@ while main:
                 inicio_menu = 0.0 
                 estadoDoJogo="menu principal"
                 sons(estadoDoJogo)
-
-            elif selecao=="Sair":#Tela de morte ---Selecionar---> Menu Principal
+            elif selecao == "Ranking":
+                estadoAnterior2 = estadoDoJogo
+                estadoDoJogo = "add ranking"
+            elif selecao=="Sair":
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -282,7 +296,9 @@ while main:
                 estadoDoJogo = "jogando"
                 sons(estadoDoJogo)
                 grupoJogador.add(jogador)
-                tempo_no_menu += perf_counter() - inicio_menu
+                tempo_no_menu += perf_counter() - inicio_de_jogo
+                if selecao != "Voltar":
+                    dificuldade = selecao
                 if selecao == "Fácil":
                     wave_counter= 1
                 elif selecao == "Médio":
@@ -338,13 +354,32 @@ while main:
 
             elif selecao == "Menu Principal":
                 estadoDoJogo = "menu principal"
-
+            elif selecao == "Adicionar Ranking":
+                estadoAnterior2 = estadoDoJogo
+                estadoDoJogo = "add ranking"
             elif selecao == "Sair":
                 pygame.quit()
                 sys.exit()
                 main=False
                 estadoDoJogo="fechado"
 
+        elif estadoDoJogo == "add ranking":
+            selecao = menu_input.eventos(event)
+            if selecao is not None:
+                if modo == "boss":
+                    ranking_boss.append({"user": selecao, "tempo": tempo_jogo_fim})
+                    ranking_boss.sort(key=lambda x: x["tempo"], reverse=False) #ordenar os tempos de forma decrescente
+                    estadoDoJogo = estadoAnterior2
+                elif modo == "infinito":
+                    print(ranking_infinito[dificuldade])
+                    ranking_infinito[dificuldade].append({"user": selecao, "tempo": tempo_jogo_fim})
+                    ranking_infinito[dificuldade].sort(key=lambda x: x["tempo"], reverse=True) #ordenar os tempos de forma decrescente
+                    estadoDoJogo = estadoAnterior2
+                    print(ranking_infinito[dificuldade])
+        elif estadoDoJogo == "ranking":
+            selecao = menu_ranking.eventos(event)
+            if selecao == "Voltar":
+                estadoDoJogo = "menu principal"
 
         elif estadoDoJogo == "jogando":
             #pausar
@@ -514,7 +549,7 @@ while main:
     if estadoDoJogo=="menu principal":
         menu_principal.draw(config.tela_virtual)
     elif estadoDoJogo=="tela de morte":
-        tela_de_morte.draw(config.tela_virtual, jogador.kills)
+        tela_de_morte.draw(config.tela_virtual, jogador.kills, modo)
     elif estadoDoJogo=="creditos":
         creditos.draw(config.tela_virtual)
     elif estadoDoJogo == "fim do tutorial":
@@ -527,6 +562,10 @@ while main:
         menu_opcoes.draw(config.tela_virtual)
     elif estadoDoJogo == "menu boss":
         menu_boss.draw_texto(config.tela_virtual, config.telaSizePlaceholder, tempo_jogo_fim)
+    elif estadoDoJogo == "add ranking":
+        menu_input.draw_texto(config.tela_virtual, config.telaSizePlaceholder, tempo_jogo_fim)
+    elif estadoDoJogo == "ranking":
+        menu_ranking.draw_texto(config.tela_virtual, config.telaSizePlaceholder, (ranking_boss, ranking_infinito))
 
 
         
@@ -538,14 +577,14 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
 
-        if jogador.kills % 15 == 0 and jogador.kills !=0 and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss":
+        if acabou and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss":
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = config.fonte_grande.render(mensagem, True, (0, 0, 0))
             config.tela_virtual.blit(mensagem_form, ((250), (config.bgInitHeight/2) - mensagem_form.get_size()[0]))
             config.tela_escalada = pygame.transform.smoothscale(config.tela_virtual, (config.bgWidth,config.bgHeight)) ##################
             config.tela.blit(config.tela_escalada,(0,0))
-            
+            acabou = 0
             pygame.display.flip() #para colocar a mensagem de final na tela
             sleep(3.0)
             #limpando os elementos da tela
@@ -557,7 +596,7 @@ while main:
             acabou_sair = 0
             pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
         
-        if wave_counter % 5 == 0 and wave_counter != 0 and not boss_fight and not acabou_sair and modo == "boss":
+        if wave_counter ==5 and wave_counter != 0 and not boss_fight and not acabou_sair and modo == "boss":
             boss = Inimigo("Boss-W1", deltaTime, pos=(config.bgInitWidth/2, 180), limites_mov=(0, 0), sentido_inicial="null")
             grupoInimigo.add(boss)
             boss_fight = 1
@@ -674,7 +713,7 @@ while main:
         kills_form = config.fonte.render(kills, False, (255, 255, 255))
 
         #HUD da carga:
-        cargas = "cargas:"
+        cargas = "Cargas:"
         cargas_form = config.fonte.render(cargas, False, (255, 215, 0))
         carga_icon = pygame.image.load(os.path.join(config.folderPath,'images','items', 'icon das cargas.png')).convert_alpha()
         carga_icon = pygame.transform.scale(carga_icon, (30, 30))
@@ -1000,6 +1039,7 @@ while main:
             if jogador.vida<=0:
                 tempo_morte=perf_counter()
                 estadoDoJogo="tela de morte"
+                tempo_jogo_fim = perf_counter() - inicio_de_jogo - tempo_no_menu
             t_invencibilidade = perf_counter()
             t_clicks = perf_counter()
             
@@ -1018,6 +1058,8 @@ while main:
                 explosao = Explosion(pos=enemy.rect.center, id=enemy.i)
                 grupoExplosion.add(explosao)
                 jogador.add_kill()
+                if jogador.kills in(15, 30, 45, 60, 75):
+                    acabou = 1
                 ja_entrou = 0 #para entrar na loja no proximo 
                 enemy.kill()
             if enemy.rect.topright[1] >= config.bgInitHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > config.bgInitWidth + 6: 
@@ -1221,7 +1263,7 @@ while main:
             
 
             sug_form = config.fonte_media.render(sug, True, (0, 0, 0))
-            config.tela_virtual.blit(sug_form, ((config.bgInitWidth/2)-(sug_form.width/2), 80))
+            config.tela_virtual.blit(sug_form, ((config.bgInitWidth/2)-(sug_form.width/2) + 50, 80))
 
     if estadoDoJogo == "pausado":
         #menu_pause.draw_tela(tela, bg)
