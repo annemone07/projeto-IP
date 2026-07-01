@@ -429,11 +429,11 @@ class menuFimBoss():
     def draw_texto(self, tela, tam_tela, tempo_de_jogo):
         config.tela_virtual.blit(self.bg, (0,0))
         mensagem_fim = "LUTA CONCLUIDA"
-        mensagem_tempo = f"TEMPO TOTAL {tempo_de_jogo:0.1f}s"
+        mensagem_tempo = f"TEMPO TOTAL: {tempo_de_jogo:0.1f}s"
         mensagem_form_fim = config.fonte_grande.render(mensagem_fim, True, (0, 0, 0))
         mensagem_form_tempo = config.fonte_media.render(mensagem_tempo, True, (0, 0, 0))
-        config.tela_virtual.blit(mensagem_form_fim, (300, 30))
-        config.tela_virtual.blit(mensagem_form_tempo, (300, 130))
+        config.tela_virtual.blit(mensagem_form_fim, (350, 30))
+        config.tela_virtual.blit(mensagem_form_tempo, (450, 130))
         pygame.display.flip() #para colocar a mensagem de final na tela
         
         for i in range(len(self.opcoes)):
@@ -442,7 +442,7 @@ class menuFimBoss():
             else:
                 cor = (255, 255, 255)
             texto_for = self.fonte.render(self.opcoes[i], True, cor)
-            tela.blit(texto_for, ((tam_tela[0]/2 - 100) , 300 + i*80))
+            tela.blit(texto_for, ((tam_tela[0]/2 - texto_for.width/2) , 300 + i*80))
 
 
     def eventos(self, event):
