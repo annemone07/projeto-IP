@@ -25,13 +25,14 @@ def criarJogador(deltaTime):
         posInicial=(config.bgInitWidth / 2, config.bgInitHeight-300),
         dt=deltaTime,
         tamanhoMapa=(config.bgInitWidth,config.bgInitHeight)
+
         #grupos=self.all_sprites,
         #game=self
     )
     return jogadorCriado
 
 def resetarVariaveis(grupoGrupos, intermediario):
-    grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser = grupoGrupos
+    grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoIma, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoExplosion = grupoGrupos
     grupoItem.empty()
     grupoEscudo.empty()
     grupoQuickShot.empty()
@@ -39,11 +40,13 @@ def resetarVariaveis(grupoGrupos, intermediario):
     grupoShotgun.empty()
     grupoCura.empty()
     grupoMoeda.empty()
+    grupoIma.empty()
     grupoRastro.empty()
     grupoBala.empty()
     grupoInimigo.empty()
     grupoBullets.empty()
     grupoLaser.empty()
+    grupoExplosion.empty()
     if not intermediario:
         grupoJogador.empty()
     
