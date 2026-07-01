@@ -114,7 +114,8 @@ tempo_inicio = 0
 tempoReiniciar=0.0
 tempo_morte=0.0
 tempo_de_jogo = perf_counter() - inicio_de_jogo
-tempo_no_menu = 0
+tempo_no_menu = 0.0
+inicio_menu = 0.0
 
 #configs primeiro load
 jogador = criarJogador(deltaTime)
@@ -137,12 +138,12 @@ grupoIma = pygame.sprite.Group()
 grupoExplosion = pygame.sprite.Group()
 
 
-grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoIma, grupoExplosion)
+grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoIma, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoExplosion)
 
 #variáveis do bullet time
 rect_anterior = jogador.rect.copy() #Salvar a posição do player pra criar o rasto
 contador_rastros = 0 #Evitar que crie algum rastro que não seja a partir dos últimos movimentos
-wave_counter = 5 #variavel para contar as waves
+wave_counter = 0 #variavel para contar as waves
 ja_entrou = 0 #p n entrar na loja infinitas vezes seguidas
 acabou_sair = 0 #para a boss fight
 filtro_bullet_time = pygame.Surface(config.telaSizePlaceholder, pygame.SRCALPHA)
@@ -156,12 +157,10 @@ boss_fight = 0
 pode_spawn_laser = 1
 mudar, laser = 0, 0 #variaveis para as balas com condições especiais
 while main:
-    jogador.vida = 200
     #print("inimigos", grupoMoeda)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
-    grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser)
+    grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoIma, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoExplosion)
     #print(grupoInimigo)
-    
     #todos os eventos
     for event in pygame.event.get():
         #condição de parada
@@ -173,76 +172,86 @@ while main:
             if event.key == pygame.K_EQUALS:
                 pygame.quit()
                 sys.exit()
-                main=False        
+                main=False   
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_MINUS:
+                jogador.vida = 0 
         
         #um if pra cada estado do jogo
         if estadoDoJogo=="menu principal":
             selecao = menu_principal.eventos(event)
-            if selecao=="Jogar":
+
+            if selecao=="Jogar": #Menu principal ---Selecionar---> Tela de Jogar(seleção de modos)
                 estadoDoJogo="escolher modo"
+                resetarVariaveis(grupoGrupos, 0)#Apagar todo mundo
+                jogador = criarJogador(deltaTime)#Cria um jogador novo, esse que tem que ter suas variáveis internas zeradas
+                wave_counter = 0#Resetar as Waves
+                inicio_de_jogo=perf_counter()#Reiniciar o contador de jogo
+                tempo_no_menu=0.0#Tempo passado no menu é zerad
+                inicio_menu = perf_counter()
+                sons(estadoDoJogo)#Sons que deveriam tocar nesse menu
                 
-            elif selecao == "Tutorial":
-                estadoDoJogo = "jogando"
+            elif selecao == "Tutorial": #Menu principal ---Selecionar---> Tutorial
+                estadoDoJogo = "jogando" #Tutorial rodando
                 modo = "tutorial"
-                grupoJogador.add(jogador)
+                grupoJogador.add(jogador)#Criar o Novo Player
                 enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -200), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
+                #Criação do Inimigo do tutorial ↑
                 contador_de_teclas_mov, contador_de_teclas_espaco, contador_itens, fim_tutorial, passa_tutorial = 0, 0, 0, 0, 0
-            elif selecao=="Creditos":
+            
+            elif selecao=="Creditos": #Menu principal ---Selecionar---> Tela de créditos
                 estadoDoJogo="creditos"
                 sons(estadoDoJogo)
-            elif selecao=="Opções":
+                
+            elif selecao=="Opções": #Menu principal ---Selecionar---> Opções
                 estadoAnteriorParaVoltar = estadoDoJogo
                 estadoDoJogo="Opções"
                 sons(estadoDoJogo)
-            elif selecao=="Sair":
+
+            elif selecao=="Sair": #Menu principal ---Selecionar---> Fecahr o jogo
                 pygame.quit()
                 sys.exit()
                 main=False
                 estadoDoJogo="fechado"
-        elif estadoDoJogo=="tela de morte":
+
+        elif estadoDoJogo=="tela de morte": #Menu principal ---Selecionar---> (algum modo de jogo) ---> Tela de morte
             sons(estadoDoJogo)
             selecao = tela_de_morte.eventos(event)
-            if selecao=="Reiniciar":
-                resetarVariaveis(grupoGrupos, 0)
-                jogador = criarJogador(deltaTime)
-                wave_counter=0
-                inicio_de_jogo=perf_counter()
-                tempo_no_menu=0.0
+
+            if selecao=="Reiniciar":#Tela de morte ---Selecionar---> Reiniciar o Modo de Jogo
+                resetarVariaveis(grupoGrupos, 0)#Apagar todo mundo
+                jogador = criarJogador(deltaTime)#Cria um jogador novo, esse que tem que ter suas variáveis internas zeradas
                 grupoJogador.add(jogador)
-                grupoInimigo.add(enemy01)
-                estadoDoJogo="jogando"
+                inicio_de_jogo=perf_counter()#Iniciar o tempo de jogo
+                tempo_no_menu=0.0
+                estadoDoJogo="jogando"#Indicar que reiniciou o jogo
                 sons(estadoDoJogo)
-                wave_counter=0
-                inicio_de_jogo=perf_counter()
-                tempo_no_menu=0.0
-            elif selecao=="Menu Principal":
-                resetarVariaveis(grupoGrupos, 0)
-                jogador = criarJogador(deltaTime)
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -200), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
-                wave_counter=0
-                inicio_de_jogo=perf_counter()
-                tempo_no_menu=0.0
+
+            elif selecao=="Menu Principal":#Tela de morte ---Selecionar---> Menu Principal
+                resetarVariaveis(grupoGrupos, 0)#Limpar o Jogo
+                inicio_menu = 0.0 
                 estadoDoJogo="menu principal"
                 sons(estadoDoJogo)
-            elif selecao=="Sair":
+
+            elif selecao=="Sair":#Tela de morte ---Selecionar---> Menu Principal
                 pygame.quit()
                 sys.exit()
                 main=False
                 estadoDoJogo="fechado"
-        elif estadoDoJogo == "creditos":
+
+        elif estadoDoJogo == "creditos": #Menu principal ---Selecionar---> Créditos
             selecao=creditos.eventos(event)
             if selecao=="Voltar":
                 estadoDoJogo="menu principal"
                 sons(menu_principal)
-        elif estadoDoJogo == "fim do tutorial":
+
+        elif estadoDoJogo == "fim do tutorial":#Menu principal --Selecionar--> Tutorial
             selecao = fim_do_tutorial.eventos(event)
             if selecao == "Menu principal":
                 resetarVariaveis(grupoGrupos, 0)
-                jogador = criarJogador(deltaTime)
-                wave_counter=0
-                inicio_de_jogo=perf_counter()
-                tempo_no_menu=0.0
+                inicio_menu = 0.0
                 estadoDoJogo="menu principal"
+
             elif selecao == "Sair":
                 pygame.quit()
                 sys.exit()
@@ -261,7 +270,8 @@ while main:
                 estadoDoJogo = "jogando"
                 sons(estadoDoJogo)
                 grupoJogador.add(jogador)
-                tempo_no_menu += perf_counter() - inicio_de_jogo
+                tempo_no_menu += perf_counter() - inicio_menu
+
             elif selecao == "Voltar":
                 estadoDoJogo = "menu principal"
 
@@ -272,7 +282,7 @@ while main:
                 estadoDoJogo = "jogando"
                 sons(estadoDoJogo)
                 grupoJogador.add(jogador)
-                tempo_no_menu += perf_counter() - inicio_de_jogo
+                tempo_no_menu += perf_counter() - inicio_menu
                 if selecao == "Fácil":
                     wave_counter= 1
                 elif selecao == "Médio":
@@ -313,23 +323,22 @@ while main:
 
         elif estadoDoJogo == "menu boss":
             selecao = menu_boss.eventos(event)
+
             if selecao == "Reiniciar":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                wave_counter=0
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
                 grupoJogador.add(jogador)
-                grupoInimigo.add(enemy01)
                 estadoDoJogo="jogando"
                 sons(estadoDoJogo)
-                wave_counter=0
-                inicio_de_jogo=perf_counter()
-                tempo_no_menu=0.0
+
             elif selecao == "Opções":
                 estadoDoJogo = "Opções"
+
             elif selecao == "Menu Principal":
                 estadoDoJogo = "menu principal"
+
             elif selecao == "Sair":
                 pygame.quit()
                 sys.exit()
@@ -343,7 +352,8 @@ while main:
                 if event.key == pygame.K_ESCAPE:
                     estadoDoJogo = "pausado"
                     sons(estadoDoJogo)
-                    tempo_atual = perf_counter() - tempo_inicio
+                    tempo_atual = perf_counter()
+
             #Criar o escudo:
             if event.type == create_escudo and random.randint(1,7)==1 and (modo == "boss" or modo == "infinito") : #chance de spawnar
                 if jogador.armadura < 100:
@@ -491,7 +501,7 @@ while main:
             elif selecao == "Menu Principal":
                 resetarVariaveis(grupoGrupos, 0)
                 jogador = criarJogador(deltaTime)
-                wave_counter=0
+
                 inicio_de_jogo=perf_counter()
                 tempo_no_menu=0.0
                 estadoDoJogo="menu principal"
