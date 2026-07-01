@@ -87,7 +87,7 @@ projeto-IP/
 
 Felipe Lopez Guerra (flg):
 
-João Felipe Audet Guerra (jfag):
+João Felipe Audet Guerra (jfag): mecânicas dos inimigos, modos de jogo, menus e ranking interno
 
 Pedro Henrique Carício Pereira de Sousa (phcps):
 
@@ -104,13 +104,13 @@ Ariel Soares Pereira Rodrigues (aspr):
 
 
 
-**Operadores Condicionais [if,elif,else]**: foram aplicados com o objetivo de definir as múltiplas respostas do programa em decorrência das ações do jogador.
+**Operadores Condicionais [if,elif,else]**: foram aplicados com o objetivo de definir as múltiplas respostas do programa em decorrência das ações do jogador e ações automáticas dos inimigos.
 
-**Listas**: aplicadas na lógica de armazenamento dos dados de posição, coleta e tipo dos objetos do jogo.
+**Listas, Tuplas e Dicionários**: aplicadas na lógica de armazenamento dos dados de posição, coleta e tipo dos objetos do jogo. Com cada estrutura sendo usada a depender da necessidade dentro do código
 
 **Funções e Métodos**: empregados para definir os comportamentos dos objetos dentro das classes.
 
-**Laços de Repetição [for, while]**: utilizados para estabelecer o loop principal de funcionamento do jogo, bem como para definir a mecânica de colisão dos objetos.
+**Laços de Repetição [for, while]**: utilizados para estabelecer o loop principal de funcionamento do jogo, bem como para definir a mecânica de colisão dos objetos e lógicas cíclicas com ciclo de execução pequena, como o rolamento da tela de fundo e formação de disparo dos inimigos.
 
 **Programação Orientada a Objetos e Modularização**: Essenciais para a organização do código-fonte. A criação de classes com o objetivo de encapsular os atributos associados aos objetos permitiu maior eficiência no instanciamento dos múltiplos elementos presentes na partida, como inimigos, o player e as balas.
 
