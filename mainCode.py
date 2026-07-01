@@ -387,8 +387,10 @@ while main:
                 if event.key == pygame.K_ESCAPE:
                     estadoDoJogo = "pausado"
                     sons(estadoDoJogo)
-                    tempo_atual = perf_counter()
-
+                    tempo_atual = perf_counter() - tempo_inicio
+                if event.key == pygame.K_l and modo == "infinito":
+                    jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
+                    inicio_de_jogo += tempo_pausado
             #Criar o escudo:
             if event.type == create_escudo and random.randint(1,7)==1 and (modo == "boss" or modo == "infinito") : #chance de spawnar
                 if jogador.armadura < 100:
@@ -465,8 +467,7 @@ while main:
 
         
             # Abrir loja usando a tecla "L" DESATIVADO!!!
-            if event.type == pygame.K_l and modo == "infinito":
-                jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
+            
             
             #criar bala padrão
             if event.type == create_bala0:
