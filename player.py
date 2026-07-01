@@ -45,7 +45,6 @@ class Jogador(pygame.sprite.Sprite):
         self.arma = 'normal'#Tipo da arma do player
         self.cartuchos = 0 #Balas da shotgun
         self.mask = pygame.mask.from_surface(self.image)
-        
 
     def fatiar_spritesheet(self,sheet):
         larguraSprite=48

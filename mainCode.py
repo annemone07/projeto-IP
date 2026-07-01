@@ -16,7 +16,8 @@ from funcoes import criarJogador, resetarVariaveis, sons
 pygame.init() 
 pygame.mixer.init()
 pygame.mixer.set_num_channels(32)
-pygame.display.set_caption("nome do jogo") #alterar para o nome do jogo dps
+pygame.display.set_icon(pygame.image.load(os.path.join(config.folderPath,"images","logo.png"))) #logo para ficar no arquivo enquanto executa
+pygame.display.set_caption("AeroHell") #alterar para o nome do jogo dps
 clock = pygame.time.Clock()
 deltaTime = clock.tick(60)/1000
 
@@ -161,6 +162,7 @@ mudar, laser = 0, 0 #variaveis para as balas com condições especiais
     ranking.write("RANKING\n")"""
 ranking_boss = []
 ranking_infinito = {"Fácil": [], "Médio": [], "Difícil": [], "Impossível": []}
+acabou = 0
 while main:
     #print("inimigos", grupoMoeda)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
@@ -231,7 +233,7 @@ while main:
                 tempo_no_menu=0.0
                 estadoDoJogo="menu principal"
                 sons(estadoDoJogo)
-            elif selecao == "Adicionar Ranking":
+            elif selecao == "Ranking":
                 estadoAnterior2 = estadoDoJogo
                 estadoDoJogo = "add ranking"
             elif selecao=="Sair":
@@ -564,14 +566,14 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
 
-        if jogador.kills % 15 == 0 and jogador.kills !=0 and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss":
+        if acabou and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss":
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = config.fonte_grande.render(mensagem, True, (0, 0, 0))
             config.tela_virtual.blit(mensagem_form, ((250), (config.bgInitHeight/2) - mensagem_form.get_size()[0]))
             config.tela_escalada = pygame.transform.smoothscale(config.tela_virtual, (config.bgWidth,config.bgHeight)) ##################
             config.tela.blit(config.tela_escalada,(0,0))
-            
+            acabou = 0
             pygame.display.flip() #para colocar a mensagem de final na tela
             sleep(3.0)
             #limpando os elementos da tela
@@ -583,7 +585,7 @@ while main:
             acabou_sair = 0
             pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
         
-        if wave_counter % 5 == 0 and wave_counter != 0 and not boss_fight and not acabou_sair and modo == "boss":
+        if wave_counter ==5 and wave_counter != 0 and not boss_fight and not acabou_sair and modo == "boss":
             boss = Inimigo("Boss-W1", deltaTime, pos=(config.bgInitWidth/2, 180), limites_mov=(0, 0), sentido_inicial="null")
             grupoInimigo.add(boss)
             boss_fight = 1
@@ -700,7 +702,7 @@ while main:
         kills_form = config.fonte.render(kills, False, (255, 255, 255))
 
         #HUD da carga:
-        cargas = "cargas:"
+        cargas = "Cargas:"
         cargas_form = config.fonte.render(cargas, False, (255, 215, 0))
         carga_icon = pygame.image.load(os.path.join(config.folderPath,'images','items', 'icon das cargas.png')).convert_alpha()
         carga_icon = pygame.transform.scale(carga_icon, (30, 30))
@@ -1045,6 +1047,8 @@ while main:
                 explosao = Explosion(pos=enemy.rect.center, id=enemy.i)
                 grupoExplosion.add(explosao)
                 jogador.add_kill()
+                if jogador.kills in(15, 30, 45, 60, 75):
+                    acabou = 1
                 ja_entrou = 0 #para entrar na loja no proximo 
                 enemy.kill()
             if enemy.rect.topright[1] >= config.bgInitHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > config.bgInitWidth + 6: 
@@ -1248,7 +1252,7 @@ while main:
             
 
             sug_form = config.fonte_media.render(sug, True, (0, 0, 0))
-            config.tela_virtual.blit(sug_form, ((config.bgInitWidth/2)-(sug_form.width/2), 80))
+            config.tela_virtual.blit(sug_form, ((config.bgInitWidth/2)-(sug_form.width/2) + 50, 80))
 
     if estadoDoJogo == "pausado":
         #menu_pause.draw_tela(tela, bg)
