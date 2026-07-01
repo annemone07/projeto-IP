@@ -1,13 +1,8 @@
-# Nome-do-Jogo
+# Aerohell
 
-
-
-## Projeto Disciplina IP
-
-
+## Projeto Final Disciplina Introdução à Programação
 
 ## 👥 Integrantes
-
 
 Felipe Lopez Guerra (flg)
 
@@ -21,8 +16,8 @@ Rodrigo Machado Araujo (rma10)
 
 Ariel Soares Pereira Rodrigues (aspr)
 
-
 ## 📂 Arquitetura do Projeto
+
 ```
 projeto-IP/
 
@@ -32,37 +27,29 @@ projeto-IP/
 │   └──  sounds/ # Arquivos de som
 ├── src/
 │   ├── config.py # Centraliza as variáveis globais, os parâmetros de redimensionamento da tela e as configurações de áudio
-│   │   
+│   │
 │   ├── enemy.py # Define as classes dos comportamentos dos inimigos
-│   │   
+│   │
 │   ├── funcoes.py # Funções dedicadas ao reinício das variáveis, configuração da música e criação do jogador
-│   │   
+│   │
 │   ├── itens.py # Define as classes dos coletáveis (moedas, cura, parte do escudo, charge, imã, quickshot e shotgun)
-│   │   
+│   │
 │   ├── loja.py # Define as classe para o ambiente de compra de itens para o jogador
-│   │   
+│   │
 │   ├── menu.py # Define as classes dos menus do jogo, incluindo a tela inicial, seleção de modo e de dificuldade, tutorial, créditos e controle de volume e de resolução
-│   │   
+│   │
 │   ├── player.py # Armazena classes do comportamento do jogador
-│   │   
+│   │
 |   └── mainCode.py # Loop principal do código
 |
 ├── .gitignore # Configurações do projeto ocultadas para o Git
 |
 └── README.md # Informações acerca do projeto
-
 ```
-
-
 
 ## 📸 Capturas de tela
 
-
-
-
-
 ## 🛠 Ferramentas, bibliotecas e frameworks
-
 
 **Python**: Linguagem de programação ensinada no semestre letivo na disciplina de Introdução à Programação e utilizada pela biblioteca Pygame.
 
@@ -74,18 +61,17 @@ projeto-IP/
 
 **Math**: biblioteca nativa do Python utilizada com o objetivo de gerar maior precisão nas operações matemáticas envolvendo o cálculo dos ângulos associados à trajetória das balas.
 
+**OS**: biblioteca empregada no mapeamento dos diretórios, garantindo o acesso ao som e aos sprites do jogo.
+
+**Random**: biblioteca nativa do Python usada para definir as probabilidades de aparecimento dos coletáveis e dos inimigos, bem como a movimentação destes últimos
+
 **Kenney.nl** e **opengameart.org**: sites utilizados para buscar os assets com os devidos créditos para o jogo.
 
 **GitHub**: plataforma utilizada para hospedagem do repositório do projeto, bem como para versionamento do código-fonte.
 
-
-
-
 ## 🤝 Divisão do Trabalho
 
-
-
-Felipe Lopez Guerra (flg):
+Felipe Lopez Guerra (flg): criação coletáveis, relatório final e slides
 
 João Felipe Audet Guerra (jfag): mecânicas dos inimigos, modos de jogo, menus e ranking interno
 
@@ -97,12 +83,7 @@ Rodrigo Machado Araujo (rma10):
 
 Ariel Soares Pereira Rodrigues (aspr):
 
-
-
-
 ## 📚 Conceitos utilizados
-
-
 
 **Operadores Condicionais [if,elif,else]**: foram aplicados com o objetivo de definir as múltiplas respostas do programa em decorrência das ações do jogador e ações automáticas dos inimigos.
 
@@ -118,27 +99,19 @@ Ariel Soares Pereira Rodrigues (aspr):
 
 ## 🧩 Desafios, Erros e Aprendizados
 
-
-
 ### Qual foi o maior erro cometido durante o projeto? Como vocês lidaram com ele?
 
 O maior erro cometido ao longo do projeto foi a carência de definição de um guia claro de arquitetura do código, o que dificultava a integração entre os módulos gerados pelos diferentes estilos de programação dos integrantes do grupo. Essa divergência de maneiras de programação, agravada pela falta de comentários nos trechos do código, potencializou o retrabalho, de modo a retardar o andamento do desenvolvimento do jogo. Diante desse cenário, uma refatoração padronizada e a documentação interna dos scripts foram as ações tomadas pelo grupo para solucionar esse problema.
-
 
 ### Qual foi o maior desafio enfrentado durante o projeto? Como vocês lidaram com ele?
 
 O maior desafio com o qual lidamos durante o trabalho foi o aprendizado de Pygame e GitHub simultaneamente à execução do projeto, uma vez que a maior parte dos integrantes do grupo não tinha contato prévio com essas tecnologias. Dessa forma, o aprendizado paralelo ao uso dessas ferramentas gerou erros, tais como conflitos nas fusões das versões do código e retrabalho para a adição das novas mecânicas ao jogo. Levando em conta essa situação, a equipe mostrou-se engajada para buscar conhecimentos acerca dessas ferramentas, por meio de diversas fontes, como os materiais disponibilizados na plataforma Redu e no Discord, bem como através de pesquisas independentes.
 
-
 ### Quais as lições aprendidas durante o projeto?
 
 O projeto foi essencial para reconhecer a importância do alinhamento técnico e da documentação para a colaboração da equipe, o que otimizou a adição de novas funcionalidades e minimizou conflitos de integração, reduzindo o retrabalho. Além disso, os empecilhos iniciais associados ao uso do GitHub possibilitaram à equipe uma importante curva de aprendizado, a qual gerou um amadurecimento coletivo acerca da manutenção de um fluxo de trabalho eficiente e integrado.
 
-
-
 ## 🎮 Tutorial Instalação Jogo
-
-
 
 ### 1. Clone o repositório
 
@@ -146,8 +119,7 @@ Escreva o seguinte comando no terminal do Git:
 
 ```bash
 
-git clone https://github.com/annemone07/projeto-IP.git
-
+git clone <https://github.com/annemone07/projeto-IP.git>
 ```
 
 ### 2. Instale as dependências
@@ -155,17 +127,6 @@ git clone https://github.com/annemone07/projeto-IP.git
 ```bash
 
 pip install pygame-ce
-
 ```
 
 ### 3. Execute o arquivo
-
-```bash
-
-python mainCode.py
-
-```
-
-
-
----
