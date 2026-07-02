@@ -158,8 +158,8 @@ duracao_ima = 20
 boss_fight = 0
 pode_spawn_laser = 1
 mudar, laser = 0, 0 #variaveis para as balas com condições especiais
-ranking_boss = []
-ranking_infinito = {"Fácil": [], "Médio": [], "Difícil": [], "Impossível": []}
+ranking_boss = [] #rankings são locais, resetam toda vez que o jogo é iniciado
+ranking_infinito = {"Fácil": [], "Médio": [], "Difícil": [], "Impossível": []} #armazena por dificuldade
 acabou = 0
 tempo_jogo_fim, nao_pode_entrar_mais = 0, 0
 while main:
@@ -171,14 +171,6 @@ while main:
             pygame.quit()
             sys.exit()
             main=False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_EQUALS:
-                pygame.quit()
-                sys.exit()
-                main=False   
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_MINUS:
-                jogador.vida = 0 
 
         if wave_counter != 5 and estadoDoJogo != ultimoEstado:
             sons(estadoDoJogo)
@@ -217,7 +209,7 @@ while main:
             elif selecao == "Teclas":
                 estadoDoJogo = "teclas"
 
-            elif selecao=="Sair": #Menu principal ---Selecionar---> Fecahr o jogo
+            elif selecao=="Sair": #Menu principal ---Selecionar---> fechar o jogo
                 pygame.quit()
                 sys.exit()
                 main=False

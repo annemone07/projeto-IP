@@ -360,7 +360,7 @@ class menuOpcoes():
                 self.opcaoSelecionada -=1 
                 if self.opcaoSelecionada < 0:
                     self.opcaoSelecionada = 0
-                    
+             
             elif event.key==pygame.K_a and self.valoresOpcoes[self.opcaoSelecionada] != "Voltar":
                 self.ultimos_valores[self.opcaoSelecionada] -=1
                 if self.ultimos_valores[self.opcaoSelecionada] < 0:

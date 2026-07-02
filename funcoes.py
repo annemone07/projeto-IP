@@ -85,8 +85,6 @@ def sons(evento):
     elif evento=="pausado" or evento=="Opções" or evento== "menu boss":
         config.musicaIsPaused=True
         pygame.mixer.music.pause()
-    #else evento=="":
-    #    pygame.mixer.music.fadeout(200)
     if evento in ("tela de morte","creditos","fim do tutorial"):
         pygame.mixer.music.fadeout(200)
     if evento=="balaPlayer":

@@ -10,7 +10,6 @@ bgHeight = pygame.display.Info().current_h
 bgWidth = pygame.display.Info().current_w
 bgInitWidth = pygame.display.get_desktop_sizes()[0][0] #IMPORTANTE, USAR ESSE PRA POSICIONAR TEXTOS DOS MENUS (não sei direito pq mas precisa ser o inicial)
 bgInitHeight = pygame.display.get_desktop_sizes()[0][1]
-#tamanhoTela:tuple = pygame.display.get_desktop_sizes()[0]
 telaSizePlaceholder = (bgWidth,bgHeight)
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 tela = pygame.display.set_mode(telaSizePlaceholder, pygame.RESIZABLE, display=0)
