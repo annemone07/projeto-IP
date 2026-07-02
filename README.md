@@ -49,9 +49,21 @@ projeto-IP/
 
 ## 📸 Capturas de tela
 
+Tela Inicial
+![tela inicial](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image7.png)
+
+Gameplay
+![jogo normal](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image8.png)
+
+Boss Fight
+![luta com boss](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image5.png)
+
+Loja de Itens
+![loja](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image0.png)
+
 ## 🛠 Ferramentas, bibliotecas e frameworks
 
-**Python**: Linguagem de programação ensinada no semestre letivo na disciplina de Introdução à Programação e utilizada pela biblioteca Pygame.
+**Python**: Linguagem de programação ensinada na disciplina de Introdução à Programação e utilizada pela biblioteca Pygame.
 
 **Pygame-ce**: Biblioteca externa do Python utilizada com a finalidade de facilitar o carregamento de imagens e áudios, sistematização da lógica de colisão e dos sprites, bem como da recepção dos inputs dos usuários.
 
@@ -77,7 +89,7 @@ João Felipe Audet Guerra (jfag): mecânicas dos inimigos, modos de jogo, menus 
 
 Pedro Henrique Carício Pereira de Sousa (phcps): criação da loja de itens 
 
-Rafael Tomaz Araujo Leite (rtal):
+Rafael Tomaz Araujo Leite (rtal): criação dos upgrades do player e animações do player e dos inimigos 
 
 Rodrigo Machado Araujo (rma10): Sistema para diferentes telas, sistema de som, fundo rolante, centralização das configurações
 
@@ -87,11 +99,11 @@ Ariel Soares Pereira Rodrigues (aspr):
 
 **Operadores Condicionais [if,elif,else]**: foram aplicados com o objetivo de definir as múltiplas respostas do programa em decorrência das ações do jogador e ações automáticas dos inimigos.
 
-**Listas, Tuplas e Dicionários**: aplicadas na lógica de armazenamento dos dados de posição, coleta e tipo dos objetos do jogo. Com cada estrutura sendo usada a depender da necessidade dentro do código
+**Listas, Tuplas e Dicionários**: aplicadas na lógica de armazenamento dos dados de posição, coleta e tipo dos objetos do jogo. Com cada estrutura sendo usada a depender da necessidade dentro do código.
 
 **Funções e Métodos**: empregados para definir os comportamentos dos objetos dentro das classes.
 
-**Laços de Repetição [for, while]**: utilizados para estabelecer o loop principal de funcionamento do jogo, bem como para definir a mecânica de colisão dos objetos e lógicas cíclicas com ciclo de execução pequena, como o rolamento da tela de fundo e formação de disparo dos inimigos.
+**Laços de Repetição [for, while]**: utilizados para estabelecer o loop principal de funcionamento do jogo, bem como para definir a mecânica de colisão dos objetos e lógicas cíclicas com ciclo de execução pequeno, como o rolamento da tela de fundo e formação de disparo dos inimigos.
 
 **Programação Orientada a Objetos e Modularização**: Essenciais para a organização do código-fonte. A criação de classes com o objetivo de encapsular os atributos associados aos objetos permitiu maior eficiência no instanciamento dos múltiplos elementos presentes na partida, como inimigos, o player e as balas.
 
@@ -101,7 +113,7 @@ Ariel Soares Pereira Rodrigues (aspr):
 
 ### Qual foi o maior erro cometido durante o projeto? Como vocês lidaram com ele?
 
-O maior erro cometido ao longo do projeto foi a carência de definição de um guia claro de arquitetura do código, o que dificultava a integração entre os módulos gerados pelos diferentes estilos de programação dos integrantes do grupo. Essa divergência de maneiras de programação, agravada pela falta de comentários nos trechos do código, potencializou o retrabalho, de modo a retardar o andamento do desenvolvimento do jogo. Diante desse cenário, uma refatoração padronizada e a documentação interna dos scripts foram as ações tomadas pelo grupo para solucionar esse problema.
+O maior erro cometido ao longo do projeto foi a carência de definição de um guia claro de arquitetura do código, o que dificultava a integração entre os módulos gerados pelos diferentes estilos de programação dos integrantes do grupo. Essa divergência de práticas de programação, agravada pela falta de comentários nos trechos do código, potencializou o retrabalho, de modo a retardar o andamento do desenvolvimento do jogo. Diante desse cenário, uma refatoração padronizada e a documentação interna dos scripts foram as ações tomadas pelo grupo para solucionar esse problema.
 
 ### Qual foi o maior desafio enfrentado durante o projeto? Como vocês lidaram com ele?
 
@@ -119,7 +131,7 @@ Escreva o seguinte comando no terminal do Git:
 
 ```bash
 
-git clone <https://github.com/annemone07/projeto-IP.git>
+git clone https://github.com/annemone07/projeto-IP.git
 ```
 
 ### 2. Instale as dependências
@@ -130,3 +142,7 @@ pip install pygame-ce
 ```
 
 ### 3. Execute o arquivo
+
+```bash
+python src/mainCode.py
+```

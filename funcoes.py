@@ -39,9 +39,6 @@ def criarJogador(deltaTime):
         posInicial=(config.bgInitWidth / 2, config.bgInitHeight-300),
         dt=deltaTime,
         tamanhoMapa=(config.bgInitWidth,config.bgInitHeight)
-
-        #grupos=self.all_sprites,
-        #game=self
     )
     return jogadorCriado
 

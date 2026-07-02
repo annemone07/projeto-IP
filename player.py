@@ -2,7 +2,6 @@ import pygame
 import os
 import math
 
-#tamanhoTela:tuple = pygame.display.get_desktop_sizes()[0]
 
 clock = pygame.time.Clock()
 
@@ -19,7 +18,6 @@ class Jogador(pygame.sprite.Sprite):
         self.deltaTime = dt
         self.images = []
         self.sheet = pygame.image.load(spriteImage).convert_alpha()
-        sheetSize = self.sheet.get_rect()
         self.direction=pygame.math.Vector2()
         self.animacoes = self.fatiar_spritesheet(self.sheet)
         self.estadoAnimacao = "run"
@@ -57,9 +55,7 @@ class Jogador(pygame.sprite.Sprite):
                 sprite = sheet.subsurface(pygame.Rect(x,y, larguraSprite, alturaSprite))
                 sprite = pygame.transform.scale(sprite, (200, 200))
                 animacoes["run"].append(sprite)
-                #print(animacoes), #print()
 
-        ##print(animacoes)
         return animacoes
             
     def getDirection(self):
@@ -71,18 +67,11 @@ class Jogador(pygame.sprite.Sprite):
             self.direction = self.direction.normalize()
     
     def movimentacao(self, camera):
-        #print("pos", self.posicao)
-        #print("rect", self.rect)
-        #print("camera", camera)
         nextPosX = self.posicao.x + self.direction.x * self.velocidade * self.deltaTime
-        nextPosY = (self.posicao.y + self.direction.y * self.velocidade * self.deltaTime)# - 6 colocar movimentação padrão do player
-        #print("nextPosX", nextPosX)
-        #print("nextPosY", nextPosY)        
+        nextPosY = (self.posicao.y + self.direction.y * self.velocidade * self.deltaTime)# - 6 colocar movimentação padrão do player    
         if nextPosX >= self.rect[2]/4 and nextPosX <= (self.tamanhoMapa[0])-self.rect[2]/4:
             self.posicao.x = nextPosX
             self.rect.centerx = self.posicao.x
-        #print("tamanho", tamanhoMapa)
-        #print("tamanho+", tamanhoMapa[1]+camera.y)
         if nextPosY <= (self.tamanhoMapa[1])-self.rect[3]/4 and nextPosY >= self.rect[3]/4: #nextPosY >= self.rect[3]/4 and
             self.posicao.y = nextPosY+2
             self.rect.centery = self.posicao.y
@@ -123,7 +112,6 @@ class Jogador(pygame.sprite.Sprite):
 
         self.image = self.animacoes["run"][indice]
 
-        #print(self.invencibilidade, indice)
     
     def add_kill(self):
         self.kills += 1
@@ -158,7 +146,6 @@ class Rastro_Bullet_Time(pygame.sprite.Sprite):
 class Bala(pygame.sprite.Sprite):
     folderPath = os.path.dirname(os.path.abspath(__file__))
     def __init__(self, image, posicao, dt):
-        ##print("teste 1")
         super().__init__()
         self.dt = dt
         self.image = pygame.image.load(os.path.join(image)).convert_alpha()
@@ -174,9 +161,6 @@ class Bala(pygame.sprite.Sprite):
         
         
     def direcao(self, posA, posB, inclinação=0):
-        ##print(posA)
-       # print()
-       # print(posB)
         dx = (posA[0] - posB[0])
         dy = (posA[1] - posB[1])
 
@@ -187,31 +171,19 @@ class Bala(pygame.sprite.Sprite):
 
         self.dire = pygame.math.Vector2(math.ceil(cos*self.velocidade), math.ceil(sin*self.velocidade))
 
-        """ if (dx <=0 and dy <= 0) or (dy >= 0 and dx<=0): #caso precise inverter alguma coordenada
-            cos = -cos
-            sin = -sin"""
-        
-        #if (dx, dy) != (0, 0):
-          #  self.dire = self.dire.normalize()
-       # print(), print(self.dire)
 
     def mov(self, camera):
-        #print(self.dire)
         self.posicao.x += (self.dire.x + camera.x) * self.dt
         self.posicao.y += (self.dire.y + camera.y) * self.dt
-        #print(self.fix_dir)
+        #atualiza o centro
         self.rect.centerx = self.posicao.x
         self.rect.centery = self.posicao.y
-        #print(self.rect.center)
+
         
         
     def update(self, dt, camera, playerPos):
         self.mov(camera)
         self.dt = dt
-        #self.dt = clock.tick(60)/1000
-        #if self.dt>1.0:
-        #    self.dt=1.0
         if abs(playerPos.x-self.posicao.x) >= 3000 or abs(playerPos.y-self.posicao.y) >= 3000:
             self.kill()
-            #print("Dead")
 # =============================================================================
