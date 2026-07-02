@@ -22,6 +22,6 @@ fonte_media = pygame.font.SysFont("consolas", 65, True, False)
 fonte_titulo = pygame.font.SysFont("comic sans", 180)
 fps=60
 volume = 1.0
-
+musicaAtual = None
 #configs de sons e musicas
 musicaIsPaused = False
