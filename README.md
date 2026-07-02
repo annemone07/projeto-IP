@@ -21,28 +21,32 @@ Ariel Soares Pereira Rodrigues (aspr)
 ```
 projeto-IP/
 
-├── assets/ # Recursos estáticos do jogo
-│   ├── images/ # Arquivos de imagem
-│   │
-│   └──  sounds/ # Arquivos de som
-├── src/
-│   ├── config.py # Centraliza as variáveis globais, os parâmetros de redimensionamento da tela e as configurações de áudio
-│   │
-│   ├── enemy.py # Define as classes dos comportamentos dos inimigos
-│   │
-│   ├── funcoes.py # Funções dedicadas ao reinício das variáveis, configuração da música e criação do jogador
-│   │
-│   ├── itens.py # Define as classes dos coletáveis (moedas, cura, parte do escudo, charge, imã, quickshot e shotgun)
-│   │
-│   ├── loja.py # Define as classe para o ambiente de compra de itens para o jogador
-│   │
-│   ├── menu.py # Define as classes dos menus do jogo, incluindo a tela inicial, seleção de modo e de dificuldade, tutorial, créditos e controle de volume e de resolução
-│   │
-│   ├── player.py # Armazena classes do comportamento do jogador
-│   │
-|   └── mainCode.py # Loop principal do código
+|
+│── images/ # Arquivos de imagem
+│   
+│── sons/ # Arquivos de som
+|
+│── config.py # Centraliza as variáveis globais, os parâmetros de redimensionamento da tela e as configurações de áudio
+│   
+│── enemy.py # Define as classes dos comportamentos dos inimigos
+│   
+│── funcoes.py # Funções dedicadas ao reinício das variáveis, configuração da música e criação do jogador
+│
+│── itens.py # Define as classes dos coletáveis (moedas, cura, parte do escudo, charge, imã, quickshot e shotgun)
+│
+│── loja.py # Define as classe para o ambiente de compra de itens para o jogador
+|
+│── menu.py # Define as classes dos menus do jogo, incluindo a tela inicial, seleção de modo e de dificuldade, tutorial, créditos e controle de volume e de resolução
+│   
+│── player.py # Armazena classes do comportamento do jogador
+│ 
+|── mainCode.py # Loop principal do código
 |
 ├── .gitignore # Configurações do projeto ocultadas para o Git
+|
+|── Sprites pra mexer, layer/ # Sprites player e inimigos
+|
+|── prints gameplay/ # Screenshots funcionamento jogo
 |
 └── README.md # Informações acerca do projeto
 ```
@@ -164,5 +168,5 @@ pip install pygame-ce
 ### 3. Execute o arquivo
 
 ```bash
-python src/mainCode.py
+python mainCode.py
 ```
