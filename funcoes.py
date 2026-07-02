@@ -26,9 +26,6 @@ def criarJogador(deltaTime):
         posInicial=(config.bgInitWidth / 2, config.bgInitHeight-300),
         dt=deltaTime,
         tamanhoMapa=(config.bgInitWidth,config.bgInitHeight)
-
-        #grupos=self.all_sprites,
-        #game=self
     )
     return jogadorCriado
 
@@ -62,8 +59,6 @@ def sons(evento):
     elif evento=="pausado":
         config.musicaIsPaused=True
         pygame.mixer.music.pause()
-    #else evento=="":
-    #    pygame.mixer.music.fadeout(200)
     if evento in ("menu principal","tela de morte","creditos","fim do tutorial","escolher modo","escolher dificuldade","Opções"):
         pygame.mixer.music.fadeout(200)
     if evento=="balaPlayer":

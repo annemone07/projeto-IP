@@ -351,13 +351,9 @@ class menuOpcoes():
 
     
     def eventos(self, event):
-        #print(event)
-            #print(evento)
-        #print(event)
         if event.type == pygame.QUIT:
             return "sair"
         elif event.type == pygame.KEYDOWN:
-            #print(f"VALOR DO OPÇÃO {self.opcaoSelecionada}")
             if event.key==pygame.K_q:
                 return "sair"
             elif event.key==pygame.K_w:
@@ -380,11 +376,9 @@ class menuOpcoes():
             
             elif event.key==pygame.K_RETURN and self.opcaoSelecionada != 2:
                 res_adaptada = self.opcoes["Resolução"][self.ultimos_valores[1]].removeprefix("< ").removesuffix(" >")
-                #print(f"OLHA AQ{res_adaptada}")
                 return res_adaptada, self.ultimos_valores[0] * 20, 0
             elif event.key==pygame.K_RETURN and self.opcaoSelecionada ==2:
                 res_adaptada = self.opcoes["Resolução"][self.ultimos_valores[1]].removeprefix("< ").removesuffix(" >")
-                #print(f"OLHA AQ{res_adaptada}")
                 return res_adaptada, self.ultimos_valores[0] * 20, 1
 
         

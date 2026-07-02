@@ -186,7 +186,7 @@ while main:
                 estadoDoJogo="escolher modo"
                 resetarVariaveis(grupoGrupos, 0)#Apagar todo mundo
                 jogador = criarJogador(deltaTime)#Cria um jogador novo, esse que tem que ter suas variáveis internas zeradas
-                wave_counter = 5#Resetar as Waves
+                wave_counter = 0#Resetar as Waves
                 inicio_de_jogo=perf_counter()#Reiniciar o contador de jogo
                 tempo_no_menu=0.0#Tempo passado no menu é zerad
                 inicio_menu = perf_counter()
