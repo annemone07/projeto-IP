@@ -44,8 +44,6 @@ projeto-IP/
 |
 ├── .gitignore # Configurações do projeto ocultadas para o Git
 |
-|── Sprites pra mexer, layer/ # Sprites player e inimigos
-|
 |── prints gameplay/ # Screenshots funcionamento jogo
 |
 └── README.md # Informações acerca do projeto
