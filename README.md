@@ -49,6 +49,15 @@ projeto-IP/
 
 ## 📸 Capturas de tela
 
+Tela Inicial
+![tela inicial](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image7.png)
+
+Gameplay
+![jogo normal](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image8.png)
+
+Boss Fight
+![luta com boss](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image5.png)
+
 ## 🛠 Ferramentas, bibliotecas e frameworks
 
 **Python**: Linguagem de programação ensinada na disciplina de Introdução à Programação e utilizada pela biblioteca Pygame.
