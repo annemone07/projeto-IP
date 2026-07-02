@@ -125,6 +125,24 @@ O maior desafio com o qual lidamos durante o trabalho foi o aprendizado de Pygam
 
 O projeto foi essencial para reconhecer a importância do alinhamento técnico e da documentação para a colaboração da equipe, o que otimizou a adição de novas funcionalidades e minimizou conflitos de integração, reduzindo o retrabalho. Além disso, os empecilhos iniciais associados ao uso do GitHub possibilitaram à equipe uma importante curva de aprendizado, a qual gerou um amadurecimento coletivo acerca da manutenção de um fluxo de trabalho eficiente e integrado.
 
+## Creditos para assets utilizados
+“Void Main Ship”, de Foozle. Disponível em foozlecc.itch.io/void-main-ship, sob licensa CC0,
+“Void Fleet Pack 1”, de Foozle. Disponível em foozlecc.itch.io/void-fleet-pack-1, sob licensa CC0,
+“Pixel Shmup”, de Kenney. Disponível em kenney.nl/assets/pixel-shmup, sob licensa CC0,
+“Gold Coin/Token”, de BizmasterStudios. Disponível em opengameart.org/content/gold-cointoken, sob licensa CC0,
+“Flying me softly”, de Alexandr Zhelanov. Disponível em opengameart.org/content/flying-me-softly, sob licensa CC-BY 3.0,
+“Space Shoot Sounds”, de Robin Lamb. Disponível em opengameart.org/content/space-shoot-sounds, sob licensa CC0,
+“Laser Beam”, de frosty ham. Disponível em opengameart.org/content/laser-beam, sob licensa CC0,
+“Explosion”, de TinyWorlds. Disponível em opengameart.org/content/explosion-0, sob licensa CC0,
+"Bossa Nova", de Joth. Disponível em opengameart.org/content/bossa-nova, sob licença CC0,
+"8-bit Epic Space Shooter Music", de HydroGene. Disponível em opengameart.org/content/8-bit-epic-space-shooter-music, sob licença CC0,
+"NES Shooter Music (5 tracks, 3 jingles)\", de SketchyLogic. Disponível em  opengameart.org/content/nes-shooter-music-5-tracks-3-jingles, sob licença CC0,
+"8bit Death Whirl", de Fupi. Disponível em  opengameart.org/content/8bit-death-whirl, sob licença CC0,
+"10 8bit coin sounds", de Luke.RUSTLTD. Disponível em  opengameart.org/content/10-8bit-coin-sounds, sob licença CC0,
+"8-Bit Sound Effect Pack (Vol. 001)", de Deva. Disponível em opengameart.org/content/8-bit-sound-effect-pack-vol-001, sob licença CC0,
+"Power Up, Level Up #beansjam", de Quitschie. Disponível em  opengameart.org/content/power-up-level-up-beansjam, sob licença CC0,
+"2 Gun Reloads", de StarNinjas. Disponível em  opengameart.org/content/2-gun-reloads, sob licença CC0
+
 ## 🎮 Tutorial Instalação Jogo
 
 ### 1. Clone o repositório
