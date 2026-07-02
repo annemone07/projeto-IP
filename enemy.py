@@ -27,7 +27,6 @@ class Inimigo(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (256, 256))
         if self.i == "Boss-W1":
             self.image = pygame.transform.scale(self.image, (0.7*config.bgInitWidth, (config.bgInitHeight)*0.2))
-        #print(self.imagens[i])
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -144,7 +143,6 @@ class Bullet(pygame.sprite.Sprite):
                        "tracker": {"velocidade" :450, "imagem" : "bala-''cinza''-retang..png"},
                        "laser" : {"velocidade" : 12, "imagem" : "laser-bonito.png", "danos": (10, 20, 40, 80, 100)}
                        }
-        #print("teste 1")
         super().__init__()
         self.boss = boss
         self.dt = dt
@@ -200,7 +198,6 @@ class Bullet(pygame.sprite.Sprite):
         if self.tipo == "rajada":
             if dy <0:
                 dy = -dy
-            #print(pow)
             indicies = {"b0" : (0, -posB[0]), "b1" : (posB[0], 0), "b2" : (-posB[0], 0), "b3":(0, posB[0]), "b4" :(118, 96), "b5": (118, -96), "b6": (-118, 96), "b7" :(-118, -96)}
             if pow not in (0, 3):
                 ang = math.atan(indicies[f"b{pow}"][1]/indicies[f"b{pow}"][0])
@@ -258,7 +255,6 @@ class Bullet(pygame.sprite.Sprite):
                 self.estado_laser += 1
                 if self.estado_laser  == 5:
                     continuar = 0
-                print(f"estado continuar{continuar}"), print(self.estado_laser)
             
             if not self.boss:
                 estados_laser = (20, 25, 30, 50, 60)
@@ -275,7 +271,6 @@ class Bullet(pygame.sprite.Sprite):
                       
             if len(enemyPos) == 0: #tira o laser da memória quando o inimigo dele morrer
                 self.kill()
-                print("MATOU AQ DENTRO")
             #atualiza o laser p ficar sempre embaixo do inimigo, só tenta atualizar se tiver passado pelo menos 1 inimigo com laser  
             else:
                 self.rect.centerx = enemyPos[0][0] 

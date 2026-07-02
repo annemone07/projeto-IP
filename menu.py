@@ -27,7 +27,7 @@ class MenuPrincipal():
             tela.blit(renderedText, (100,170+i*60))
         eq_rend = self.fonte.render(self.dadosGrupo["equipe"], True, (0, 0, 0))
         titulo_rend = self.fonte_titulo.render("AeroHell", True, (0, 0, 0))
-        config.tela_virtual.blit(titulo_rend, (600, 40))
+        config.tela_virtual.blit(titulo_rend, (config.bgInitHeight/2, 40))
         tela.blit(eq_rend, (config.bgInitWidth-620, config.bgInitHeight-370))
         for n in range(len(self.dadosGrupo["membros"])):
             memb_rend = self.fonte.render(self.dadosGrupo["membros"][n], True, (0, 0, 0))
@@ -360,7 +360,7 @@ class menuOpcoes():
                 self.opcaoSelecionada -=1 
                 if self.opcaoSelecionada < 0:
                     self.opcaoSelecionada = 0
-                    
+             
             elif event.key==pygame.K_a and self.valoresOpcoes[self.opcaoSelecionada] != "Voltar":
                 self.ultimos_valores[self.opcaoSelecionada] -=1
                 if self.ultimos_valores[self.opcaoSelecionada] < 0:
