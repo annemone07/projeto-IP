@@ -141,7 +141,7 @@ O projeto foi essencial para reconhecer a importância do alinhamento técnico e
 "10 8bit coin sounds", de Luke.RUSTLTD. Disponível em  opengameart.org/content/10-8bit-coin-sounds, sob licença CC0,\
 "8-Bit Sound Effect Pack (Vol. 001)", de Deva. Disponível em opengameart.org/content/8-bit-sound-effect-pack-vol-001, sob licença CC0,\
 "Power Up, Level Up #beansjam", de Quitschie. Disponível em  opengameart.org/content/power-up-level-up-beansjam, sob licença CC0,\
-"2 Gun Reloads", de StarNinjas. Disponível em  opengameart.org/content/2-gun-reloads, sob licença CC0\
+"2 Gun Reloads", de StarNinjas. Disponível em  opengameart.org/content/2-gun-reloads, sob licença CC0
 
 ## 🎮 Tutorial Instalação Jogo
 
