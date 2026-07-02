@@ -18,7 +18,6 @@ class Jogador(pygame.sprite.Sprite):
         self.deltaTime = dt
         self.images = []
         self.sheet = pygame.image.load(spriteImage).convert_alpha()
-        sheetSize = self.sheet.get_rect()
         self.direction=pygame.math.Vector2()
         self.animacoes = self.fatiar_spritesheet(self.sheet)
         self.estadoAnimacao = "run"

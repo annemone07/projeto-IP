@@ -210,8 +210,6 @@ class Bullet(pygame.sprite.Sprite):
             sin = math.sin(ang)
             if pow in (0, 2, 5, 7): #correcao para os valores do cosseno negativo
                 cos = -cos
-            """if sin<0:  #correcao para o seno, para ele sempre atirar p baixo 
-                sin = -sin"""
             self.dire = pygame.math.Vector2((cos*self.velocidade), (sin*self.velocidade))
 
         if self.tipo == "laser":

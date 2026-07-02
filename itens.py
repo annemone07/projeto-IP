@@ -7,7 +7,6 @@ class itemGeral(pygame.sprite.Sprite):
     
     def __init__(self, spriteImage, posInicial):
         super().__init__()
-        folderPath = os.path.dirname(os.path.abspath(__file__))
         self.sheet = pygame.image.load(spriteImage).convert_alpha()
         self.direction=pygame.math.Vector2()
         self.animacoes = self.fatiar_spritesheet(self.sheet)
