@@ -22,7 +22,6 @@ derrota= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects"
 hitJogador= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","Hit 1.wav"))
 moedinha= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","coin1.wav"))
 carrergandoCartucho= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","gun_reload.1.ogg"))
-restoColetavel= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","Power Up.wav"))
 bala1Inimigo = pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot1.ogg"))
 bala2Inimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot2.ogg"))
 balaShotgunInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot3.ogg"))
@@ -82,11 +81,9 @@ def sons(evento):
         tocarMusica("store")
     elif evento == "menu principal":
         tocarMusica("title")
-    elif evento=="pausado" or evento=="Opções" or evento== "menu boss":
+    elif evento=="pausado" or evento=="Opções" or evento== "menu boss" or evento== "creditos" or evento== "fim do tutorial" or evento== "tela de morte":
         config.musicaIsPaused=True
         pygame.mixer.music.pause()
-    if evento in ("tela de morte","creditos","fim do tutorial"):
-        pygame.mixer.music.fadeout(200)
     if evento=="balaPlayer":
         balaJogador.set_volume(config.volume/2)
         pygame.mixer.Sound.play(balaJogador)
@@ -118,9 +115,6 @@ def sons(evento):
     if evento== "reload":
         carrergandoCartucho.set_volume(config.volume)
         pygame.mixer.Sound.play(carrergandoCartucho)
-    if evento== "coletado":
-        restoColetavel.set_volume(config.volume)
-        pygame.mixer.Sound.play(restoColetavel)
     if evento== "morteJogador":
         derrota.set_volume(config.volume/2)
         pygame.mixer.Sound.play(derrota)

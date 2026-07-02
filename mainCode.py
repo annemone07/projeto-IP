@@ -755,7 +755,7 @@ while main:
         for pedacos in grupoEscudo:
             if jogador.hitbox.colliderect(pedacos.rect):
                 escudo_coletados.append(pedacos)
-                sons("coletado")
+                
                 pedacos.kill()
             elif pedacos.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 pedacos.kill()
@@ -771,7 +771,7 @@ while main:
         for cura in grupoCura:
             if jogador.hitbox.colliderect(cura.rect):
                 cura_coletados.append(cura)
-                sons("coletado")
+                
                 cura.kill()
             elif cura.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 cura.kill()
@@ -787,7 +787,7 @@ while main:
         for powerup in grupoQuickShot:
             if jogador.hitbox.colliderect(powerup.rect):
                 quick_shots_coletados.append(powerup)
-                sons("coletado")
+                
                 powerup.kill()
             elif powerup.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 powerup.kill()
@@ -809,7 +809,7 @@ while main:
         for carga in grupoBulletTime:
             if jogador.hitbox.colliderect(carga.rect):
                 charges_coletados.append(carga)
-                sons("coletado")
+                
                 carga.kill()
                 if jogador.charge < 5:
                     jogador.charge += 1
@@ -821,7 +821,7 @@ while main:
         for ima in grupoIma:
             if jogador.hitbox.colliderect(ima.rect):
                 imas_coletados.append(ima)
-                sons("coletado")
+                
                 ima.kill()
             elif ima.rect.topright[1] > config.bgInitHeight + 6:
                 ima.kill()
