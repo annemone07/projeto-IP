@@ -256,6 +256,12 @@ while main:
             selecao=creditos.eventos(event)
             if selecao=="Voltar":
                 estadoDoJogo="menu principal"
+            elif selecao=="Proximo":
+                creditos.estadoCreditos=1
+                creditos.opcoes[1]="Anterior"
+            elif selecao=="Anterior":
+                creditos.estadoCreditos=0
+                creditos.opcoes[1]="Proximo"
 
         elif estadoDoJogo == "fim do tutorial":#Menu principal --Selecionar--> Tutorial
             selecao = fim_do_tutorial.eventos(event)

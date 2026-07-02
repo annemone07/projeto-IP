@@ -126,15 +126,24 @@ class Creditos():
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images", "backgrounds","bgCreditos.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
-        self.opcoes = ["Voltar"]
-        self.referencias = ["“Void Main Ship”, de Foozle. Disponível em foozlecc.itch.io/void-main-ship, sob licensa CC0",
-                            "“Void Fleet Pack 1”, de Foozle. Disponível em foozlecc.itch.io/void-fleet-pack-1, sob licensa\n CC0",
-                            "“Pixel Shmup”, de Kenney. Disponível em kenney.nl/assets/pixel-shmup, sob licensa CC0",
-                            "“Gold Coin/Token”, de BizmasterStudios. Disponível em opengameart.org/content/gold-cointoken,\n sob licensa CC0",
-                            "“Flying me softly”, de Alexandr Zhelanov. Disponível em opengameart.org/content/flying-me-softly,\n sob licensa CC-BY 3.0 ",
-                            "“Space Shoot Sounds”, de Robin Lamb. Disponível em opengameart.org/content/space-shoot-sounds,\n sob licensa CC0",
-                            "“Laser Beam”, de frosty ham. Disponível em opengameart.org/content/laser-beam, sob licensa CC0",
-                            "“Explosion”, de TinyWorlds. Disponível em opengameart.org/content/explosion-0, sob licensa CC0"
+        self.estadoCreditos=0
+        self.opcoes = ["Voltar", "Proximo"]
+        self.referencias = ["“Void Main Ship”, de Foozle. Disponível em \nfoozlecc.itch.io/void-main-ship, sob licensa CC0",
+                            "“Void Fleet Pack 1”, de Foozle. Disponível em \nfoozlecc.itch.io/void-fleet-pack-1, sob licensa CC0",
+                            "“Pixel Shmup”, de Kenney. Disponível em \nkenney.nl/assets/pixel-shmup, sob licensa CC0",
+                            "“Gold Coin/Token”, de BizmasterStudios. \nDisponível em opengameart.org/content/gold-cointoken, sob licensa CC0",
+                            "“Flying me softly”, de Alexandr Zhelanov. \nDisponível em opengameart.org/content/flying-me-softly, sob licensa CC-BY 3.0 ",
+                            "“Space Shoot Sounds”, de Robin Lamb. \nDisponível em opengameart.org/content/space-shoot-sounds, sob licensa CC0",
+                            "“Laser Beam”, de frosty ham. \nDisponível em opengameart.org/content/laser-beam, sob licensa CC0",
+                            "“Explosion”, de TinyWorlds. \nDisponível em opengameart.org/content/explosion-0, sob licensa CC0",
+                            "\"Bossa Nova\", de Joth. Disponível em \nopengameart.org/content/bossa-nova , sob licença CC0",
+                            "\"8-bit Epic Space Shooter Music\", de HydroGene. Disponível em \nopengameart.org/content/8-bit-epic-space-shooter-music, sob licença CC0",
+                            "\"NES Shooter Music (5 tracks, 3 jingles)\", de SketchyLogic. Disponível em  \nopengameart.org/content/nes-shooter-music-5-tracks-3-jingles, sob licença CC0",
+                            '"8bit Death Whirl", de Fupi. Disponível em  \nopengameart.org/content/8bit-death-whirl, sob licença CC0',
+                            '"10 8bit coin sounds", de Luke.RUSTLTD. Disponível em  \nopengameart.org/content/10-8bit-coin-sounds, sob licença CC0',
+                            '"8-Bit Sound Effect Pack (Vol. 001)", de Deva. Disponível em \nopengameart.org/content/8-bit-sound-effect-pack-vol-001, sob licença CC0',
+                            '"Power Up, Level Up #beansjam", de Quitschie. Disponível em  \nopengameart.org/content/power-up-level-up-beansjam, sob licença CC0',
+                            '"2 Gun Reloads", de StarNinjas. Disponível em  \nopengameart.org/content/2-gun-reloads, sob licença CC0'
                             ]
         self.opcaoSelecionada = 0
     
@@ -147,13 +156,22 @@ class Creditos():
             else:
                 cor = (255,255,255)
             renderedText = self.fonte.render(text, True, cor)
-            tela.blit(renderedText, (100,100+i*60))
+            tela.blit(renderedText, (100+i*200,100))
         for i, text in enumerate(self.referencias):
-            renderedText = self.fonte2.render(text, True, (255,255,255))
-            if(i>0 and '\n' in self.referencias[i-1] and '\n' not in self.referencias[i]):
-                tela.blit(renderedText, (90,200+i*100))
+            if self.estadoCreditos==0:
+                if i<8:
+                    renderedText = self.fonte2.render(text, True, (255,255,255))
+                    if(i>0 and '\n' in self.referencias[i-1] and '\n' not in self.referencias[i]):
+                        tela.blit(renderedText, (90,200+i*100))
+                    else:
+                        tela.blit(renderedText, (90,180+i*100))
             else:
-                tela.blit(renderedText, (90,180+i*100))
+                if i>=8:
+                    renderedText = self.fonte2.render(text, True, (255,255,255))
+                    if(i>0 and '\n' in self.referencias[i-1] and '\n' not in self.referencias[i]):
+                        tela.blit(renderedText, (90,200+(i-8)*100))
+                    else:
+                        tela.blit(renderedText, (90,180+(i-8)*100))
     
     def eventos(self, event):
         if event.type == pygame.QUIT:
@@ -161,6 +179,10 @@ class Creditos():
         elif event.type == pygame.KEYDOWN:
             if event.key==pygame.K_RETURN:
                 return self.opcoes[self.opcaoSelecionada]
+            elif event.key == pygame.K_d:
+                self.opcaoSelecionada = (self.opcaoSelecionada + 1) % 3
+            elif event.key == pygame.K_a:
+                self.opcaoSelecionada = (self.opcaoSelecionada - 1)%3
         return None
     
 
@@ -197,9 +219,9 @@ class menuFimTutorial():
             return "sair"
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_s:
-                self.opcaoAtual = (self.opcaoAtual + 1) % 3
+                self.opcaoAtual = (self.opcaoAtual + 1) % 2
             elif event.key == pygame.K_w:
-                self.opcaoAtual = (self.opcaoAtual - 1)%3
+                self.opcaoAtual = (self.opcaoAtual - 1)%2
             elif event.key == pygame.K_RETURN:
                 return self.opcoes[self.opcaoAtual]
             return None
