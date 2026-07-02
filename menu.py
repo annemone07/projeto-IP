@@ -122,7 +122,7 @@ class Creditos():
     def __init__(self, tela:pygame.surface):
         self.folderPath = config.folderPath
         self.fonte = pygame.font.SysFont("consolas", 48)
-        self.fonte2 = pygame.font.SysFont("consolas", 32)
+        self.fonte2 = pygame.font.SysFont("consolas", 24)
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images", "backgrounds","bgCreditos.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
@@ -163,17 +163,17 @@ class Creditos():
                 if i<8:
                     renderedText = self.fonte2.render(text, True, (255,255,255))
                     if(i<15 and self.refAnterior.count('\n')>=3 and not text.count('\n')<3):
-                        tela.blit(renderedText, (90,140+i*100))
+                        tela.blit(renderedText, (90,120+i*100))
                     else:
-                        tela.blit(renderedText, (90,120+i*115))
+                        tela.blit(renderedText, (90,120+i*85))
                     self.refAnterior=text
             else:
                 if i>=8:
                     renderedText = self.fonte2.render(text, True, (255,255,255))
                     if(i<15 and self.refAnterior.count('\n')>=3 and not text.count('\n')<3):
-                        tela.blit(renderedText, (90,140+(i-8)*100))
+                        tela.blit(renderedText, (90,120+(i-8)*100))
                     else:
-                        tela.blit(renderedText, (90,140+(i-8)*115))
+                        tela.blit(renderedText, (90,120+(i-8)*85))
                     self.refAnterior=text
     
     def eventos(self, event):
