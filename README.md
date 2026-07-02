@@ -77,6 +77,8 @@ Loja de Itens
 
 **Random**: biblioteca nativa do Python usada para definir as probabilidades de aparecimento dos coletáveis e dos inimigos, bem como a movimentação destes últimos
 
+**Time**: biblioteca nativa do Python para ter o manejo de tempo de alguns eventos internos de forma mais precisa, por algumas limitações do timer do pygame
+
 **Kenney.nl** e **opengameart.org**: sites utilizados para buscar os assets com os devidos créditos para o jogo.
 
 **GitHub**: plataforma utilizada para hospedagem do repositório do projeto, bem como para versionamento do código-fonte.
