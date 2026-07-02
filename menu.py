@@ -128,20 +128,21 @@ class Creditos():
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
         self.estadoCreditos=0
         self.opcoes = ["Voltar", "Proximo"]
+        self.refAnterior=""
         self.referencias = ["“Void Main Ship”, de Foozle. Disponível em \nfoozlecc.itch.io/void-main-ship, sob licensa CC0",
-                            "“Void Fleet Pack 1”, de Foozle. Disponível em \nfoozlecc.itch.io/void-fleet-pack-1, sob licensa CC0",
+                            "“Void Fleet Pack 1”, de Foozle. Disponível em \nfoozlecc.itch.io/void-fleet-pack-1, sob \nlicensa CC0",
                             "“Pixel Shmup”, de Kenney. Disponível em \nkenney.nl/assets/pixel-shmup, sob licensa CC0",
-                            "“Gold Coin/Token”, de BizmasterStudios. \nDisponível em opengameart.org/content/gold-cointoken, sob licensa CC0",
-                            "“Flying me softly”, de Alexandr Zhelanov. \nDisponível em opengameart.org/content/flying-me-softly, sob licensa CC-BY 3.0 ",
-                            "“Space Shoot Sounds”, de Robin Lamb. \nDisponível em opengameart.org/content/space-shoot-sounds, sob licensa CC0",
+                            "“Gold Coin/Token”, de BizmasterStudios. \nDisponível em opengameart.org/content/gold-cointoken, \nsob licensa CC0",
+                            "“Flying me softly”, de Alexandr Zhelanov. \nDisponível em opengameart.org/content/flying-me-softly, \nsob licensa CC-BY 3.0 ",
+                            "“Space Shoot Sounds”, de Robin Lamb. \nDisponível em opengameart.org/content/space-shoot-sounds, \nsob licensa CC0",
                             "“Laser Beam”, de frosty ham. \nDisponível em opengameart.org/content/laser-beam, sob licensa CC0",
                             "“Explosion”, de TinyWorlds. \nDisponível em opengameart.org/content/explosion-0, sob licensa CC0",
-                            "\"Bossa Nova\", de Joth. Disponível em \nopengameart.org/content/bossa-nova , sob licença CC0",
+                            "\"Bossa Nova\", de Joth. Disponível em \nopengameart.org/content/bossa-nova, sob licença CC0",
                             "\"8-bit Epic Space Shooter Music\", de HydroGene. Disponível em \nopengameart.org/content/8-bit-epic-space-shooter-music, sob licença CC0",
-                            "\"NES Shooter Music (5 tracks, 3 jingles)\", de SketchyLogic. Disponível em  \nopengameart.org/content/nes-shooter-music-5-tracks-3-jingles, sob licença CC0",
+                            "\"NES Shooter Music (5 tracks, 3 jingles)\", de SketchyLogic. Disponível em  \nopengameart.org/content/nes-shooter-music-5-tracks-3-jingles, \nsob licença CC0",
                             '"8bit Death Whirl", de Fupi. Disponível em  \nopengameart.org/content/8bit-death-whirl, sob licença CC0',
                             '"10 8bit coin sounds", de Luke.RUSTLTD. Disponível em  \nopengameart.org/content/10-8bit-coin-sounds, sob licença CC0',
-                            '"8-Bit Sound Effect Pack (Vol. 001)", de Deva. Disponível em \nopengameart.org/content/8-bit-sound-effect-pack-vol-001, sob licença CC0',
+                            '"8-Bit Sound Effect Pack (Vol. 001)", de Deva. Disponível em \nopengameart.org/content/8-bit-sound-effect-pack-vol-001,\nsob licença CC0',
                             '"Power Up, Level Up #beansjam", de Quitschie. Disponível em  \nopengameart.org/content/power-up-level-up-beansjam, sob licença CC0',
                             '"2 Gun Reloads", de StarNinjas. Disponível em  \nopengameart.org/content/2-gun-reloads, sob licença CC0'
                             ]
@@ -156,22 +157,24 @@ class Creditos():
             else:
                 cor = (255,255,255)
             renderedText = self.fonte.render(text, True, cor)
-            tela.blit(renderedText, (100+i*200,100))
+            tela.blit(renderedText, (100+i*200,60))
         for i, text in enumerate(self.referencias):
             if self.estadoCreditos==0:
                 if i<8:
                     renderedText = self.fonte2.render(text, True, (255,255,255))
-                    if(i>0 and '\n' in self.referencias[i-1] and '\n' not in self.referencias[i]):
-                        tela.blit(renderedText, (90,200+i*100))
+                    if(i<15 and self.refAnterior.count('\n')>=3 and not text.count('\n')<3):
+                        tela.blit(renderedText, (90,140+i*100))
                     else:
-                        tela.blit(renderedText, (90,180+i*100))
+                        tela.blit(renderedText, (90,120+i*115))
+                    self.refAnterior=text
             else:
                 if i>=8:
                     renderedText = self.fonte2.render(text, True, (255,255,255))
-                    if(i>0 and '\n' in self.referencias[i-1] and '\n' not in self.referencias[i]):
-                        tela.blit(renderedText, (90,200+(i-8)*100))
+                    if(i<15 and self.refAnterior.count('\n')>=3 and not text.count('\n')<3):
+                        tela.blit(renderedText, (90,140+(i-8)*100))
                     else:
-                        tela.blit(renderedText, (90,180+(i-8)*100))
+                        tela.blit(renderedText, (90,140+(i-8)*115))
+                    self.refAnterior=text
     
     def eventos(self, event):
         if event.type == pygame.QUIT:
