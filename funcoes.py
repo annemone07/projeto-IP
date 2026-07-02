@@ -21,6 +21,8 @@ balaJogador = pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEff
 derrota= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","vgdeathsound.wav"))
 hitJogador= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","Hit 1.wav"))
 moedinha= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","coin1.wav"))
+carrergandoCartucho= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","gun_reload.1.ogg"))
+restoColetavel= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","Power Up.wav"))
 bala1Inimigo = pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot1.ogg"))
 bala2Inimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot2.ogg"))
 balaShotgunInimigo= pygame.mixer.Sound(os.path.join(config.folderPath,"sons","soundEffects","alienshoot3.ogg"))
@@ -118,6 +120,12 @@ def sons(evento):
     if evento== "pegouMoeda":
         moedinha.set_volume(config.volume/2)
         pygame.mixer.Sound.play(moedinha)
+    if evento== "reload":
+        carrergandoCartucho.set_volume(config.volume)
+        pygame.mixer.Sound.play(carrergandoCartucho)
+    if evento== "coletado":
+        restoColetavel.set_volume(config.volume)
+        pygame.mixer.Sound.play(restoColetavel)
     if evento== "morteJogador":
         derrota.set_volume(config.volume/2)
         pygame.mixer.Sound.play(derrota)

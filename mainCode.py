@@ -191,8 +191,7 @@ while main:
         if wave_counter != 5 and estadoDoJogo != ultimoEstado:
             sons(estadoDoJogo)
             ultimoEstado = estadoDoJogo
-        
-
+            
         #um if pra cada estado do jogo
         if estadoDoJogo=="menu principal":
             selecao = menu_principal.eventos(event)
@@ -201,7 +200,7 @@ while main:
                 estadoDoJogo="escolher modo"
                 resetarVariaveis(grupoGrupos, 0)#Apagar todo mundo
                 jogador = criarJogador(deltaTime)#Cria um jogador novo, esse que tem que ter suas variáveis internas zeradas
-                wave_counter = 5#Resetar as Waves
+                wave_counter = 0#Resetar as Waves
                 inicio_de_jogo=perf_counter()#Reiniciar o contador de jogo
                 tempo_no_menu=0.0#Tempo passado no menu é zerad
                 inicio_menu = perf_counter()
@@ -761,6 +760,7 @@ while main:
         for pedacos in grupoEscudo:
             if jogador.hitbox.colliderect(pedacos.rect):
                 escudo_coletados.append(pedacos)
+                sons("coletado")
                 pedacos.kill()
             elif pedacos.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 pedacos.kill()
@@ -776,6 +776,7 @@ while main:
         for cura in grupoCura:
             if jogador.hitbox.colliderect(cura.rect):
                 cura_coletados.append(cura)
+                sons("coletado")
                 cura.kill()
             elif cura.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 cura.kill()
@@ -791,6 +792,7 @@ while main:
         for powerup in grupoQuickShot:
             if jogador.hitbox.colliderect(powerup.rect):
                 quick_shots_coletados.append(powerup)
+                sons("coletado")
                 powerup.kill()
             elif powerup.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 powerup.kill()
@@ -812,6 +814,7 @@ while main:
         for carga in grupoBulletTime:
             if jogador.hitbox.colliderect(carga.rect):
                 charges_coletados.append(carga)
+                sons("coletado")
                 carga.kill()
                 if jogador.charge < 5:
                     jogador.charge += 1
@@ -823,6 +826,7 @@ while main:
         for ima in grupoIma:
             if jogador.hitbox.colliderect(ima.rect):
                 imas_coletados.append(ima)
+                sons("coletado")
                 ima.kill()
             elif ima.rect.topright[1] > config.bgInitHeight + 6:
                 ima.kill()
@@ -852,6 +856,7 @@ while main:
                 if jogador.cartuchos < 50:
                     jogador.cartuchos += 1
                 cartuchos_coletados.append(cartuchos)
+                sons("reload")
                 cartuchos.kill()
             elif cartuchos.rect.topright[1] > config.bgInitHeight + 6: #eliminar o item da memória caso saia da tela
                 cartuchos.kill()
