@@ -67,8 +67,8 @@ def tocarMusica(nome):
     if config.musicaAtual != nome:
         pygame.mixer.music.load(playlist[nome])
         pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(config.volume)
         config.musicaAtual = nome
+    pygame.mixer.music.set_volume(config.volume)
 
 
 def sons(evento):

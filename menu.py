@@ -222,9 +222,9 @@ class menuFimTutorial():
             return "sair"
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_s:
-                self.opcaoAtual = (self.opcaoAtual + 1) % 2
+                self.opcaoAtual = (self.opcaoAtual + 1) % len(self.opcoes)
             elif event.key == pygame.K_w:
-                self.opcaoAtual = (self.opcaoAtual - 1)%2
+                self.opcaoAtual = (self.opcaoAtual - 1)% len(self.opcoes)
             elif event.key == pygame.K_RETURN:
                 return self.opcoes[self.opcaoAtual]
             return None
