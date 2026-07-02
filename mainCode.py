@@ -8,7 +8,7 @@ import random
 from itens import itemGeral, ParteEscudo, Quick_Shot, Moedas, Cura, Charge, Ima, Shotgun
 from time import perf_counter, sleep
 from loja import Loja
-from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes, menuFimBoss, menuAddRanking, exibirRanking
+from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes, menuFimBoss, menuAddRanking, exibirRanking, menuTeclas
 import config
 from funcoes import criarJogador, resetarVariaveis, sons
 
@@ -16,7 +16,6 @@ from funcoes import criarJogador, resetarVariaveis, sons
 pygame.init() 
 pygame.mixer.init()
 pygame.mixer.set_num_channels(32)
-pygame.display.set_icon(pygame.image.load(os.path.join(config.folderPath,"images","logo.png"))) #logo para ficar no arquivo enquanto executa
 pygame.display.set_caption("AeroHell") #alterar para o nome do jogo dps
 clock = pygame.time.Clock()
 deltaTime = clock.tick(60)/1000
@@ -108,7 +107,7 @@ loja = Loja()
 menu_boss = menuFimBoss(config.tela_virtual)
 menu_input = menuAddRanking(config.tela_virtual)
 menu_ranking = exibirRanking(config.tela_virtual)
-
+menu_teclas = menuTeclas(config.tela_virtual)
 
 #temporizadores
 t_invencibilidade = 0
@@ -164,6 +163,7 @@ mudar, laser = 0, 0 #variaveis para as balas com condições especiais
 ranking_boss = []
 ranking_infinito = {"Fácil": [], "Médio": [], "Difícil": [], "Impossível": []}
 acabou = 0
+tempo_jogo_fim, nao_pode_entrar_mais = 0, 0
 while main:
     #print("inimigos", grupoMoeda)
     #ouro, prata, shield, heal, bt, qs = 0, 0, 0, 0, 0, 0
@@ -198,12 +198,14 @@ while main:
                 tempo_no_menu=0.0#Tempo passado no menu é zerad
                 inicio_menu = perf_counter()
                 sons(estadoDoJogo)#Sons que deveriam tocar nesse menu
+                boss_fight = 0
+
                 
             elif selecao == "Tutorial": #Menu principal ---Selecionar---> Tutorial
                 estadoDoJogo = "jogando" #Tutorial rodando
                 modo = "tutorial"
                 grupoJogador.add(jogador)#Criar o Novo Player
-                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -200), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -50), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
                 #Criação do Inimigo do tutorial ↑
                 contador_de_teclas_mov, contador_de_teclas_espaco, contador_itens, fim_tutorial, passa_tutorial = 0, 0, 0, 0, 0
             
@@ -215,6 +217,9 @@ while main:
                 estadoAnteriorParaVoltar = estadoDoJogo
                 estadoDoJogo="Opções"
                 sons(estadoDoJogo)
+            
+            elif selecao == "Teclas":
+                estadoDoJogo = "teclas"
 
             elif selecao=="Sair": #Menu principal ---Selecionar---> Fecahr o jogo
                 pygame.quit()
@@ -238,16 +243,24 @@ while main:
                 tempo_no_menu=0.0
                 estadoDoJogo="jogando"#Indicar que reiniciou o jogo
                 sons(estadoDoJogo)
-
+                menu_input.ja_adicionou = 0
+                nao_pode_entrar_mais = 0
+                boss_fight = 0
             elif selecao=="Menu Principal":#Tela de morte ---Selecionar---> Menu Principal
                 resetarVariaveis(grupoGrupos, 0)#Limpar o Jogo
                 inicio_menu = 0.0 
                 estadoDoJogo="menu principal"
                 sons(estadoDoJogo)
-            elif selecao == "Ranking":
+                menu_input.ja_adicionou = 0
+                nao_pode_entrar_mais = 0
+            elif selecao == "Ranking" and not menu_input.ja_adicionou:
                 estadoAnterior2 = estadoDoJogo
                 estadoDoJogo = "add ranking"
+                menu_input.ja_adicionou
+            elif selecao == "Ranking" and menu_input.ja_adicionou:
+                nao_pode_entrar_mais = 1
             elif selecao=="Sair":
+                nao_pode_entrar_mais = 0
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -313,7 +326,7 @@ while main:
         elif estadoDoJogo=="Opções":
             sons(estadoDoJogo)
             selecao = menu_opcoes.eventos(event)
-            print(selecao)
+            #print(selecao)
             if selecao[1] is not None:
                 config.volume=float(selecao[1])/100.0
             if selecao[0] == "Tela Cheia":
@@ -348,16 +361,27 @@ while main:
                 grupoJogador.add(jogador)
                 estadoDoJogo="jogando"
                 sons(estadoDoJogo)
+                menu_input.ja_adicionou = 0
+                nao_pode_entrar_mais = 0
+                boss_fight = 0
+                
 
             elif selecao == "Opções":
                 estadoDoJogo = "Opções"
+                nao_pode_entrar_mais = 0
 
             elif selecao == "Menu Principal":
                 estadoDoJogo = "menu principal"
-            elif selecao == "Adicionar Ranking":
+                menu_input.ja_adicionou = 0
+                nao_pode_entrar_mais = 0
+            elif selecao == "Ranking" and not menu_input.ja_adicionou:
                 estadoAnterior2 = estadoDoJogo
                 estadoDoJogo = "add ranking"
+                menu_input.ja_adicionou = 1
+            elif selecao == "Ranking" and menu_input.ja_adicionou:
+                nao_pode_entrar_mais = 1
             elif selecao == "Sair":
+                nao_pode_entrar_mais = 0
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -366,18 +390,24 @@ while main:
         elif estadoDoJogo == "add ranking":
             selecao = menu_input.eventos(event)
             if selecao is not None:
+                menu_input.ja_adicionou = 1
                 if modo == "boss":
                     ranking_boss.append({"user": selecao, "tempo": tempo_jogo_fim})
                     ranking_boss.sort(key=lambda x: x["tempo"], reverse=False) #ordenar os tempos de forma decrescente
                     estadoDoJogo = estadoAnterior2
                 elif modo == "infinito":
-                    print(ranking_infinito[dificuldade])
+                    #print(ranking_infinito[dificuldade])
                     ranking_infinito[dificuldade].append({"user": selecao, "tempo": tempo_jogo_fim})
                     ranking_infinito[dificuldade].sort(key=lambda x: x["tempo"], reverse=True) #ordenar os tempos de forma decrescente
                     estadoDoJogo = estadoAnterior2
-                    print(ranking_infinito[dificuldade])
+                    #print(ranking_infinito[dificuldade])
         elif estadoDoJogo == "ranking":
             selecao = menu_ranking.eventos(event)
+            if selecao == "Voltar":
+                estadoDoJogo = "menu principal"
+
+        elif estadoDoJogo == "teclas":
+            selecao = menu_teclas.eventos(event)
             if selecao == "Voltar":
                 estadoDoJogo = "menu principal"
 
@@ -551,6 +581,9 @@ while main:
         menu_principal.draw(config.tela_virtual)
     elif estadoDoJogo=="tela de morte":
         tela_de_morte.draw(config.tela_virtual, jogador.kills, modo)
+        if nao_pode_entrar_mais:
+            msg_form = config.fonte_media.render("SEU TEMPO JÁ FOI REGISTRADO", True, (255, 0, 0))
+            config.tela_virtual.blit(msg_form, (config.bgWidth/2 - msg_form.width/2, config.bgHeight - 100))
     elif estadoDoJogo=="creditos":
         creditos.draw(config.tela_virtual)
     elif estadoDoJogo == "fim do tutorial":
@@ -563,10 +596,16 @@ while main:
         menu_opcoes.draw(config.tela_virtual)
     elif estadoDoJogo == "menu boss":
         menu_boss.draw_texto(config.tela_virtual, config.telaSizePlaceholder, tempo_jogo_fim)
+        if nao_pode_entrar_mais:
+            msg_form = config.fonte_media.render("SEU TEMPO JÁ FOI REGISTRADO", True, (255, 0, 0))
+            config.tela_virtual.blit(msg_form, (config.bgWidth/2 - msg_form.width/2, config.bgHeight - 100))
     elif estadoDoJogo == "add ranking":
         menu_input.draw_texto(config.tela_virtual, config.telaSizePlaceholder, tempo_jogo_fim)
     elif estadoDoJogo == "ranking":
         menu_ranking.draw_texto(config.tela_virtual, config.telaSizePlaceholder, (ranking_boss, ranking_infinito))
+    elif estadoDoJogo == "teclas":
+        menu_teclas.draw_texto(config.tela_virtual, config.telaSizePlaceholder)
+        
 
 
         
@@ -578,7 +617,7 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
 
-        if acabou and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss":
+        if acabou and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss" and jogador.vida >0:
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = config.fonte_grande.render(mensagem, True, (0, 0, 0))
@@ -1138,6 +1177,11 @@ while main:
             pygame.draw.rect(config.tela_virtual, (0, 0, 0), (468, 55, 600, 40), 3)
             barra_vida = int(boss.vida*6/10) #regra de 3 com o retangulo tendo 600 de tamanho e vida do boss 1000
             pygame.draw.rect(config.tela_virtual, (255, 0, 0), (468, 55, barra_vida, 40))
+
+        if modo == "infinito" and perf_counter() - inicio_de_jogo - tempo_no_menu < 3:
+            mensagem_loja = "APERTE L PARA ENTRAR NA LOJA"
+            mensagem_loja_rend = config.fonte_media.render(mensagem_loja, True, (0, 0, 0))
+            config.tela_virtual.blit(mensagem_loja_rend, (config.bgInitWidth/2 - mensagem_loja_rend.width/2, config.bgHeight - 100))
             
 
 
@@ -1215,7 +1259,7 @@ while main:
 
             if tecla[pygame.K_LSHIFT] and len(grupoBulletTime) >= 0 and len(grupoInimigo) == 0 and sug == "  Pegue a carga e aperte shift\n   para usar o bullet time":
                 passa_tutorial =1
-                print("PASSAR TUTORIAL")
+                #print("PASSAR TUTORIAL")
             
 
             if passa_tutorial and len(grupoShotgun) ==0 and len(grupoInimigo) == 0 and len(grupoQuickShot) >= 0 and not fim_tutorial:
@@ -1239,16 +1283,25 @@ while main:
                 grupoShotgun.add(cartucho)
                 
                  
-            if tecla[pygame.K_TAB] and passa_tutorial and len(grupoShotgun) > 0:
+            if tecla[pygame.K_TAB] and passa_tutorial and len(grupoShotgun) > 0 and len(grupoInimigo) == 0 and jogador.kills == 0:
                 #passa_tutorial = 0
                 sug = "Mate o inimigo!"
                 grupoInimigo.add(enemy01)
                 fim_tutorial = 1
+
+            if fim_tutorial and len(grupoInimigo) == 0 and jogador.kills == 0:
+                enemy01 = Inimigo(i =0, dt=deltaTime, pos=(config.bgInitWidth/2, -50), limites_mov=(300, config.bgInitWidth - 300), sentido_inicial="L")
+                grupoInimigo.add(enemy01)
                 
 
-            if enemy01.vida <= 0 and len(grupoExplosion) == 0:
+            if enemy01.vida <= 0 and len(grupoExplosion) == 0 and jogador.kills > 0:
                 estadoDoJogo = "fim do tutorial"
                 #fim_do_tutorial = 1
+
+            
+
+            
+                
 
 
                 

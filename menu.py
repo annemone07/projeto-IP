@@ -11,7 +11,7 @@ class MenuPrincipal():
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
-        self.opcoes = ["Jogar", "Tutorial", "Opções","Ranking", "Sair", "Creditos"]
+        self.opcoes = ["Jogar", "Tutorial", "Opções","Ranking","Teclas", "Sair", "Creditos"]
         self.opcaoSelecionada = 0
         self.dadosGrupo = {"equipe": "Equipe 3", "membros": ("jfag", "rma10", "phcps", "flg", "rtal", "aspr")}
     
@@ -186,8 +186,8 @@ class menuFimTutorial():
 
     def draw(self, tela, tam_tela, bg):
         tela.blit(bg, (0, 0))
-        texto_pause = self.fonte.render("PARABÉNS!\nFIM DO TUTORIAL", True, (255, 255, 255))
-        tela.blit(texto_pause, (tam_tela[0]/2 - 180, 100))
+        texto_pause = self.fonte.render("     PARABÉNS! \n   FIM DO TUTORIAL", True, (255, 255, 255))
+        tela.blit(texto_pause, (tam_tela[0]/2 - texto_pause.width/2, 100))
         for i in range(len(self.opcoes)):
             delta = 0
             if i == self.opcaoAtual:
@@ -197,7 +197,7 @@ class menuFimTutorial():
             if i == 0:
                 delta = 30
             texto_for = self.fonte.render(self.opcoes[i], True, cor)
-            tela.blit(texto_for, ((tam_tela[0]/2 - texto_for.width/2 + delta) , 200 + i*80))
+            tela.blit(texto_for, ((tam_tela[0]/2 - texto_for.width/2 + delta) , 300 + i*80))
 
 
             
@@ -433,7 +433,7 @@ class menuFimBoss():
     def __init__(self, tela:pygame.surface):
         self.folderPath = config.folderPath
         self.fonte = pygame.font.SysFont("consolas", 50, True, False)
-        self.opcoes = ("Reiniciar", "Opções", "Adicionar Ranking" ,"Menu Principal","Sair")
+        self.opcoes = ("Reiniciar", "Opções", "Ranking" ,"Menu Principal","Sair")
         self.tamanho = tela.get_size()
         self.opcaoAtual = 0
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
@@ -487,6 +487,7 @@ class menuAddRanking():
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
         self.nome = ""
+        self.ja_adicionou = 0
 
 
     def draw_texto(self, tela, tam_tela, tempo_de_jogo):
@@ -516,7 +517,7 @@ class menuAddRanking():
     def eventos(self, event):
         if event.type == pygame.QUIT:
             return "sair"
-        elif event.type == pygame.TEXTINPUT:
+        elif event.type == pygame.TEXTINPUT and len(self.nome) < 6:
             self.nome += (event.text).upper()
             self.opcaoAtual += 1
             if self.opcaoAtual == 6:
@@ -531,6 +532,10 @@ class menuAddRanking():
                 self.opcaoAtual = 0
                 user = self.nome
                 self.nome = ""
+                if len(user) < 6:
+                    var = 6 - len(user)
+                    for _ in range(var):
+                        user += " "
                 return user
 
             
@@ -560,10 +565,12 @@ class exibirRanking():
         mensagem_form_1 = config.fonte_media.render(ranking_boss, True, (0, 0, 0))
         mensagem_form_2 = config.fonte_media.render(ranking_infinito, True, (0, 0, 0))
         dif = self.fonte.render(self.dificuldades[self.opcaoAtual], True, (0, 0, 0))
+        ins = self.fonte.render("USE A-D PARA ALTERNAR ENTRE AS DIFICULDADES \n             APERTE ESC PARA SAIR", True, (0, 0, 0))
 
         config.tela_virtual.blit(mensagem_form_1, (150, 30))
         config.tela_virtual.blit(mensagem_form_2, (config.bgInitWidth - 500, 27))
         config.tela_virtual.blit(dif, (config.bgInitWidth - 350 - dif.width/2, 120))
+        config.tela_virtual.blit(ins, (config.bgInitWidth/2 - ins.width/2, config.bgHeight - 100))
         
         
         
@@ -590,6 +597,52 @@ class exibirRanking():
                 self.opcaoAtual += 1
                 if self.opcaoAtual > 3:
                     self.opcaoAtual = 0
+            if event.key == pygame.K_ESCAPE:
+                return "Voltar"
+
+            
+        return None
+    
+
+
+
+
+class menuTeclas():
+    def __init__(self, tela:pygame.surface):
+        self.folderPath = config.folderPath
+        self.fonte = pygame.font.SysFont("consolas", 50, True, False)
+        #self.opcoes = ("Reiniciar", "Opções", "Menu Principal","Sair")
+        self.tamanho = tela.get_size()
+        self.opcaoAtual = 0
+        self.bg = pygame.image.load(os.path.join(self.folderPath,"images","backgrounds","bgIP.png")).convert()
+        self.bg = pygame.transform.scale(self.bg, self.tamanho)
+        self.teclas = {"Movimentar" : "W-A-S-D", "Atirar": "Espaço","Bullet time": "Shift", "Trocar arma": "Tab", "Pausar": "Esc"}
+
+
+    def draw_texto(self, tela, tam_tela):
+        config.tela_virtual.blit(self.bg, (0,0))
+        nome = "TECLAS"
+        #mensagem_tempo = f"TEMPO TOTAL {tempo_de_jogo:0.1f}s"
+        mensagem_form_1 = config.fonte_grande.render(nome, True, (0, 0, 0))
+        ins = self.fonte.render("APERTE ESC PARA SAIR", True, (0, 0, 0))
+
+        config.tela_virtual.blit(mensagem_form_1, (config.bgWidth/2 - mensagem_form_1.width/2, 30))
+        config.tela_virtual.blit(ins, (config.bgInitWidth/2 - ins.width/2, config.bgHeight - 100))
+        
+        
+        valor_delta = 0
+        for acao in self.teclas:
+            valor_delta += 1
+            dado_atual = self.fonte.render(f"{acao}:  {self.teclas[acao]}" , True, (0, 0, 0))
+            config.tela_virtual.blit(dado_atual,(config.bgWidth/2 - dado_atual.width/2, 200 + 60 * valor_delta))
+        
+
+
+
+    def eventos(self, event):
+        if event.type == pygame.QUIT:
+            return "sair"
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 return "Voltar"
 
