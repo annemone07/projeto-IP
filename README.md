@@ -58,6 +58,9 @@ Gameplay
 Boss Fight
 ![luta com boss](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image5.png)
 
+Loja de Itens
+![loja](https://github.com/annemone07/projeto-IP/blob/main/prints%20gameplay/image0.png)
+
 ## 🛠 Ferramentas, bibliotecas e frameworks
 
 **Python**: Linguagem de programação ensinada na disciplina de Introdução à Programação e utilizada pela biblioteca Pygame.
