@@ -125,11 +125,21 @@ class telaMorte(MenuPrincipal):
 class Creditos():
     def __init__(self, tela:pygame.surface):
         self.folderPath = config.folderPath
-        self.fonte = pygame.font.SysFont("Arial", 48)
+        self.fonte = pygame.font.SysFont("consolas", 48)
+        self.fonte2 = pygame.font.SysFont("consolas", 32)
         self.tamanho = (config.bgWidth,config.bgHeight)
         self.bg = pygame.image.load(os.path.join(self.folderPath,"images", "backgrounds","bgCreditos.png")).convert()
         self.bg = pygame.transform.scale(self.bg, self.tamanho)
         self.opcoes = ["Voltar"]
+        self.referencias = ["“Void Main Ship”, de Foozle. Disponível em foozlecc.itch.io/void-main-ship, sob licensa CC0",
+                            "“Void Fleet Pack 1”, de Foozle. Disponível em foozlecc.itch.io/void-fleet-pack-1, sob licensa\n CC0",
+                            "“Pixel Shmup”, de Kenney. Disponível em kenney.nl/assets/pixel-shmup, sob licensa CC0",
+                            "“Gold Coin/Token”, de BizmasterStudios. Disponível em opengameart.org/content/gold-cointoken,\n sob licensa CC0",
+                            "“Flying me softly”, de Alexandr Zhelanov. Disponível em opengameart.org/content/flying-me-softly,\n sob licensa CC-BY 3.0 ",
+                            "“Space Shoot Sounds”, de Robin Lamb. Disponível em opengameart.org/content/space-shoot-sounds,\n sob licensa CC0",
+                            "“Laser Beam”, de frosty ham. Disponível em opengameart.org/content/laser-beam, sob licensa CC0",
+                            "“Explosion”, de TinyWorlds. Disponível em opengameart.org/content/explosion-0, sob licensa CC0"
+                            ]
         self.opcaoSelecionada = 0
     
     def draw(self, tela):
@@ -139,9 +149,15 @@ class Creditos():
             if i == self.opcaoSelecionada:
                 cor = (254, 56, 103)
             else:
-                cor = (0,0,0)
+                cor = (255,255,255)
             renderedText = self.fonte.render(text, True, cor)
             tela.blit(renderedText, (100,100+i*60))
+        for i, text in enumerate(self.referencias):
+            renderedText = self.fonte2.render(text, True, (255,255,255))
+            if(i>0 and '\n' in self.referencias[i-1] and '\n' not in self.referencias[i]):
+                tela.blit(renderedText, (90,200+i*100))
+            else:
+                tela.blit(renderedText, (90,180+i*100))
     
     def eventos(self, event):
         #print(event)

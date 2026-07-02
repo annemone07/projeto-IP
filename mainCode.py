@@ -47,7 +47,7 @@ pygame.time.set_timer(create_Cura, 2000)
 
 #Evento de spawn - Escudo
 create_escudo = pygame.USEREVENT + 3
-pygame.time.set_timer(create_escudo, 3000)
+pygame.time.set_timer(create_escudo, 1000)
 
 #Evento de spawn - Quick_shot
 create_quickshot = pygame.USEREVENT + 4
@@ -392,7 +392,7 @@ while main:
                     jogador.quick_shot, tempo_pausado = loja.abrir(clock, jogador, jogador.quick_shot, jogador.bullet_time)
                     inicio_de_jogo += tempo_pausado
             #Criar o escudo:
-            if event.type == create_escudo and random.randint(1,7)==1 and (modo == "boss" or modo == "infinito") : #chance de spawnar
+            if event.type == create_escudo and random.randint(1,5)==1 and (modo == "boss" or modo == "infinito") : #chance de spawnar
                 if jogador.armadura < 100:
                         x = random.randint(200,config.bgInitWidth-200)
                         y = -200
@@ -582,7 +582,7 @@ while main:
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = config.fonte_grande.render(mensagem, True, (0, 0, 0))
-            config.tela_virtual.blit(mensagem_form, ((250), (config.bgInitHeight/2) - mensagem_form.get_size()[0]))
+            config.tela_virtual.blit(mensagem_form, (config.bgInitWidth/2-mensagem_form.get_width()/2, config.bgInitHeight/2-mensagem_form.get_height()/2))
             config.tela_escalada = pygame.transform.smoothscale(config.tela_virtual, (config.bgWidth,config.bgHeight)) ##################
             config.tela.blit(config.tela_escalada,(0,0))
             acabou = 0
