@@ -270,6 +270,9 @@ while main:
                 inicio_menu = 0.0
                 estadoDoJogo="menu principal"
 
+            elif selecao == "Opções":
+                estadoAnteriorParaVoltar = estadoDoJogo
+                estadoDoJogo = "Opções"
             elif selecao == "Sair":
                 pygame.quit()
                 sys.exit()
