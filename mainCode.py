@@ -160,8 +160,8 @@ pode_spawn_laser = 1
 mudar, laser = 0, 0 #variaveis para as balas com condições especiais
 ranking_boss = [] #rankings são locais, resetam toda vez que o jogo é iniciado
 ranking_infinito = {"Fácil": [], "Médio": [], "Difícil": [], "Impossível": []} #armazena por dificuldade
-acabou = 0
 tempo_jogo_fim, nao_pode_entrar_mais = 0, 0
+contador_kills = 0
 while main:
     grupoGrupos = (grupoItem, grupoEscudo, grupoQuickShot, grupoBulletTime, grupoShotgun, grupoCura, grupoMoeda, grupoIma, grupoJogador, grupoRastro, grupoBala, grupoInimigo, grupoBullets, grupoLaser, grupoExplosion)
     #todos os eventos
@@ -598,14 +598,13 @@ while main:
         #Salvar tecla apertada
         tecla = pygame.key.get_pressed()
 
-        if acabou and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss" and jogador.vida >0:
+        if contador_kills >= 15 and len(grupoExplosion) == 0 and not ja_entrou and not boss_fight and modo == "boss" and jogador.vida >0:
             wave_counter += 1
             mensagem = f"HORDA {wave_counter} FINALIZADA"
             mensagem_form = config.fonte_grande.render(mensagem, True, (0, 0, 0))
             config.tela_virtual.blit(mensagem_form, (config.bgInitWidth/2-mensagem_form.get_width()/2, config.bgInitHeight/2-mensagem_form.get_height()/2))
             config.tela_escalada = pygame.transform.smoothscale(config.tela_virtual, (config.bgWidth,config.bgHeight)) ##################
             config.tela.blit(config.tela_escalada,(0,0))
-            acabou = 0
             pygame.display.flip() #para colocar a mensagem de final na tela
             sleep(3.0)
             #limpando os elementos da tela
@@ -616,6 +615,7 @@ while main:
             inicio_de_jogo += tempo_pausado + 3
             ja_entrou = 1
             acabou_sair = 0
+            contador_kills = 0
             pygame.event.clear() #tirando ""todos os eventos da fila, para não passar comandos p dps do intervalo
         
         if wave_counter ==5 and wave_counter != 0 and not boss_fight and not acabou_sair and modo == "boss":
@@ -1068,8 +1068,7 @@ while main:
                 grupoExplosion.add(explosao)
                 sons("ExplosaoInimigo")
                 jogador.add_kill()
-                if jogador.kills in(15, 30, 45, 60, 75):
-                    acabou = 1
+                contador_kills += 1
                 ja_entrou = 0 #para entrar na loja no proximo 
                 enemy.kill()
             if enemy.rect.topright[1] >= config.bgInitHeight + 6 or enemy.rect.topright[0] < 0 or enemy.rect.topleft[0] > config.bgInitWidth + 6: 
