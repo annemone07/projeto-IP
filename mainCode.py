@@ -10,7 +10,8 @@ from time import perf_counter, sleep
 from loja import Loja
 from menu import MenuPrincipal, menuPause, telaMorte, Creditos, menuFimTutorial, menuModos, menuDificuldade, menuOpcoes, menuFimBoss, menuAddRanking, exibirRanking, menuTeclas
 import config
-from funcoes import criarJogador, resetarVariaveis, sons
+from funcoes import criarJogador, resetarVariaveis, sons, atualizar_ranking
+import json
 
 #configs permanentes
 pygame.init() 
@@ -158,8 +159,11 @@ duracao_ima = 20
 boss_fight = 0
 pode_spawn_laser = 1
 mudar, laser = 0, 0 #variaveis para as balas com condições especiais
-ranking_boss = [] #rankings são locais, resetam toda vez que o jogo é iniciado
-ranking_infinito = {"Fácil": [], "Médio": [], "Difícil": [], "Impossível": []} #armazena por dificuldade
+#abrindo o arquivo json
+with open(os.path.join(config.folderPath,"ranking.json"), "r", encoding="utf-8") as rank:
+    rankings = json.load(rank)
+ranking_boss = rankings["ranking_boss"]
+ranking_infinito = rankings["ranking_infinito"]
 tempo_jogo_fim, nao_pode_entrar_mais = 0, 0
 contador_kills = 0
 while main:
@@ -168,6 +172,7 @@ while main:
     for event in pygame.event.get():
         #condição de parada
         if event.type == pygame.QUIT:
+            atualizar_ranking(rankings)
             pygame.quit()
             sys.exit()
             main=False
@@ -210,6 +215,7 @@ while main:
                 estadoDoJogo = "teclas"
 
             elif selecao=="Sair": #Menu principal ---Selecionar---> fechar o jogo
+                atualizar_ranking(rankings)
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -247,6 +253,7 @@ while main:
                 nao_pode_entrar_mais = 1
             elif selecao=="Sair":
                 nao_pode_entrar_mais = 0
+                atualizar_ranking(rankings)
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -274,6 +281,7 @@ while main:
                 estadoAnteriorParaVoltar = estadoDoJogo
                 estadoDoJogo = "Opções"
             elif selecao == "Sair":
+                atualizar_ranking(rankings)
                 pygame.quit()
                 sys.exit()
                 main = False
@@ -369,6 +377,7 @@ while main:
                 nao_pode_entrar_mais = 1
             elif selecao == "Sair":
                 nao_pode_entrar_mais = 0
+                atualizar_ranking(rankings)
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -554,6 +563,7 @@ while main:
 
             #sair
             elif selecao == "Sair":
+                atualizar_ranking(rankings)
                 pygame.quit()
                 sys.exit()
                 main=False
@@ -1317,4 +1327,6 @@ while main:
     #flip atualiza a tela
     pygame.display.update()
     pygame.display.flip()
-    clock.tick(config.fps)        
+    clock.tick(config.fps)
+
+    
