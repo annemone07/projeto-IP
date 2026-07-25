@@ -14,7 +14,6 @@ Rafael Tomaz Araujo Leite (rtal)
 
 Rodrigo Machado Araujo (rma10)
 
-Ariel Soares Pereira Rodrigues (aspr)
 
 ## 📂 Arquitetura do Projeto
 
@@ -36,13 +35,17 @@ projeto-IP/
 │
 │── loja.py # Define as classe para o ambiente de compra de itens para o jogador
 |
-│── menu.py # Define as classes dos menus do jogo, incluindo a tela inicial, seleção de modo e de dificuldade, tutorial, créditos e controle de volume e de resolução
+│── menu.py # Define as classes dos menus do jogo, incluindo a tela inicial, seleção de modo e de dificuldade, tutorial, créditos e opções
 │   
 │── player.py # Armazena classes do comportamento do jogador
 │ 
 |── mainCode.py # Loop principal do código
 |
 ├── .gitignore # Configurações do projeto ocultadas para o Git
+|
+├── ranking.json # Atualiza o ranking local de forma facilitada
+|
+├── mainCode.spec #Configurações para compilar usando PyInstaller(executável único)
 |
 |── prints gameplay/ # Screenshots funcionamento jogo
 |
@@ -89,7 +92,7 @@ Loja de Itens
 
 Felipe Lopez Guerra (flg): criação coletáveis, relatório final e slides
 
-João Felipe Audet Guerra (jfag): mecânicas dos inimigos, modos de jogo, menus e ranking interno
+João Felipe Audet Guerra (jfag): mecânicas dos inimigos, modos de jogo, menus e ranking
 
 Pedro Henrique Carício Pereira de Sousa (phcps): criação da loja de itens e realização de testes e balanceamento
 
@@ -97,7 +100,6 @@ Rafael Tomaz Araujo Leite (rtal): criação dos upgrades do player e animações
 
 Rodrigo Machado Araujo (rma10): Sistema para diferentes telas, sistema de som, fundo rolante, centralização das configurações
 
-Ariel Soares Pereira Rodrigues (aspr):
 
 ## 📚 Conceitos utilizados
 
