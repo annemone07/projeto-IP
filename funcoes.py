@@ -3,6 +3,7 @@ import os
 import config
 from player import Jogador
 import random
+import json
 
 pygame.init()
 pygame.mixer.init()
@@ -121,3 +122,7 @@ def sons(evento):
     if evento== "venceu":
         venceuBoss.set_volume(config.volume)
         pygame.mixer.Sound.play(venceuBoss)
+
+def atualizar_ranking(ranking):
+    with open(os.path.join(config.folderPath,"ranking.json"), "w", encoding="utf-8") as rank:
+        json.dump(ranking, rank, indent=2) #atualiza o json localmente
