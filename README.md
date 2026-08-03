@@ -45,7 +45,7 @@ projeto-IP/
 |
 ├── ranking.json # Atualiza o ranking local de forma facilitada
 |
-├── mainCode.spec #Configurações para compilar usando PyInstaller(executável único)
+├── mainCode.spec # Configurações para compilar usando PyInstaller(executável único)
 |
 |── prints gameplay/ # Screenshots funcionamento jogo
 |
